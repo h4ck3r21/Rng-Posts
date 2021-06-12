@@ -1,0 +1,28 @@
+body.error {
+    animation: FadeIn 0.75s ease-in-out forwards;
+    background-color: #fff;
+}
+
+@keyframes FadeIn {
+  from {
+    background-color: red;
+  }
+
+  to {
+    background-color: white;
+  }
+}
+
+body {
+    user-select:none;
+}
+
+#para-correct {
+    color: #0c0;
+    text-decoration: underline;
+}
+
+#errors {
+    color:#e00;
+    text-decoration: underline;
+}
