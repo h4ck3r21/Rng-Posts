@@ -1,52 +1,10 @@
-<!DOCTYPE HTML>
-<html lang = "en">
-    <head>
-        <title>Not a Game</title>
-        <meta charset = "UTF-8" />
-        <link rel="icon" href="https://i.ibb.co/BNQXhDM/icon.png">
-        <link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/styling.css') }}">
-    </head>
-    <body>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
-          crossorigin="anonymous">
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css"
-          integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ"
-          crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
-            integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-            crossorigin="anonymous"></script>
-    <script src="{{ url_for('static', filename='sockets.js') }}"></script>
-    <script>
-        var socket = io.connect('/', {transports: ['websocket']});
-        function begin(){
-            socket.emit('ready', '{{userid}}')
-        }
-    </script>
-    <h1 id="victory" class="hidden"></h1>
-    <table id="table" width="100%" class="table"><tr>
-            <colgroup>
-                <col width="60%">
-                <col width="20%">
-                <col width="20%">
-            </colgroup>
-            <td>
-                <div>
-                    <iframe src="/paragraph/{{userid}}" title="your paragraph" id="your-para" class="hidden"></iframe>
-                    <button onclick="begin()" type="button" id="start-button">Start</button>
-                </div>
-                <input id="message-box" type="text" name="mytext" class="message" />
-            </td><td>
-              <div id="enemy-paragraphs"></div>
-            </td><td>
-              <div id="log" style="word-break: break-all"></div>
-            </td>
-        </tr></table>
-        <h3 hidden id="username">{{name}}</h3>
-        <h3 hidden id="userID">{{userid}}</h3>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>homepage</title>
+</head>
+<body>
+
+</body>
 </html>
