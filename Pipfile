@@ -10,6 +10,7 @@ gunicorn = "*"
 flask-socketio = "*"
 eventlet = "*"
 essential-generators = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 pytest = "*"
