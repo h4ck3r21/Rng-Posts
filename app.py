@@ -1,7 +1,8 @@
 from flask import Flask, render_template
 import psycopg2
+import os
 
-DATABASE_URL = "dbname=duke-of-e-database user=postgres password=9jl2$*gsi96*h8AjpdZ71 port=9261"
+DATABASE_URL = os.environ["dbname=duke-of-e-database user=postgres password=9jl2$*gsi96*h8AjpdZ71 port=9261"]
 conn = psycopg2.connect(DATABASE_URL)
 app = Flask(__name__)
 
