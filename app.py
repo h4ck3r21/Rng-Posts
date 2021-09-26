@@ -1,10 +1,39 @@
-from flask import Flask, render_template
-import psycopg2
+from flask import Flask, request, render_template
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 import os
 
-DATABASE_URL = os.environ["dbname=duke-of-e-database user=postgres password=9jl2$*gsi96*h8AjpdZ71 port=9261"]
-conn = psycopg2.connect(DATABASE_URL)
 app = Flask(__name__)
+
+app.config.from_object(os.environ['APP_SETTINGS'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+
+class Book(db.Model):
+    __tablename__ = 'books'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String())
+    author = db.Column(db.String())
+    published = db.Column(db.String())
+
+    def __init__(self, name, author, published):
+        self.name = name
+        self.author = author
+        self.published = published
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'author': self.author,
+            'published': self.published
+        }
 
 
 @app.route('/')
