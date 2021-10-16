@@ -1,44 +1,43 @@
-from flask import Flask, request, render_template
-from flask_migrate import Migrate
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
 
-app.config.from_object(os.environ['APP_SETTINGS'])
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+DATABASE_URL = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
 
-class Book(db.Model):
-    __tablename__ = 'books'
+# commands to be used
+# User.query.all()
+# User.query.filter_by(username='admin').first()
+# {variable} = User(username='admin', email='admin@example.com', password='xxxxxx')
+# db.session.add({variable})
+# db.session.delete({variable})
+# db.session.commit()
 
+
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String())
-    author = db.Column(db.String())
-    published = db.Column(db.String())
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
 
-    def __init__(self, name, author, published):
-        self.name = name
-        self.author = author
-        self.published = published
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'author': self.author,
-            'published': self.published
-        }
+        return '<User %r>' % self.username
 
 
 @app.route('/')
 def homepage():
-    return render_template('homepage.html')
+    user_id = request.cookies.get('userID')
+    print('rendering home page')
+    # try:
+    user = User.query.filter_by(id=user_id).first()
+    return render_template('homepage.html', user=user)
+    # except SQLAlchemy.exc.DataError:
+    #   return render_template('homepage.html', user=None)
 
 
 if __name__ == "__main__":
