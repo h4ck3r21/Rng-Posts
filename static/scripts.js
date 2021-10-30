@@ -1,15 +1,15 @@
-function openLogIn() {
-  document.getElementById("logInPopUp").style.display = "block";
+function openLogin() {
+  document.getElementById("loginPopUp").style.display = "block";
 }
 
-function closeLogIn() {
-  document.getElementById("logInPopUp").style.display = "none";
+function closeLogin() {
+  document.getElementById("loginPopUp").style.display = "none";
 }
 
-function checkSignedIn(user) {
-    if (user === undefined) {
-        document.getElementById("logInButton").style.display = "block";
+function checkSignedIn() {
+    if (document.getElementById("user").innerHTML === undefined) {
+        document.getElementById("loginButton").style.display = "block";
     } else {
-        document.getElementById("logInButton").style.display = "none";
+        document.getElementById("loginButton").style.display = "none";
     }
 }

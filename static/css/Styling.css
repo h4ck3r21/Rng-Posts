@@ -1,4 +1,4 @@
-#logInButton {
+#loginButton {
   display: block;
   background-color: #555;
   color: white;
@@ -12,7 +12,7 @@
   width: 280px;
 }
 
-#logInPopUp  {
+#loginPopUp  {
   display: none;
   position: fixed;
   top: 0;
@@ -28,7 +28,7 @@
 }
 
 .input-text {
-  width: 100%;
+  width: 90%;
   padding: 15px;
   margin: 5px 0 22px 0;
   border: none;

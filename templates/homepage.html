@@ -5,30 +5,33 @@
         <meta charset="UTF-8">
         <title>Duke of Edinburgh Website</title>
         <link rel="stylesheet" href="../static/css/Styling.css">
+        <script src="../static/scripts.js"></script>
 
     </head>
 
     <body>
 
-    <button id="logInButton" onclick="openLogIn()">Log in</button>
+        <var id="user" hidden>{{user}}</var>
 
-    <div id="logInPopUp">
-        <form method="post" class="form-container">
-            <h1>Log in</h1>
-            <label for="email">Email </label>
-            <input type="email" name="email" id="email" class="input-text" required>
+        <button id="loginButton" onclick=openLogin()>Log in</button>
 
-            <label for="username">Username</label>
-            <input name="username" id="username" class="input-text" required>
+        <div id="loginPopUp">
+            <form method="post" class="form-container" action="/login">
+                <h1>Log in</h1>
+                <label for="email">Email </label>
+                <input type="email" name="email" id="email" class="input-text" required>
 
-            <label for="password">Password </label>
-            <input type="password" name="password" id="password" class="input-text" required>
+                <label for="username">Username</label>
+                <input name="username" id="username" class="input-text" required>
 
-            <button type="submit" id="LoginSubmitButton" class="btn">Log in</button>
-            <button type="button" id="LoginCloseButton" class="btn close" onclick="closeForm()">Close</button>
-        </form>
-    </div>
+                <label for="password">Password </label>
+                <input type="password" name="password" id="password" class="input-text" required>
 
-    <script src="/static/scripts.js"></script>
+                <p id="register"><a href="register_page.html">Register.</a></p>
+                <button type="submit" id="LoginSubmitButton" class="btn">Log in</button>
+                <button type="button" id="LoginCloseButton" class="btn close" onclick="closeLogin()">Close</button>
+            </form>
+        </div>
+
     </body>
 </html>

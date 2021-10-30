@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 import os
 
@@ -67,6 +67,27 @@ def homepage():
     user = User.query.filter_by(id=user_id).first()
     print(user)
     return render_template('homepage.html', user=user)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def index():
+    email = request.form['email']
+    username = request.form['username']
+    password = request.form['password']
+    user = User.query.filter_by(username=username).first()
+    if user.password == password:
+        resp = make_response(render_template('set-cookie.html'))
+        resp.set_cookie('userID', user.id)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def index():
+    email = request.form['email']
+    username = request.form['username']
+    password = request.form['password']
+    user = User(username=username, email=email, password=password)
+    db.session.add(user)
+    db.session.commit()
 
 
 if __name__ == "__main__":

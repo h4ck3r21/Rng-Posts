@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="../static/css/Styling.css">
+    <script src="../static/register.js"></script>
+</head>
+<body>
+    <center>
+        <div class="bordered">
+            <form method="post" class="form-container" action="/register">
+                <h1>Log in</h1>
+                <label for="email">Email </label>
+                <input type="email" name="email" id="email" class="input-text" required>
+
+                <label for="username">Username</label>
+                <input name="username" id="username" class="input-text" required>
+
+                <label for="password">Password </label>
+                <input type="password" name="password" id="password" class="input-text" required>
+
+                <button type="submit" id="LoginSubmitButton" class="btn">Log in</button>
+                <button type="button" id="LoginCloseButton" class="btn close" onclick="back()">Back</button>
+            </form>
+        </div>
+    </center>
+</body>
+</html>
