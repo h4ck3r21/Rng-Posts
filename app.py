@@ -11,6 +11,7 @@ db = SQLAlchemy(app)
 
 
 # commands to be used
+# db.create_all()
 # User.query.all()
 # User.query.filter_by(username='admin').first()
 # {variable} = User(username='admin', email='admin@example.com', password='xxxxxx')
@@ -25,7 +26,6 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -70,24 +70,38 @@ def homepage():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-def index():
-    email = request.form['email']
+def login():
     username = request.form['username']
     password = request.form['password']
     user = User.query.filter_by(username=username).first()
-    if user.password == password:
+    if not user:
+        return render_template('homepage.html', login_error='username not registered')
+    elif user.password != password:
+        return render_template('homepage.html', login_error='password is incorrect')
+    else:
         resp = make_response(render_template('set-cookie.html'))
-        resp.set_cookie('userID', user.id)
+        resp.set_cookie('userID',  str(user.id))
+        return resp
+
+
+@app.route('/register_page')
+def render_register_page():
+    return render_template('register_page.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def index():
-    email = request.form['email']
+def register():
     username = request.form['username']
     password = request.form['password']
-    user = User(username=username, email=email, password=password)
-    db.session.add(user)
-    db.session.commit()
+    if User.query.filter_by(username=username).first():
+        return render_template('register_page.html', error='username already used')
+    else:
+        user = User(username=username, password=password)
+        db.session.add(user)
+        db.session.commit()
+        resp = make_response(render_template('set-cookie.html'))
+        resp.set_cookie('userID', str(user.id))
+        return resp
 
 
 if __name__ == "__main__":
