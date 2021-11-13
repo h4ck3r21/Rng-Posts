@@ -12,6 +12,8 @@
             <form method="post" class="form-container" action="/register">
                 <h1>Log in</h1>
 
+                <p class="error-text">{{error}}</p>
+
                 <label for="username">Username</label>
                 <input name="username" id="username" class="input-text" required>
 
@@ -22,6 +24,7 @@
                 <button type="button" id="LoginCloseButton" class="btn close" onclick="back()">Back</button>
             </form>
         </div>
+
     </center>
 </body>
 </html>

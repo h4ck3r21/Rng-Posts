@@ -1,7 +1,8 @@
+import os
 from datetime import datetime
+
 from flask import Flask, render_template, request, make_response
 from flask_sqlalchemy import SQLAlchemy
-import os
 
 app = Flask(__name__)
 
@@ -61,32 +62,36 @@ class Category(db.Model):
 
 
 @app.route('/')
-def homepage():
+def home():
     user_id = request.cookies.get('userID')
     print('rendering home page')
     user = User.query.filter_by(id=user_id).first()
     print(user)
-    return render_template('homepage.html', user=user)
+    return render_template('homepage.html', user=user, login_error="")
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print("logging in")
     username = request.form['username']
     password = request.form['password']
     user = User.query.filter_by(username=username).first()
+    resp = make_response(render_template('set-cookie.html'))
     if not user:
-        return render_template('homepage.html', login_error='username not registered')
+        print("username not registered")
+        return render_template('homepage.html', user=None, login_error="username not registered")
     elif user.password != password:
-        return render_template('homepage.html', login_error='password is incorrect')
+        print("password incorrect")
+        return render_template('homepage.html', user=None, login_error="password incorrect")
     else:
-        resp = make_response(render_template('set-cookie.html'))
+        print("login successful")
         resp.set_cookie('userID',  str(user.id))
         return resp
 
 
 @app.route('/register_page')
 def render_register_page():
-    return render_template('register_page.html')
+    return render_template('register_page.html', error="")
 
 
 @app.route('/register', methods=['GET', 'POST'])
