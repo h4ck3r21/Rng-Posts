@@ -1,4 +1,11 @@
 #loginButton {
+  position: fixed;
+  top: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+.open-button {
   display: block;
   background-color: #555;
   color: white;
@@ -6,10 +13,6 @@
   border: none;
   cursor: pointer;
   opacity: 0.8;
-  position: fixed;
-  top: 23px;
-  right: 28px;
-  width: 280px;
 }
 
 p.error-text {
@@ -17,18 +20,28 @@ p.error-text {
 }
 
 #loginPopUp  {
-  display: none;
-  position: fixed;
   top: 0;
   right: 15px;
+}
+
+.popup {
+  display: none;
+  position: fixed;
   border: 3px solid #f1f1f1;
   z-index: 9;
 }
 
-.form-container {
+.login-form {
   max-width: 300px;
+}
+
+.form-container {
   padding: 10px;
   background-color: white;
+}
+
+.post-form {
+  max-width: 500px
 }
 
 .input-text {

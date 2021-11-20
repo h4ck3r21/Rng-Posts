@@ -13,10 +13,10 @@
 
         <var id="user" hidden>{{user}}</var>
 
-        <button id="loginButton" onclick=openLogin()>Log in</button>
+        <button id="loginButton" class="open-button" onclick=openLogin()>Log in</button>
 
-        <div id="loginPopUp">
-            <form method="post" class="form-container" action="/login">
+        <div id="loginPopUp" class="popup">
+            <form method="post" class="form-container login-form" action="/login">
                 <h1>Log in</h1>
 
                 <p class="error-text" id="login-error">{{login_error}}</p>
@@ -33,8 +33,25 @@
             </form>
         </div>
 
-        <div class="signed-in">
+        <div id="signed-in">
             <h1>Welcome {{user.username}}</h1>
+
+            <button id="postButton" class="open-button" onclick=openPost()>Post</button>
+
+            <div id="postPopUp" class="popup">
+                <form method="post" class="form-container post-form" action="/add_post">
+                    <label for="title">Title</label>
+                    <input name="title" id="title" class="input-text" required>
+
+                    <label for="body">Body</label>
+                    <br>
+                    <textarea rows="10" name="body" id="body" class="input-text body-input" required></textarea>
+
+
+                    <button type="submit" id="submit-post" class="btn">Log in</button>
+                    <button type="button" id="PostCloseButton" class="btn close" onclick="closePost()">Close</button>
+                </form>
+            </div>
         </div>
 
         <script src="../static/check_logged_in.js"></script>

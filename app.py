@@ -38,12 +38,6 @@ class Post(db.Model):
     body = db.Column(db.Text, nullable=False)
     pub_date = db.Column(db.DateTime, nullable=False,
                          default=datetime.utcnow)
-
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'),
-                            nullable=False)
-    category = db.relationship('Category',
-                               backref=db.backref('posts', lazy=True))
-
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
                         nullable=False)
     user = db.relationship('User',
@@ -53,18 +47,10 @@ class Post(db.Model):
         return '<Post %r>' % self.title
 
 
-class Category(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-
-    def __repr__(self):
-        return '<Category %r>' % self.name
-
-
 @app.route('/')
 def home():
-    user_id = request.cookies.get('userID')
     print('rendering home page')
+    user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
     print(user)
     return render_template('homepage.html', user=user, login_error="")
@@ -85,7 +71,7 @@ def login():
         return render_template('homepage.html', user=None, login_error="password incorrect")
     else:
         print("login successful")
-        resp.set_cookie('userID',  str(user.id))
+        resp.set_cookie('userID', str(user.id))
         return resp
 
 
@@ -107,6 +93,19 @@ def register():
         resp = make_response(render_template('set-cookie.html'))
         resp.set_cookie('userID', str(user.id))
         return resp
+
+
+@app.route('/add_post', methods=['GET', 'POST'])
+def add_post():
+    title = request.form['title']
+    body = request.form['body']
+    print(body)
+    user_id = request.cookies.get('userID')
+    user = User.query.filter_by(id=user_id).first()
+    post = Post(title=title, body=body, user=user)
+    db.session.add(post)
+    #db.session.commit()
+    return render_template('homepage.html', user=user, login_error="")
 
 
 if __name__ == "__main__":
