@@ -16,3 +16,7 @@ function closePost() {
   document.getElementById("postButton").style.display = "block";
 }
 
+function removeRow(input) {
+  document.getElementById('content').removeChild(input.parentNode);
+}
+

@@ -48,12 +48,46 @@
                     <textarea rows="10" name="body" id="body" class="input-text body-input" required></textarea>
 
 
-                    <button type="submit" id="submit-post" class="btn">Log in</button>
+                    <button type="submit" id="submit-post" class="btn">Submit</button>
                     <button type="button" id="PostCloseButton" class="btn close" onclick="closePost()">Close</button>
                 </form>
             </div>
         </div>
 
+        <script>
+
+            console.log("{{user.posts}}");
+
+
+            var posts = "{{user.posts}}";
+            posts = posts.substring(1, posts.length - 1);
+            posts = posts.split("Post: ");
+            posts.shift()
+
+            console.log(posts);
+
+            for (post in posts) {
+                console.log(post)
+
+            }
+
+
+            function addRow(post) {
+
+                const div = document.createElement('div');
+
+                div.className = 'post';
+
+                div.innerHTML = `
+                    <h3 class="post-title">post.title<\h3>
+                    <br>
+                    <p class="post-body">post.body<\p>
+                    <p class="post-time">post.pub_date<\p>
+                `;
+
+                document.getElementById('content').appendChild(div);
+            }
+        </script>
         <script src="../static/check_logged_in.js"></script>
 
     </body>

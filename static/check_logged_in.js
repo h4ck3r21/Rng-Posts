@@ -16,6 +16,12 @@ if (document.getElementById("user").innerHTML == "None") {
 
 }
 
-if (document.getElementById("login-error").innerHTML != "") {
+if (document.getElementById("login-error").innerHTML != "None") {
     openLogin()
+}
+
+
+var login_error = document.getElementById("login-error")
+if (login_error.innerHTML == "None") {
+    login_error.style.display = "none"
 }

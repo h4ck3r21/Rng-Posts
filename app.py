@@ -38,22 +38,24 @@ class Post(db.Model):
     body = db.Column(db.Text, nullable=False)
     pub_date = db.Column(db.DateTime, nullable=False,
                          default=datetime.utcnow)
+    is_public = db.Column(db.Boolean, nullable=False, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
                         nullable=False)
     user = db.relationship('User',
                            backref=db.backref('posts', lazy=True))
 
     def __repr__(self):
-        return '<Post %r>' % self.title
+        return f'Post: {self.title}; {self.body}; {self.pub_date}'
 
 
 @app.route('/')
 def home():
     print('rendering home page')
     user_id = request.cookies.get('userID')
+    err = request.cookies.get('login-error')
     user = User.query.filter_by(id=user_id).first()
-    print(user)
-    return render_template('homepage.html', user=user, login_error="")
+    print(user.posts)
+    return render_template('homepage.html', user=user, login_error=err)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -64,15 +66,17 @@ def login():
     user = User.query.filter_by(username=username).first()
     resp = make_response(render_template('set-cookie.html'))
     if not user:
-        print("username not registered")
-        return render_template('homepage.html', user=None, login_error="username not registered")
+        err = "username not registered"
+        print(err)
+        resp.set_cookie("login-error", err)
     elif user.password != password:
-        print("password incorrect")
-        return render_template('homepage.html', user=None, login_error="password incorrect")
+        err = "password incorrect""password incorrect"
+        print(err)
+        resp.set_cookie("login-error", err)
     else:
         print("login successful")
         resp.set_cookie('userID', str(user.id))
-        return resp
+    return resp
 
 
 @app.route('/register_page')
@@ -84,28 +88,30 @@ def render_register_page():
 def register():
     username = request.form['username']
     password = request.form['password']
+    resp = make_response(render_template('set-cookie.html'))
     if User.query.filter_by(username=username).first():
-        return render_template('register_page.html', error='username already used')
+        err = 'username already used'
+        resp.set_cookie("login-error", err)
+        return resp
     else:
         user = User(username=username, password=password)
         db.session.add(user)
         db.session.commit()
-        resp = make_response(render_template('set-cookie.html'))
         resp.set_cookie('userID', str(user.id))
-        return resp
+    return resp
 
 
 @app.route('/add_post', methods=['GET', 'POST'])
 def add_post():
     title = request.form['title']
     body = request.form['body']
-    print(body)
+    print(title + "\n" + body)
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
     post = Post(title=title, body=body, user=user)
     db.session.add(post)
-    #db.session.commit()
-    return render_template('homepage.html', user=user, login_error="")
+    db.session.commit()
+    return render_template('set-cookie.html')
 
 
 if __name__ == "__main__":
