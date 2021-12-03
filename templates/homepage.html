@@ -52,6 +52,8 @@
                     <button type="button" id="PostCloseButton" class="btn close" onclick="closePost()">Close</button>
                 </form>
             </div>
+
+            <div id="content"></div>
         </div>
 
         <script>
@@ -60,29 +62,32 @@
 
 
             var posts = "{{user.posts}}";
-            posts = posts.substring(1, posts.length - 1);
-            posts = posts.split("Post: ");
-            posts.shift()
+            posts = posts.substring(7, posts.length - 1);
+            posts = posts.split(", Post: ");
+
 
             console.log(posts);
 
-            for (post in posts) {
-                console.log(post)
+            for (index in posts) {
+                console.log(posts[index])
+                addRow(posts[index])
 
             }
 
 
             function addRow(post) {
 
+                post = post.split(";")
+                console.log(post)
+
                 const div = document.createElement('div');
 
                 div.className = 'post';
 
                 div.innerHTML = `
-                    <h3 class="post-title">post.title<\h3>
-                    <br>
-                    <p class="post-body">post.body<\p>
-                    <p class="post-time">post.pub_date<\p>
+                    <h3 class="post-title">${post[0]}<\h3>
+                    <p class="post-body">${post[1]}<\p>
+                    <p class="post-time">${post[2].substring(0, post[2].length-6)}<\p>
                 `;
 
                 document.getElementById('content').appendChild(div);

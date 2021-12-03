@@ -75,3 +75,29 @@ p.error-text {
 .form-container .btn:hover, .open-button:hover {
   opacity: 1;
 }
+
+.post {
+    border: 5px solid black;
+    margin: 20px 10px;
+    padding: 0px 10px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.post-title {
+    text-align: center;
+    margin: 0 3px;
+    font-weight: bold
+    font-style: normal;
+    font-size: 1.5em;
+}
+
+.post-body {
+    font-size: 0.75em;
+    font-style: normal;
+}
+
+.post-time {
+    font-size: 0.5em;
+    text-align: right;
+    font-style: italic;
+}
