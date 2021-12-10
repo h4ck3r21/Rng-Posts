@@ -56,7 +56,8 @@ def home():
     user_id = request.cookies.get('userID')
     err = request.cookies.get('login-error')
     user = User.query.filter_by(id=user_id).first()
-    print(user.posts)
+    if user is not None:
+        print(user.posts)
     return render_template('homepage.html', user=user, login_error=err)
 
 
