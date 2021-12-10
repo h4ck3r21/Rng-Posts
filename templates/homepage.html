@@ -33,6 +33,12 @@
             </form>
         </div>
 
+        <div id="not-signed-in">
+            <h1>Welcome to my website</h1>
+            <p>Start by registering, then you can post notes to yourself.
+                If you wish to access the notes again, then you can sign in</p>
+        </div>
+
         <div id="signed-in">
             <h1>Welcome {{user.username}}</h1>
 
@@ -87,7 +93,9 @@
                 div.innerHTML = `
                     <h3 class="post-title">${post[0]}<\h3>
                     <p class="post-body">${post[1]}<\p>
+                    <div class="draggable" id="postheader">::::</div>
                     <p class="post-time">${post[2].substring(0, post[2].length-6)}<\p>
+
                 `;
 
                 document.getElementById('content').appendChild(div);

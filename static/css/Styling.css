@@ -1,3 +1,8 @@
+body {
+  background-color: #EEE;
+
+}
+
 #loginButton {
   position: fixed;
   top: 23px;
@@ -77,10 +82,21 @@ p.error-text {
 }
 
 .post {
-    border: 5px solid black;
+    position: absolute;
+    width: 20%;
+    border: 1px solid black;
     margin: 20px 10px;
     padding: 0px 10px;
     font-family: "Times New Roman", Times, serif;
+    background-color: #CCF;
+    z-index: 10;
+}
+
+.draggable {
+    font-size: 0.75em;
+    width: 8%;
+    position: absolute;
+    z-index: 9;
 }
 
 .post-title {
@@ -92,12 +108,15 @@ p.error-text {
 }
 
 .post-body {
-    font-size: 0.75em;
+    text-align: left;
+    font-size: 1em;
     font-style: normal;
+    font-weight: 100;
 }
 
 .post-time {
-    font-size: 0.5em;
+    font-size: 0.25em;
     text-align: right;
     font-style: italic;
+    margin: 0;
 }

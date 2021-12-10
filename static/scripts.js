@@ -20,3 +20,4 @@ function removeRow(input) {
   document.getElementById('content').removeChild(input.parentNode);
 }
 
+
