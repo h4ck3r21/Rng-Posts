@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <title>Duke of Edinburgh Website</title>
         <link rel="stylesheet" href="../static/css/Styling.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="../static/scripts.js"></script>
 
     </head>
@@ -40,6 +41,15 @@
         </div>
 
         <div id="signed-in">
+            <div class="header">
+                <img src="images/logo">
+                <div class="search-box">
+                    <form action="/search-posts" method="post" class="search-form">
+                        <input type="text" placeholder="Search" name="search" class="input-text" required>
+                        <button type="submit"><i class="fa fa-search"></i></button>
+                    </form>
+                </div>
+            </div>
             <h1>Welcome {{user.username}}</h1>
 
             <button id="postButton" class="open-button" onclick=openPost()>Post</button>
@@ -64,10 +74,10 @@
 
         <script>
 
-            console.log("{{user.posts}}");
+            console.log("{{posts}}");
 
 
-            var posts = "{{user.posts}}";
+            var posts = "{{posts}}";
             posts = posts.substring(7, posts.length - 1);
             posts = posts.split(", Post: ");
 
@@ -93,7 +103,6 @@
                 div.innerHTML = `
                     <h3 class="post-title">${post[0]}<\h3>
                     <p class="post-body">${post[1]}<\p>
-                    <div class="draggable" id="postheader">::::</div>
                     <p class="post-time">${post[2].substring(0, post[2].length-6)}<\p>
 
                 `;

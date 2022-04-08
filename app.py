@@ -1,8 +1,10 @@
 import os
 from datetime import datetime
+from typing import List, Optional
 
 from flask import Flask, render_template, request, make_response
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 
 app = Flask(__name__)
 
@@ -14,7 +16,6 @@ db = SQLAlchemy(app)
 
 
 # commands to be used
-# db.create_all()
 # User.query.all()
 # User.query.filter_by(username='admin').first()
 # {variable} = User(username='admin', email='admin@example.com', password='xxxxxx')
@@ -45,20 +46,39 @@ class Post(db.Model):
                         nullable=False)
     user = db.relationship('User',
                            backref=db.backref('posts', lazy=True))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'),
+                            nullable=False)
+    category = db.relationship('Category',
+                               backref=db.backref('posts', lazy=True))
 
     def __repr__(self):
         return f'Post: {self.title}; {self.body}; {self.pub_date}'
 
 
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return '<Category %r>' % self.name
+
+
+def reset_db():
+    db.drop_all()
+    db.create_all()
+
+
 @app.route('/')
-def home():
+def home(posts: Optional[List] = None):
     print('rendering home page')
     user_id = request.cookies.get('userID')
     err = request.cookies.get('login-error')
     user = User.query.filter_by(id=user_id).first()
     if user is not None:
         print(user.posts)
-    return render_template('homepage.html', user=user, login_error=err)
+        if posts is None:
+            posts = user.posts
+    return render_template('homepage.html', user=user, posts=posts, login_error=err)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -78,7 +98,7 @@ def login():
         resp.set_cookie("login-error", err)
     else:
         print("login successful")
-        resp.set_cookie('userID', str(user.id))
+        resp.set_cookie('userID', str(hash(user.id)))
     return resp
 
 
@@ -91,6 +111,7 @@ def render_register_page():
 def register():
     username = request.form['username']
     password = request.form['password']
+    print(password)
     resp = make_response(render_template('set-cookie.html'))
     if User.query.filter_by(username=username).first():
         err = 'username already used'
@@ -100,7 +121,7 @@ def register():
         user = User(username=username, password=password)
         db.session.add(user)
         db.session.commit()
-        resp.set_cookie('userID', str(user.id))
+        resp.set_cookie('user', str(hash(user.id)))
     return resp
 
 
@@ -115,6 +136,18 @@ def add_post():
     db.session.add(post)
     db.session.commit()
     return render_template('set-cookie.html')
+
+
+@app.route('/search-posts', methods=['GET', 'POST'])
+def search_posts():
+    search = request.form['']
+    posts = Post.query.filter(or_(
+        Post.title.like(f"%{search}%"),
+        Post.body.like(f"%{search}%"),
+        Post.user.username.like(f"%{search}%"),
+        Post.category.name.like(f"%{search}%"),
+    )).all()
+    home(posts)
 
 
 if __name__ == "__main__":
