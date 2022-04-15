@@ -14,7 +14,6 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 db = SQLAlchemy(app)
 
-
 # commands to be used
 # User.query.all()
 # User.query.filter_by(username='admin').first()
@@ -24,6 +23,13 @@ db = SQLAlchemy(app)
 # db.session.commit()
 # py = Category(name='Python')
 # Post(title='Hello Python!', body='Python is pretty cool', category=py)
+# Post.query.with_parent(some_tag)
+
+
+post_tags = db.Table('tags',
+                     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True),
+                     db.Column('post_id', db.Integer, db.ForeignKey('post.id'), primary_key=True)
+                     )
 
 
 class User(db.Model):
@@ -46,13 +52,19 @@ class Post(db.Model):
                         nullable=False)
     user = db.relationship('User',
                            backref=db.backref('posts', lazy=True))
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'),
-                            nullable=False)
-    category = db.relationship('Category',
-                               backref=db.backref('posts', lazy=True))
+    tags = db.relationship('Tag', secondary=post_tags, lazy='subquery',
+                           backref=db.backref('pages', lazy=True))
 
     def __repr__(self):
         return f'Post: {self.title}; {self.body}; {self.pub_date}'
+
+
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return '<Category %r>' % self.name
 
 
 class Category(db.Model):
@@ -78,7 +90,10 @@ def home(posts: Optional[List] = None):
         print(user.posts)
         if posts is None:
             posts = user.posts
-    return render_template('homepage.html', user=user, posts=posts, login_error=err)
+    return render_template('homepage.html',
+                           user=user,
+                           posts=posts,
+                           login_error=err)
 
 
 @app.route('/login', methods=['GET', 'POST'])
