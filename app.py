@@ -1,10 +1,11 @@
+import collections
 import os
+import string
 from datetime import datetime
 from typing import List, Optional
 
 from flask import Flask, render_template, request, make_response
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_
 
 app = Flask(__name__)
 
@@ -17,7 +18,7 @@ db = SQLAlchemy(app)
 # commands to be used
 # User.query.all()
 # User.query.filter_by(username='admin').first()
-# {variable} = User(username='admin', email='admin@example.com', password='xxxxxx')
+# {variable} = User(username='admin', email='admin@example.com', password='')
 # db.session.add({variable})
 # db.session.delete({variable})
 # db.session.commit()
@@ -64,15 +65,7 @@ class Tag(db.Model):
     name = db.Column(db.String(50), nullable=False)
 
     def __repr__(self):
-        return '<Category %r>' % self.name
-
-
-class Category(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-
-    def __repr__(self):
-        return '<Category %r>' % self.name
+        return '<Tag %r>' % self.name
 
 
 def reset_db():
@@ -81,15 +74,15 @@ def reset_db():
 
 
 @app.route('/')
-def home(posts: Optional[List] = None):
+def home(posts: Optional[List] = None, err: str = ""):
     print('rendering home page')
     user_id = request.cookies.get('userID')
-    err = request.cookies.get('login-error')
     user = User.query.filter_by(id=user_id).first()
     if user is not None:
         print(user.posts)
         if posts is None:
             posts = user.posts
+
     return render_template('homepage.html',
                            user=user,
                            posts=posts,
@@ -106,11 +99,11 @@ def login():
     if not user:
         err = "username not registered"
         print(err)
-        resp.set_cookie("login-error", err)
+        resp = home(err=err)
     elif user.password != password:
-        err = "password incorrect""password incorrect"
+        err = "password incorrect"
         print(err)
-        resp.set_cookie("login-error", err)
+        resp = home(err=err)
     else:
         print("login successful")
         resp.set_cookie('userID', str(hash(user.id)))
@@ -118,8 +111,8 @@ def login():
 
 
 @app.route('/register_page')
-def render_register_page():
-    return render_template('register_page.html', error="")
+def render_register_page(err=""):
+    return render_template('register_page.html', error=err)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -130,13 +123,13 @@ def register():
     resp = make_response(render_template('set-cookie.html'))
     if User.query.filter_by(username=username).first():
         err = 'username already used'
-        resp.set_cookie("login-error", err)
+        resp = render_register_page(err)
         return resp
     else:
         user = User(username=username, password=password)
         db.session.add(user)
         db.session.commit()
-        resp.set_cookie('user', str(hash(user.id)))
+        resp.set_cookie('userID', str(hash(user.id)))
     return resp
 
 
@@ -144,10 +137,18 @@ def register():
 def add_post():
     title = request.form['title']
     body = request.form['body']
-    print(title + "\n" + body)
+    tags = request.form['tags']
+    print(title + "\n" + body + "\n" + tags)
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
+    tags = tags.split()
     post = Post(title=title, body=body, user=user)
+    for tag_name in tags:
+        tag_name = tag_name.translate(str.maketrans("", "", string.punctuation)).lower()
+        tag = Tag.query.filter_by(name=tag_name).first()
+        if tag is None:
+            tag = Tag(name=tag_name)
+        post.tags.append(tag)
     db.session.add(post)
     db.session.commit()
     return render_template('set-cookie.html')
@@ -156,12 +157,17 @@ def add_post():
 @app.route('/search-posts', methods=['GET', 'POST'])
 def search_posts():
     search = request.form['']
-    posts = Post.query.filter(or_(
-        Post.title.like(f"%{search}%"),
-        Post.body.like(f"%{search}%"),
-        Post.user.username.like(f"%{search}%"),
-        Post.category.name.like(f"%{search}%"),
-    )).all()
+    keywords = search.split()
+    matches = []
+
+    for keyword in keywords:
+        matches.append(Post.query.filter(Post.title.like(f"%{keyword}%")))
+        matches.append(Post.query.filter(Post.body.like(f"%{keyword}%")))
+        matches.append(Post.query.filter(Post.user.username.like(f"%{keyword}%")))
+        matches.append(Post.query.filter(Post.tags.name.like(f"%{keyword}%")))
+
+    counts = collections.Counter(matches)
+    posts = list(set(sorted(matches, key=lambda x: -counts[x])))
     home(posts)
 
 

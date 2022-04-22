@@ -18,13 +18,13 @@ if (document.getElementById("user").innerHTML == "None") {
 
 }
 
-if (document.getElementById("login-error").innerHTML != "None") {
+if (document.getElementById("login-error").innerHTML != "") {
     openLogin()
 }
 
 
 var login_error = document.getElementById("login-error")
-if (login_error.innerHTML == "None") {
+if (login_error.innerHTML == "") {
     login_error.style.display = "none"
 }
 
