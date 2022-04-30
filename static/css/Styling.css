@@ -111,4 +111,16 @@ p.error-text {
     text-align: right;
     font-style: italic;
     margin: 0;
+    float: right;
+}
+
+.post-tags {
+    font-size: 0.3em;
+}
+
+.post-user {
+    text-align: left;
+    font-size: 1em;
+    font-style: normal;
+    font-weight: 100;
 }

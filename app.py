@@ -57,7 +57,11 @@ class Post(db.Model):
                            backref=db.backref('pages', lazy=True))
 
     def __repr__(self):
-        return f'Post: {self.title}; {self.body}; {self.pub_date}'
+        return f'Post: {self.title}; '\
+               f'{self.body}; '\
+               f'{", ".join([tag.name for tag in self.tags])}; '\
+               f'{self.user.username}; '\
+               f'{self.pub_date} '
 
 
 class Tag(db.Model):
@@ -156,19 +160,26 @@ def add_post():
 
 @app.route('/search-posts', methods=['GET', 'POST'])
 def search_posts():
-    search = request.form['']
+    search = request.form['search']
+    print(search)
     keywords = search.split()
     matches = []
 
     for keyword in keywords:
-        matches.append(Post.query.filter(Post.title.like(f"%{keyword}%")))
-        matches.append(Post.query.filter(Post.body.like(f"%{keyword}%")))
-        matches.append(Post.query.filter(Post.user.username.like(f"%{keyword}%")))
-        matches.append(Post.query.filter(Post.tags.name.like(f"%{keyword}%")))
+        matches.extend(Post.query.filter(Post.title.like(f"%{keyword}%")).all())
+        matches.extend(Post.query.filter(Post.body.like(f"%{keyword}%")).all())
+        users = User.query.filter(User.username.like(f"%{keyword}%")).all()
+        tags = Tag.query.filter(Tag.name.like(f"%{keyword}%")).all()
+        for post in Post.query.all():
+            if post.user in users:
+                matches.append(post)
+            tag_posts = [post for tag in post.tags if tag in tags]
+            matches.extend(tag_posts)
 
+        print(matches)
     counts = collections.Counter(matches)
     posts = list(set(sorted(matches, key=lambda x: -counts[x])))
-    home(posts)
+    return home(posts)
 
 
 if __name__ == "__main__":
