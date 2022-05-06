@@ -42,7 +42,7 @@
 
         <div id="signed-in">
             <div class="header">
-                <img src="images/logo">
+                <img src="../images/icon-turtle.jpg">
                 <div class="search-box">
                     <form action="/search-posts" method="post" class="search-form">
                         <input type="text" placeholder="Search" name="search" class="input-text" required>
@@ -50,7 +50,7 @@
                     </form>
                 </div>
             </div>
-            <h1>Welcome {{user.username}}</h1>
+            <h1>{{msg}}</h1>
 
             <button id="postButton" class="open-button" onclick=openPost()>Post</button>
 
@@ -74,7 +74,7 @@
             <div id="content"></div>
         </div>
 
-        <script>
+        <script id="post-script">
 
             console.log("{{posts}}");
 
@@ -103,11 +103,15 @@
                 div.className = 'post';
 
                 div.innerHTML = `
-                    <h3 class="post-title">${post[0]}<\h3>
-                    <p class="post-body">${post[1]}<\p>
-                    <p class="post-tags">${post[2]}<\p>
-                    <span class="post-user">Posted by ${post[3]}<\span>
-                    <span class="post-time">at ${post[4].substring(0, post[2].length-6)}<\span>
+                    <h3 class="post-title">${post[0]}</h3>
+                    <div class="post-body-holder">
+                        <p class="post-body">${post[1]}</p>
+                    </div>
+                    <div class="post-metadata-holder">
+                    <p class="post-tags">tags: ${post[2]}</p>
+                    <span class="post-user">Posted by ${post[3]}</span>
+                    <span class="post-time">at ${post[4].substring(0, post[4].length-6)}</span>
+                    </div>
 
 
                 `;

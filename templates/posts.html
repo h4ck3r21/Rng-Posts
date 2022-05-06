@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>post</title>
+</head>
+<body>
+    <h3 class="post-title">${post[0]}</h3>
+    <p class="post-body">${post[1]}</p>
+    <div class="post-body-holder">
+    <p class="post-tags">tags: ${post[2]}</p>
+    </div>
+    <span class="post-user">Posted by ${post[3]}</span>
+    <span class="post-time">at ${post[4].substring(0, post[4].length-6)}</span>
+</body>
+</html>

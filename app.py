@@ -57,10 +57,10 @@ class Post(db.Model):
                            backref=db.backref('pages', lazy=True))
 
     def __repr__(self):
-        return f'Post: {self.title}; '\
-               f'{self.body}; '\
-               f'{", ".join([tag.name for tag in self.tags])}; '\
-               f'{self.user.username}; '\
+        return f'Post: {self.title}; ' \
+               f'{self.body}; ' \
+               f'{", ".join([tag.name for tag in self.tags])}; ' \
+               f'{self.user.username}; ' \
                f'{self.pub_date} '
 
 
@@ -78,16 +78,19 @@ def reset_db():
 
 
 @app.route('/')
-def home(posts: Optional[List] = None, err: str = ""):
+def home(posts: Optional[List] = None, err: str = "", msg: str = ""):
     print('rendering home page')
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
     if user is not None:
         print(user.posts)
+        if msg == "":
+            msg = "Welcome " + user.username
         if posts is None:
             posts = user.posts
 
     return render_template('homepage.html',
+                           msg=msg,
                            user=user,
                            posts=posts,
                            login_error=err)
@@ -175,11 +178,9 @@ def search_posts():
                 matches.append(post)
             tag_posts = [post for tag in post.tags if tag in tags]
             matches.extend(tag_posts)
-
-        print(matches)
     counts = collections.Counter(matches)
-    posts = list(set(sorted(matches, key=lambda x: -counts[x])))
-    return home(posts)
+    posts = sorted(list(set(matches)), key=lambda x: -counts[x])
+    return home(posts, msg=f"Search results for '{search}'")
 
 
 if __name__ == "__main__":
