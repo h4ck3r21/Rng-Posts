@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>post</title>
+    <link rel="stylesheet" href="../static/css/Styling.css">
 </head>
 <body>
-    <h3 class="post-title">${post[0]}</h3>
-    <p class="post-body">${post[1]}</p>
+    <h3 class="post-title">{{title}}</h3>
     <div class="post-body-holder">
-    <p class="post-tags">tags: ${post[2]}</p>
+    <p class="post-body">{{body}}</p>
     </div>
-    <span class="post-user">Posted by ${post[3]}</span>
-    <span class="post-time">at ${post[4].substring(0, post[4].length-6)}</span>
+    <p class="post-tags">tags: {{tags}}</p>
+    <span class="post-user">Posted by {{user}}</span>
+    <span class="post-time">at {{time}}</span>
 </body>
 </html>

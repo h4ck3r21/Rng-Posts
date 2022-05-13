@@ -57,11 +57,7 @@ class Post(db.Model):
                            backref=db.backref('pages', lazy=True))
 
     def __repr__(self):
-        return f'Post: {self.title}; ' \
-               f'{self.body}; ' \
-               f'{", ".join([tag.name for tag in self.tags])}; ' \
-               f'{self.user.username}; ' \
-               f'{self.pub_date} '
+        return '<Post %r>' % self.id
 
 
 class Tag(db.Model):
@@ -140,6 +136,11 @@ def register():
     return resp
 
 
+@app.route("/create-post")
+def create_post():
+    return render_template("send-post.html")
+
+
 @app.route('/add_post', methods=['GET', 'POST'])
 def add_post():
     title = request.form['title']
@@ -159,6 +160,19 @@ def add_post():
     db.session.add(post)
     db.session.commit()
     return render_template('set-cookie.html')
+
+
+@app.route("/post/<post_id>")
+def display_post(post_id):
+    post = Post.query.filter_by(id=post_id).first()
+    print([tag.name for tag in post.tags])
+    return render_template('posts.html',
+                           title=post.title,
+                           body=post.body,
+                           time=post.pub_date,
+                           tags=" ".join([tag.name for tag in post.tags]),
+                           user=post.user.username,
+                           )
 
 
 @app.route('/search-posts', methods=['GET', 'POST'])

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create post</title>
+    <link rel="stylesheet" href="../static/css/Styling.css">
+</head>
+<body>
+<center>
+    <form method="post" class="form-container post-form" action="/add_post">
+        <label for="title">Title</label>
+        <input name="title" id="title" class="input-text" required>
+        <br>
+        <label for="body">Body</label>
+        <br>
+        <textarea rows="10" name="body" id="body" class="input-text body-input" required></textarea>
+        <br>
+        <label for="tags">Tags</label>
+        <input name="tags" id="tags" class="input-text">
+
+        <button type="submit" id="submit-post" class="btn">Submit</button>
+        <a href="/">
+            <button type="button" id="PostCloseButton" class="btn close">Close</button>
+        </a>
+    </form>
+</center>
+</body>
+</html>

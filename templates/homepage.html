@@ -42,7 +42,7 @@
 
         <div id="signed-in">
             <div class="header">
-                <img src="../images/icon-turtle.jpg">
+                <img src="../images/icon-turtle.jpg" alt="logo"/>
                 <div class="search-box">
                     <form action="/search-posts" method="post" class="search-form">
                         <input type="text" placeholder="Search" name="search" class="input-text" required>
@@ -50,28 +50,15 @@
                     </form>
                 </div>
             </div>
-            <h1>{{msg}}</h1>
+            <div class="main-content">
+                <h1>{{msg}}</h1>
 
-            <button id="postButton" class="open-button" onclick=openPost()>Post</button>
+                <a href="/create-post">
+                <button id="postButton" class="open-button">Post</button>
+                </a>
 
-            <div id="postPopUp" class="popup">
-                <form method="post" class="form-container post-form" action="/add_post">
-                    <label for="title">Title</label>
-                    <input name="title" id="title" class="input-text" required>
-
-                    <label for="body">Body</label>
-                    <br>
-                    <textarea rows="10" name="body" id="body" class="input-text body-input" required></textarea>
-
-                    <label for="tags">Tags</label>
-                    <input name="tags" id="tags" class="input-text">
-
-                    <button type="submit" id="submit-post" class="btn">Submit</button>
-                    <button type="button" id="PostCloseButton" class="btn close" onclick="closePost()">Close</button>
-                </form>
+                <div id="content"></div>
             </div>
-
-            <div id="content"></div>
         </div>
 
         <script id="post-script">
@@ -80,8 +67,8 @@
 
 
             var posts = "{{posts}}";
-            posts = posts.substring(7, posts.length - 1);
-            posts = posts.split(", Post: ");
+            posts = posts.substring(9, posts.length - 5);
+            posts = posts.split("&gt;, &lt;Post ");
 
 
             console.log(posts);
@@ -95,28 +82,15 @@
 
             function addRow(post) {
 
-                post = post.split(";")
                 console.log(post)
 
-                const div = document.createElement('div');
+                const iframe = document.createElement('iframe');
 
-                div.className = 'post';
+                iframe.className = 'post';
 
-                div.innerHTML = `
-                    <h3 class="post-title">${post[0]}</h3>
-                    <div class="post-body-holder">
-                        <p class="post-body">${post[1]}</p>
-                    </div>
-                    <div class="post-metadata-holder">
-                    <p class="post-tags">tags: ${post[2]}</p>
-                    <span class="post-user">Posted by ${post[3]}</span>
-                    <span class="post-time">at ${post[4].substring(0, post[4].length-6)}</span>
-                    </div>
+                iframe.src = "/post/"+post;
 
-
-                `;
-
-                document.getElementById('content').appendChild(div);
+                document.getElementById('content').appendChild(iframe);
             }
         </script>
         <script src="../static/check_logged_in.js"></script>
