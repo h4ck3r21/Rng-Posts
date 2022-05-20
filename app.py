@@ -4,7 +4,7 @@ import string
 from datetime import datetime
 from typing import List, Optional
 
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, send_file
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -195,6 +195,11 @@ def search_posts():
     counts = collections.Counter(matches)
     posts = sorted(list(set(matches)), key=lambda x: -counts[x])
     return home(posts, msg=f"Search results for '{search}'")
+
+
+@app.route("/logo")
+def logo():
+    return send_file("images/icon-turtle.jpg", mimetype='image/jpg')
 
 
 if __name__ == "__main__":

@@ -5,13 +5,13 @@ body {
 
 .header {
     background-color: #333;
-    height: 100px;
-
+    padding: 10px;
 }
 
-.search-box {
+.search-form {
     display: inline;
-    float: right;
+    float: center;
+    align: center;
     width: auto;
 }
 
@@ -155,4 +155,16 @@ p.error-text {
     font-size: 1em;
     font-style: normal;
     font-weight: 100;
+}
+
+.search-bar {
+    width: 80%;
+    height: 25px;
+}
+
+img.logo {
+    height: 50px;
+    display: inline;
+    position: relative;
+    top: 20px
 }

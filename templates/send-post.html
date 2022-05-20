@@ -7,14 +7,19 @@
 </head>
 <body>
 <center>
-    <form method="post" class="form-container post-form" action="/add_post">
+    <form method="post" class="form-container post-form" action="/add_post" onsubmit="return getContent()">
         <label for="title">Title</label>
         <input name="title" id="title" class="input-text" required>
         <br>
         <label for="body">Body</label>
-        <br>
-        <textarea rows="10" name="body" id="body" class="input-text body-input" required></textarea>
-        <br>
+        <textarea name="body" id="body" style="display:none" required></textarea>
+        <div contenteditable="true" class="body-input input-text" id="body-input">
+            <input type="file" id="File" name="filename">
+            <img id='imgPreview' alt="image cannot be loaded"/>
+        </div>
+
+
+        <br><br>
         <label for="tags">Tags</label>
         <input name="tags" id="tags" class="input-text">
 
@@ -24,5 +29,6 @@
         </a>
     </form>
 </center>
+<script src="../static/image-render.js"></script>
 </body>
 </html>

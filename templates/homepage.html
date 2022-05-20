@@ -42,13 +42,11 @@
 
         <div id="signed-in">
             <div class="header">
-                <img src="../images/icon-turtle.jpg" alt="logo"/>
-                <div class="search-box">
-                    <form action="/search-posts" method="post" class="search-form">
-                        <input type="text" placeholder="Search" name="search" class="input-text" required>
-                        <button type="submit"><i class="fa fa-search"></i></button>
-                    </form>
-                </div>
+                <img src="\logo" alt="logo" class="logo" />
+                <form action="/search-posts" method="post" class="search-form">
+                    <input type="text" placeholder="Search" name="search" class="input-text search-bar" required>
+                    <button type="submit"><i class="fa fa-search"></i></button>
+                </form>
             </div>
             <div class="main-content">
                 <h1>{{msg}}</h1>
