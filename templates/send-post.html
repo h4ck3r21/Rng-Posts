@@ -4,18 +4,24 @@
     <meta charset="UTF-8">
     <title>Create post</title>
     <link rel="stylesheet" href="../static/css/Styling.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <center>
-    <form method="post" class="form-container post-form" action="/add_post" onsubmit="return getContent()">
+
+    <form method="post" class="form-container post-form" action="/add_post">
         <label for="title">Title</label>
         <input name="title" id="title" class="input-text" required>
         <br>
         <label for="body">Body</label>
-        <textarea name="body" id="body" style="display:none" required></textarea>
-        <div contenteditable="true" class="body-input input-text" id="body-input">
-            <input type="file" id="File" name="filename">
-            <img id='imgPreview' alt="image cannot be loaded"/>
+        <div class="body-input input-text" id="body-input">
+            <textarea name="body" id="body" class="body-input input-text" required></textarea>
+            <img class='imgPreview' alt="image cannot be loaded" width="90%"/>
+            <br>
+            <div class="button-input-container">
+                <input type="file" class="file-input" id="File" name="file[]">
+                <button class="file-button" type="button"><i class="fa fa-file-image-o"></i></button>
+            </div>
         </div>
 
 
@@ -30,5 +36,6 @@
     </form>
 </center>
 <script src="../static/image-render.js"></script>
+<script src="../static/modify-file-upload-button.js"></script>
 </body>
 </html>

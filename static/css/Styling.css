@@ -11,7 +11,6 @@ body {
 .search-form {
     display: inline;
     float: center;
-    align: center;
     width: auto;
 }
 
@@ -115,7 +114,7 @@ p.error-text {
 .post-title {
     text-align: center;
     margin: 0 3px;
-    font-weight: bold
+    font-weight: bold;
     font-style: normal;
     font-size: 2em;
     background-color: #EED
@@ -167,4 +166,30 @@ img.logo {
     display: inline;
     position: relative;
     top: 20px
+}
+
+.button-input-container {
+  display: inline-flex;
+  align-items: center;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-button {
+  -webkit-appearance: none;
+  background: #FFF;
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 0.1em 0.2em;
+  cursor: pointer;
+}
+
+.file-button:active {
+  background: #666;
+}
+
+.file-button:hover {
+  background: #AAA;
 }
