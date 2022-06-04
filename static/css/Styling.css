@@ -173,10 +173,6 @@ img.logo {
   align-items: center;
 }
 
-.file-input {
-  display: none;
-}
-
 .file-button {
   -webkit-appearance: none;
   background: #FFF;
@@ -192,4 +188,8 @@ img.logo {
 
 .file-button:hover {
   background: #AAA;
+}
+
+.inv {
+  display: none;
 }

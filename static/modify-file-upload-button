@@ -1,6 +1,0 @@
-document.querySelectorAll('.file-button').forEach(function (button) {
-  const input =  button.parentElement.querySelector('.file-input');
-  button.addEventListener('click', function(){
-    input.click();
-  });
-});

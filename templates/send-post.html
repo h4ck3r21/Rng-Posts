@@ -16,10 +16,11 @@
         <label for="body">Body</label>
         <div class="body-input input-text" id="body-input">
             <textarea name="body" id="body" class="body-input input-text" required></textarea>
-            <img class='imgPreview' alt="image cannot be loaded" width="90%"/>
+            <img id='imgPreview' alt="image cannot be loaded" width="90%" class="inv"/>
             <br>
             <div class="button-input-container">
-                <input type="file" class="file-input" id="File" name="file[]">
+                <input type="file" class="files-inputed inv" id="file-input" name="files[]" multiple>
+                <input type="file" class="new-file-input inv" id="File" name="file">
                 <button class="file-button" type="button"><i class="fa fa-file-image-o"></i></button>
             </div>
         </div>
