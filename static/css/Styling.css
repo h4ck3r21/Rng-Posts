@@ -193,3 +193,42 @@ img.logo {
 .inv {
   display: none;
 }
+
+.img-container {
+  position: relative;
+  width: 90%;
+}
+
+.img-container img {
+  width: 100%;
+  height: auto;
+}
+
+.img-container .btn {
+  width: auto;
+  height: auto;
+  transform: translate(-0%, -50%);
+  -ms-transform: translate(-0%, -50%);
+  background-color: #555;
+  color: white;
+  font-size: 100%;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.img-container .left {
+  position: absolute;
+  left: 1%;
+  top: 50%;
+}
+
+.img-container .right {
+  position: absolute;
+  right: 1%;
+  top: 50%;
+}
+
+.img-container .btn:hover {
+  background-color: black;
+}

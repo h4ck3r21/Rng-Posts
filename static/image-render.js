@@ -1,15 +1,21 @@
 
+
 window.addEventListener('load', function(){
     document.getElementById('File')/addEventListener('change', function(e){
+      const files = document.querySelector('#file-input').files
       addFile()  
-      filePreview(0);
+      image_num = files.length
+      filePreview();
     });
 });
 
 
-function filePreview(image_num){
+function filePreview(){
+  const files = document.querySelector('#file-input').files
   const preview = document.getElementById('imgPreview');
-  const files = document.querySelector('#File').files
+  if (image_num >= files.length) {
+    image_num = 0
+  }
   const file = files[image_num];
   const reader = new FileReader();
   console.log(files)
@@ -20,9 +26,19 @@ function filePreview(image_num){
   }, false);
 
   if (file) {
-    preview.classList.remove("inv");
+    document.getElementById('imgPreviewContainer').classList.remove("inv");
     reader.readAsDataURL(file);
   }
 }
+
+var image_num = 0
+
+function move_image(n){
+  image_num += n
+  console.log(image_num)
+  filePreview(image_num)
+}
+
+
 
 
