@@ -1,8 +1,9 @@
 document.querySelectorAll('.file-button').forEach(function (button) {
-  const input =  button.parentElement.querySelector('#File');
+  const input =  document.querySelector('#File');
   button.addEventListener('click', function(){
     input.click();
   });
+  console.log("added button")
 });
 
 function addFile (){

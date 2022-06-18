@@ -6,12 +6,13 @@
     <link rel="stylesheet" href="../static/css/Styling.css">
 </head>
 <body>
-    <h3 class="post-title">{{title}}</h3>
+    <h3 class="post-title">{{post_info['title']}}</h3>
     <div class="post-body-holder">
-    <p class="post-body">{{body}}</p>
+    <p class="post-body">{{post_info['body']}}</p>
     </div>
-    <p class="post-tags">tags: {{tags}}</p>
-    <span class="post-user">Posted by {{user}}</span>
-    <span class="post-time">at {{time}}</span>
+    <p class="post-tags">tags: {{post_info['tags']}}</p>
+    <span class="post-user">Posted by {{post_info['user']}}</span>
+    <span class="post-time">at {{post_info['time']}}</span>
+    <p>{{post_info['files']}}</p>
 </body>
 </html>

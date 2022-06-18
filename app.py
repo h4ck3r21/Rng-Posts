@@ -5,9 +5,11 @@ from datetime import datetime
 from typing import List, Optional
 
 from flask import Flask, render_template, request, make_response, send_file
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+
 
 DATABASE_URL = os.environ['DATABASE_URL']
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
@@ -15,6 +17,7 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 db = SQLAlchemy(app)
 
+migrate = Migrate(app, db)
 # commands to be used
 # User.query.all()
 # User.query.filter_by(username='admin').first()
@@ -66,6 +69,15 @@ class Tag(db.Model):
 
     def __repr__(self):
         return '<Tag %r>' % self.name
+
+
+class File(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    file = db.Column(db.LargeBinary, nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'),
+                        nullable=False)
+    post = db.relationship('Post',
+                           backref=db.backref('files', lazy=True))
 
 
 def reset_db():
@@ -146,7 +158,8 @@ def add_post():
     title = request.form['title']
     body = request.form['body']
     tags = request.form['tags']
-    print(title + "\n" + body + "\n" + tags)
+    files = request.files['files[]']
+    print(f"{title}\n{body}\n{tags}\n{files}")
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
     tags = tags.split()
@@ -157,6 +170,10 @@ def add_post():
         if tag is None:
             tag = Tag(name=tag_name)
         post.tags.append(tag)
+    if files:
+        print(str(request.files))
+        file_model = File(file=files.read())
+        post.files.append(file_model)
     db.session.add(post)
     db.session.commit()
     return render_template('set-cookie.html')
@@ -166,13 +183,14 @@ def add_post():
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
     print([tag.name for tag in post.tags])
-    return render_template('posts.html',
-                           title=post.title,
-                           body=post.body,
-                           time=post.pub_date,
-                           tags=" ".join([tag.name for tag in post.tags]),
-                           user=post.user.username,
-                           )
+    return render_template('posts.html', post_info={
+        "title": post.title,
+        "body": post.body,
+        "time": post.pub_date,
+        "tags": " ".join([tag.name for tag in post.tags]),
+        "user": post.user.username,
+        "files": post.files
+    })
 
 
 @app.route('/search-posts', methods=['GET', 'POST'])

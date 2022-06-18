@@ -9,7 +9,7 @@
 <body>
 <center>
 
-    <form method="post" class="form-container post-form" action="/add_post">
+    <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/add_post">
         <label for="title">Title</label>
         <input name="title" id="title" class="input-text" required>
         <br>
@@ -31,7 +31,7 @@
             </div>
 
         </div>
-
+        
 
         <br><br>
         <label for="tags">Tags</label>
