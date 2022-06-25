@@ -13,6 +13,13 @@
     <p class="post-tags">tags: {{post_info['tags']}}</p>
     <span class="post-user">Posted by {{post_info['user']}}</span>
     <span class="post-time">at {{post_info['time']}}</span>
-    <p>{{post_info['files']}}</p>
+    <img id="img"></img>
+    <p id="var" class="inv">{{post_info['files'][0]}}</var>
+    <script>
+        var file = document.getElementById("var").innerHTML;
+        const img = document.getElementById("img");
+        console.log(`data:image/png;base64` + file);
+        img.src = `data:image/png;base64` + file;
+    </script>
 </body>
 </html>

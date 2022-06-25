@@ -182,14 +182,14 @@ def add_post():
 @app.route("/post/<post_id>")
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
-    print([tag.name for tag in post.tags])
+    print("----------------------------------------------")
     return render_template('posts.html', post_info={
         "title": post.title,
         "body": post.body,
         "time": post.pub_date,
         "tags": " ".join([tag.name for tag in post.tags]),
         "user": post.user.username,
-        "files": post.files
+        "files": [file.file for file in post.files]
     })
 
 
