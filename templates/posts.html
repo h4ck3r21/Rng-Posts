@@ -4,27 +4,23 @@
     <meta charset="UTF-8">
     <title>post</title>
     <link rel="stylesheet" href="../static/css/Styling.css">
+    <var id="var" class="inv">{{post_info['files']}}</var>
+    <script src="../static/Post-image-render.js"></script>
 </head>
 <body>
     <h3 class="post-title">{{post_info['title']}}</h3>
     <div class="post-body-holder">
-    <p class="post-body">{{post_info['body']}}</p>
+        <p class="post-body">{{post_info['body']}}</p>
     </div>
     <p class="post-tags">tags: {{post_info['tags']}}</p>
     <span class="post-user">Posted by {{post_info['user']}}</span>
     <span class="post-time">at {{post_info['time']}}</span>
-    <img id="img"></img>
-    <var id="var" class="inv">{{post_info['files']}}</var>
-    <script>
-        var files = document.getElementById("var").innerHTML;
-        files = files.slice(1, -1)
-        files = files.split(", ")
-        file = files[0]
-        if (file) {
-            var fileImage = document.getElementById("img");
-            var src = `data:image/png;base64,` + file.slice(2, -1);
-            fileImage.src=src
-        }
-    </script>
+    
+    <div class="img-container inv" id="imgContainer">
+        <img id='img' alt="image cannot be loaded"/>
+        <button type="button" class="btn left" onclick="move_image(-1)">&#10094;</button>
+        <button type="button" class="btn right" onclick="move_image(+1)">&#10095;</button>
+    </div>
+    <script>filePreview(0)</script>
 </body>
 </html>

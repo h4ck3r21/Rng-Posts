@@ -13,7 +13,7 @@ window.addEventListener('load', function(){
 function filePreview(){
   const files = document.querySelector('#file-input').files
   const preview = document.getElementById('imgPreview');
-  if (image_num >= files.length) {
+  if (image_num >= files.length || image_num < 0) {
     image_num = 0
   }
   const file = files[image_num];

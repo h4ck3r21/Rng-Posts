@@ -159,7 +159,8 @@ def add_post():
     title = request.form['title']
     body = request.form['body']
     tags = request.form['tags']
-    files = request.files['files[]']
+    files = request.files.getlist('files[]')
+    print(request.files.getlist('files[]'))
     print(f"{title}\n{body}\n{tags}\n{files}")
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
@@ -171,9 +172,10 @@ def add_post():
         if tag is None:
             tag = Tag(name=tag_name)
         post.tags.append(tag)
-    if files:
-        print(str(request.files))
-        file_model = File(file=files.read())
+    for file in files:
+        print("eztofindmessage")
+        print(file)
+        file_model = File(file=file.read())
         post.files.append(file_model)
     db.session.add(post)
     db.session.commit()
@@ -183,8 +185,8 @@ def add_post():
 @app.route("/post/<post_id>")
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
-    print("----------------------------------------------")
-    print([file.file for file in post.files])
+    print(f"------------ {post.title} -- {len([b64encode(file.file) for file in post.files])} vs {post.files}")
+
     return render_template('posts.html', post_info={
         "title": post.title,
         "body": post.body,
