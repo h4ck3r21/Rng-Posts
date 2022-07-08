@@ -1,6 +1,7 @@
 import collections
 import os
 import string
+from base64 import b64encode
 from datetime import datetime
 from typing import List, Optional
 
@@ -183,13 +184,14 @@ def add_post():
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
     print("----------------------------------------------")
+    print([file.file for file in post.files])
     return render_template('posts.html', post_info={
         "title": post.title,
         "body": post.body,
         "time": post.pub_date,
         "tags": " ".join([tag.name for tag in post.tags]),
         "user": post.user.username,
-        "files": [file.file for file in post.files]
+        "files": [b64encode(file.file) for file in post.files]
     })
 
 

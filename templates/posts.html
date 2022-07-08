@@ -14,12 +14,17 @@
     <span class="post-user">Posted by {{post_info['user']}}</span>
     <span class="post-time">at {{post_info['time']}}</span>
     <img id="img"></img>
-    <p id="var" class="inv">{{post_info['files'][0]}}</var>
+    <var id="var" class="inv">{{post_info['files']}}</var>
     <script>
-        var file = document.getElementById("var").innerHTML;
-        const img = document.getElementById("img");
-        console.log(`data:image/png;base64` + file);
-        img.src = `data:image/png;base64` + file;
+        var files = document.getElementById("var").innerHTML;
+        files = files.slice(1, -1)
+        files = files.split(", ")
+        file = files[0]
+        if (file) {
+            var fileImage = document.getElementById("img");
+            var src = `data:image/png;base64,` + file.slice(2, -1);
+            fileImage.src=src
+        }
     </script>
 </body>
 </html>
