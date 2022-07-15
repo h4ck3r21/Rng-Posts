@@ -88,6 +88,10 @@
 
                 iframe.src = "/post/"+post;
 
+                iframe.addEventListener('load', function() {
+                    this.style.height = this.contentWindow.document.body.scrollHeight + "px"
+                });
+
                 document.getElementById('content').appendChild(iframe);
             }
         </script>

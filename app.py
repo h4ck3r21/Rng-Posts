@@ -160,7 +160,6 @@ def add_post():
     body = request.form['body']
     tags = request.form['tags']
     files = request.files.getlist('files[]')
-    print(request.files.getlist('files[]'))
     print(f"{title}\n{body}\n{tags}\n{files}")
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
@@ -173,8 +172,6 @@ def add_post():
             tag = Tag(name=tag_name)
         post.tags.append(tag)
     for file in files:
-        print("eztofindmessage")
-        print(file)
         file_model = File(file=file.read())
         post.files.append(file_model)
     db.session.add(post)
