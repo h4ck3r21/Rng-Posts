@@ -74,7 +74,7 @@ class Tag(db.Model):
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    file = db.Column(db.LargeBinary, nullable=False)
+    name = db.Column(db.String(80), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'),
                         nullable=False)
     post = db.relationship('Post',
@@ -160,7 +160,7 @@ def add_post():
     body = request.form['body']
     tags = request.form['tags']
     files = request.files.getlist('files[]')
-    print(f"{title}\n{body}\n{tags}\n{files}")
+    print(f"________________________{title}\n{body}\n{tags}\n{files}")
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
     tags = tags.split()
@@ -172,7 +172,8 @@ def add_post():
             tag = Tag(name=tag_name)
         post.tags.append(tag)
     for file in files:
-        file_model = File(file=file.read())
+        file.save("/files")
+        file_model = File(name=file.name)
         post.files.append(file_model)
     db.session.add(post)
     db.session.commit()
@@ -182,7 +183,7 @@ def add_post():
 @app.route("/post/<post_id>")
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
-    print(f"------------ {post.title} -- {len([b64encode(file.file) for file in post.files])} vs {post.files}")
+    print(f"------------ {post.title} --  vs {post.files}")
 
     return render_template('posts.html', post_info={
         "title": post.title,

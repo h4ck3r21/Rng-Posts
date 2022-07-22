@@ -204,6 +204,11 @@ img.logo {
   height: auto;
 }
 
+.img-container video {
+  width: 100%;
+  height: auto;
+}
+
 .img-container .btn {
   width: auto;
   height: auto;
