@@ -64,17 +64,25 @@
             console.log("{{posts}}");
 
 
+
             var posts = "{{posts}}";
-            posts = posts.substring(9, posts.length - 5);
-            posts = posts.split("&gt;, &lt;Post ");
+            if (posts == "[]") {
+                no_posts = document.createElement('p')
+                no_posts.className = noPostsMessage
+                no_posts.innerHTML = "There seems to be no results for your search"
+            }
+            else {
+                posts = posts.substring(9, posts.length - 5);
+                posts = posts.split("&gt;, &lt;Post ");
 
 
-            console.log(posts);
+                console.log(posts);
 
-            for (index in posts) {
-                console.log(posts[index])
-                addRow(posts[index])
+                for (index in posts) {
+                    console.log(posts[index])
+                    addRow(posts[index])
 
+                }
             }
 
 

@@ -1,13 +1,13 @@
 import collections
 import os
 import string
-from base64 import b64encode
 from datetime import datetime
 from typing import List, Optional
 
 from flask import Flask, render_template, request, make_response, send_file
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -19,6 +19,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
+app.config['UPLOAD_FOLDER'] = "/files"
+app.config['MAX_CONTENT_PATH'] = 10000000
+
 # commands to be used
 # User.query.all()
 # User.query.filter_by(username='admin').first()
@@ -172,7 +175,7 @@ def add_post():
             tag = Tag(name=tag_name)
         post.tags.append(tag)
     for file in files:
-        file.save("/files")
+        file.save(secure_filename(file.filename))
         file_model = File(name=file.name)
         post.files.append(file_model)
     db.session.add(post)
@@ -183,7 +186,7 @@ def add_post():
 @app.route("/post/<post_id>")
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
-    print(f"------------ {post.title} --  vs {post.files}")
+    print(f"{post.title} -- {post.files}")
 
     return render_template('posts.html', post_info={
         "title": post.title,
@@ -191,7 +194,7 @@ def display_post(post_id):
         "time": post.pub_date,
         "tags": " ".join([tag.name for tag in post.tags]),
         "user": post.user.username,
-        "files": [b64encode(file.file) for file in post.files]
+        "file": post.files
     })
 
 
