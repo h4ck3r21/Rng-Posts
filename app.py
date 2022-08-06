@@ -4,13 +4,14 @@ import string
 from datetime import datetime
 from typing import List, Optional
 
-from flask import Flask, render_template, request, make_response, send_file
+from flask import Flask, render_template, request, make_response, send_file, url_for, flash
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename, redirect
 
 app = Flask(__name__)
-
+UPLOAD_FOLDER = 'files'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 DATABASE_URL = os.environ['DATABASE_URL']
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
@@ -19,7 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
-app.config['UPLOAD_FOLDER'] = "/files"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_PATH'] = 10000000
 
 # commands to be used
@@ -77,7 +78,8 @@ class Tag(db.Model):
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    src = db.Column(db.String(400), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'),
                         nullable=False)
     post = db.relationship('Post',
@@ -157,30 +159,56 @@ def create_post():
     return render_template("send-post.html")
 
 
+@app.route("/download_file/<path>/<filename>")
+def download_file(path, filename):
+    return send_file(path, download_name=filename)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def upload(file):
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(path)
+        src = url_for('download_file', path=path, filename=filename)
+        file_model = File(name=filename, src=src)
+        return file_model
+    else:
+        flash('file type not accepted')
+        return None
+
+
 @app.route('/add_post', methods=['GET', 'POST'])
 def add_post():
-    title = request.form['title']
-    body = request.form['body']
-    tags = request.form['tags']
-    files = request.files.getlist('files[]')
-    print(f"________________________{title}\n{body}\n{tags}\n{files}")
-    user_id = request.cookies.get('userID')
-    user = User.query.filter_by(id=user_id).first()
-    tags = tags.split()
-    post = Post(title=title, body=body, user=user)
-    for tag_name in tags:
-        tag_name = tag_name.translate(str.maketrans("", "", string.punctuation)).lower()
-        tag = Tag.query.filter_by(name=tag_name).first()
-        if tag is None:
-            tag = Tag(name=tag_name)
-        post.tags.append(tag)
-    for file in files:
-        file.save(secure_filename(file.filename))
-        file_model = File(name=file.name)
-        post.files.append(file_model)
-    db.session.add(post)
-    db.session.commit()
-    return render_template('set-cookie.html')
+    if request.method == 'POST':
+        title = request.form['title']
+        body = request.form['body']
+        tags = request.form['tags']
+        files = request.files.getlist('files[]')
+        print(f"________________________{title}\n{body}\n{tags}\n{files}")
+        user_id = request.cookies.get('userID')
+        user = User.query.filter_by(id=user_id).first()
+        tags = tags.split()
+        post = Post(title=title, body=body, user=user)
+        for tag_name in tags:
+            tag_name = tag_name.translate(str.maketrans("", "", string.punctuation)).lower()
+            tag = Tag.query.filter_by(name=tag_name).first()
+            if tag is None:
+                tag = Tag(name=tag_name)
+            post.tags.append(tag)
+        for file in files:
+            file_model = upload(file)
+            if file_model is not None:
+                post.files.append(file_model)
+        db.session.add(post)
+        db.session.commit()
+        return render_template('set-cookie.html')
+    else:
+        return render_template('homepage.html')
 
 
 @app.route("/post/<post_id>")
@@ -194,7 +222,7 @@ def display_post(post_id):
         "time": post.pub_date,
         "tags": " ".join([tag.name for tag in post.tags]),
         "user": post.user.username,
-        "file": post.files
+        "file": ",".join(map(lambda f: f.src, post.files))
     })
 
 
