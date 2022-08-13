@@ -1,5 +1,4 @@
 var files = document.getElementById("var").innerHTML;
-files = files.slice(1, -1)
 files = files.split(",")
 console.log("files:" + files)
 var image_num = 0
@@ -12,10 +11,14 @@ function filePreview(n) {
     if (file) {
         document.getElementById('imgContainer').classList.remove("inv");
         var fileFrame = document.getElementById("file");
-        fileFrame.src=src;
+        fileFrame.src= src;
         console.log(src)
-    };
 };
+
+function resizeWindow(iframe) {
+    scale = this.height/contentWindow.document.height
+    iframe.style=`-webkit-transform:scale(${scale});-moz-transform-scale(${0.5});`
+}
 
 function move_image(n){
     image_num += n;

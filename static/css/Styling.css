@@ -199,14 +199,12 @@ img.logo {
   width: 90%;
 }
 
-.img-container img {
+.img-container {
   width: 100%;
   height: auto;
-}
-
-.img-container video {
-  width: 100%;
-  height: auto;
+  position: relative;
+  overflow: hidden;
+  padding-top: 66.66%;
 }
 
 .img-container .btn {
@@ -236,4 +234,15 @@ img.logo {
 
 .img-container .btn:hover {
   background-color: black;
+}
+
+.file {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
 }

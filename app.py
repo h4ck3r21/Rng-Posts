@@ -7,11 +7,11 @@ from typing import List, Optional
 from flask import Flask, render_template, request, make_response, send_file, url_for, flash
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.utils import secure_filename, redirect
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'files'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'wav', }
 
 DATABASE_URL = os.environ['DATABASE_URL']
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
@@ -214,7 +214,7 @@ def add_post():
 @app.route("/post/<post_id>")
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
-    print(f"{post.title} -- {post.files}")
+    print(f"{post.title} -- {post.files[0].src}")
 
     return render_template('posts.html', post_info={
         "title": post.title,
@@ -222,7 +222,7 @@ def display_post(post_id):
         "time": post.pub_date,
         "tags": " ".join([tag.name for tag in post.tags]),
         "user": post.user.username,
-        "file": ",".join(map(lambda f: f.src, post.files))
+        "files": ",".join(map(lambda f: f.src, post.files))
     })
 
 
