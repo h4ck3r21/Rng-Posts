@@ -97,7 +97,11 @@
                 iframe.src = "/post/"+post;
 
                 iframe.addEventListener('load', function() {
-                    this.style.height = this.contentWindow.document.body.scrollHeight + "px"
+                    this.style.height = this.contentWindow.document.body.scrollHeight + 25 + "px"
+                });
+
+                window.addEventListener('resize', function() {
+                    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 25 + "px"
                 });
 
                 document.getElementById('content').appendChild(iframe);

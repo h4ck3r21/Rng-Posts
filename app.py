@@ -22,6 +22,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_PATH'] = 10000000
+app.secret_key = 'asdjlhkfuiewh32897re jhwqhyr8932ycrewyuqiyriuewoynq8392'
 
 # commands to be used
 # User.query.all()

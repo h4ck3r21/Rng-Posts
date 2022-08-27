@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>post</title>
-    <link rel="stylesheet" href="../static/css/Styling.css">
-    <var id="var" class="inv">{{post_info['files']}}</var>
-    <script src="../static/Post-image-render.js"></script>
+    <link rel="stylesheet" href="../static/css/posts.css">
+
 </head>
 <body>
+    <var id="var" class="inv">{{post_info['files']}}</var>
     <h3 class="post-title">{{post_info['title']}}</h3>
     <div class="post-body-holder">
         <p class="post-body">{{post_info['body']}}</p>
@@ -16,11 +16,12 @@
     <span class="post-user">Posted by {{post_info['user']}}</span>
     <span class="post-time">at {{post_info['time']}}</span>
     
-    <div class="img-container inv" id="imgContainer">
-        <iframe id='file' class="file"></iframe>
+    <div class="img-container container inv" id="imgContainer">
+        <iframe id='file' class="file responsive-iframe"></iframe>
         <button type="button" class="btn left" onclick="move_image(-1)">&#10094;</button>
         <button type="button" class="btn right" onclick="move_image(+1)">&#10095;</button>
     </div>
-    <script>filePreview(0)</script>
+
+    <script src="../static/Post-image-render.js"></script>
 </body>
 </html>
