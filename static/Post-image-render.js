@@ -11,14 +11,22 @@ function filePreview(n) {
     if (file) {
         document.getElementById('imgContainer').classList.remove("inv");
         var fileFrame = document.getElementById("file");
+        fileFrame.addEventListener("readystatechange", resizeImage(fileFrame));
         fileFrame.src= src;
         console.log(src);
     };
 };
 
-function resizeWindow(iframe) {
-    scale = this.height / contentWindow.document.height;
-    iframe.style=`-webkit-transform:scale(${scale});-moz-transform-scale(${0.5});`
+function resizeImage(iframe) {
+    height = iframe.offsetWidth;
+    width = iframe.offsetHeight;
+    console.log("height, width = " + height + " " + width);
+    iDocument = iframe.contentWindow.document;
+    console.log(iDocument);
+    image = iDocument.getElementsByTagName("img")[0];
+    height + "px";
+    width + "px";
+
 };
 
 function move_image(n){
