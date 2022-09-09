@@ -1,0 +1,109 @@
+.file-button:hover {
+  background: #AAA;
+}
+
+.inv {
+  display: none;
+}
+
+.input-text {
+  width: 90%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+.input-text:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+.form-container .btn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+.form-container .close {
+  background-color: red;
+}
+
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
+
+.form-container {
+  padding: 10px;
+  background-color: white;
+}
+
+.post-form {
+  max-width: 500px
+}
+
+body {
+  background-color: #EEE;
+
+}
+
+.file-button {
+  -webkit-appearance: none;
+  background: #FFF;
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 0.1em 0.2em;
+  cursor: pointer;
+}
+
+.file-button:active {
+  background: #666;
+}
+
+.img-container .left {
+  position: absolute;
+  left: 1%;
+  top: 50%;
+}
+
+.img-container .right {
+  position: absolute;
+  right: 1%;
+  top: 50%;
+}
+
+.img-container .btn {
+  width: auto;
+  height: auto;
+  transform: translate(-0%, -50%);
+  -ms-transform: translate(-0%, -50%);
+  background-color: #555;
+  color: white;
+  font-size: 100%;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.img-container .btn:hover {
+  background-color: black;
+}.img-container .left {
+   position: absolute;
+   left: 1%;
+   top: 50%;
+ }
+
+ .img-container .right {
+   position: absolute;
+   right: 1%;
+   top: 50%;
+ }
+
+ .img-container .btn:hover {
+   background-color: black;
+ }

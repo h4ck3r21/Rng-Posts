@@ -118,17 +118,6 @@ img.logo {
   align-items: center;
 }
 
-.file-button {
-  -webkit-appearance: none;
-  background: #FFF;
-  border: 1px solid black;
-  border-radius: 3px;
-  padding: 0.1em 0.2em;
-  cursor: pointer;
-}
 
-.file-button:active {
-  background: #666;
-}
 
 

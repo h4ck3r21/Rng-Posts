@@ -29,10 +29,12 @@ function filePreview(){
         vidPreview.src = reader.result
         vidPreview.classList.remove("inv")
         imgPreview.classList.add("inv")
+        vidPreview.maxWidth = 200px
     } else if (reader.result.startsWith("data:image")) {
         imgPreview.src = reader.result
         imgPreview.classList.remove("inv")
         vidPreview.classList.add("inv")
+        imgPreview.maxWidth = 200px
     } else {
         console.log("unrecognisable file type")
     }

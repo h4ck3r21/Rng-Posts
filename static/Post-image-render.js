@@ -11,21 +11,31 @@ function filePreview(n) {
     if (file) {
         document.getElementById('imgContainer').classList.remove("inv");
         var fileFrame = document.getElementById("file");
-        fileFrame.addEventListener("readystatechange", resizeImage(fileFrame));
         fileFrame.src= src;
         console.log(src);
+        fileFrame.addEventListener("load", resizeImageLoop(fileFrame));
     };
 };
 
-function resizeImage(iframe) {
-    height = iframe.offsetWidth;
-    width = iframe.offsetHeight;
+function resizeImageLoop(iframe) {
+    elements = iframe.contentWindow.document.body.getElementsByTagName("*")
+    console.log(elements)
+    if (elements.length == 0) {
+        setTimeout(() => {  resizeImageLoop(iframe); }, 1000);
+    } else {
+        if (elements[0].tagName == "IMG") {
+            console.log("resizing image")
+            resizeImage(iframe, elements[0])
+        }
+    }
+}
+
+function resizeImage(iframe, image) {
+    height = iframe.offsetHeight;
+    width = iframe.offsetWidth;
     console.log("height, width = " + height + " " + width);
-    iDocument = iframe.contentWindow.document;
-    console.log(iDocument);
-    image = iDocument.getElementsByTagName("img")[0];
-    height + "px";
-    width + "px";
+    image.style.maxHeight = height + "px";
+    image.style.maxWidth = width + "px";
 
 };
 
