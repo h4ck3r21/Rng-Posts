@@ -19,8 +19,7 @@
         <div class="body-input input-text" id="body-input">
             <textarea name="body" id="body" class="body-input input-text" required></textarea>
             <div class="img-container inv" id="imgPreviewContainer">
-                <img id='imgPreview' alt="image cannot be loaded"/>
-                <video id="vidPreview"></video>
+                <object id='preview' alt="file cannot be loaded"></object>
                 <button type="button" class="btn left" onclick="move_image(-1)">&#10094;</button>
                 <button type="button" class="btn right" onclick="move_image(+1)">&#10095;</button>
             </div>
@@ -45,7 +44,7 @@
         </a>
     </form>
 </center>
-<script src="../static/image-render.js"></script>
 <script src="../static/modify-file-upload-button.js"></script>
+<script src="../static/image-render.js"></script>
 </body>
 </html>

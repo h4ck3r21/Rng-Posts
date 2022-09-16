@@ -215,7 +215,7 @@ def add_post():
 @app.route("/post/<post_id>")
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
-    print(f"{post.title} -- {post.files[0].src}")
+    print(f" -- {post.title} -- ")
 
     return render_template('posts.html', post_info={
         "title": post.title,

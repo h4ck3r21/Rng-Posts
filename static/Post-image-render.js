@@ -4,11 +4,14 @@ console.log("files:" + files);
 var image_num = 0;
 
 function filePreview(n) {
-    if (image_num >= files.length || image_num < 0) {
+    if (image_num >= files.length) {
         image_num = 0
+      } else if (image_num < 0) {
+        image_num = files.length
       }
     src = files[image_num]
-    if (file) {
+    if (files[0] != "") {
+        console.log(files)
         document.getElementById('imgContainer').classList.remove("inv");
         var fileFrame = document.getElementById("file");
         fileFrame.src= src;
@@ -19,7 +22,6 @@ function filePreview(n) {
 
 function resizeImageLoop(iframe) {
     elements = iframe.contentWindow.document.body.getElementsByTagName("*")
-    console.log(elements)
     if (elements.length == 0) {
         setTimeout(() => {  resizeImageLoop(iframe); }, 1000);
     } else {

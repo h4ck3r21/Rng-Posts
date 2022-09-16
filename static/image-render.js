@@ -1,11 +1,13 @@
 
 
 window.addEventListener('load', function(){
-    document.getElementById('File')/addEventListener('change', function(e){
-      const files = document.querySelector('#file-input').files
-      addFile()  
-      image_num = files.length
-      filePreview();
+    console.log("load")
+    document.getElementById('File').addEventListener('change', function(e){
+        console.log("change")
+        const files = document.querySelector('#file-input').files
+        addFile()
+        image_num = files.length
+        filePreview();
     });
 });
 
@@ -25,19 +27,11 @@ function filePreview(){
 
   reader.addEventListener("load", function () {
     // result is a base64 string
-    if (reader.result.startsWith("data:video")) {
-        vidPreview.src = reader.result
-        vidPreview.classList.remove("inv")
-        imgPreview.classList.add("inv")
-        vidPreview.maxWidth = 200px
-    } else if (reader.result.startsWith("data:image")) {
-        imgPreview.src = reader.result
-        imgPreview.classList.remove("inv")
-        vidPreview.classList.add("inv")
-        imgPreview.maxWidth = 200px
-    } else {
-        console.log("unrecognisable file type")
-    }
+    datatype = reader.result.split(";")[0]
+    const embed = document.getElementById("preview")
+    embed.data = reader.result
+    embed.width = "100%"
+
 
   }, false);
 
