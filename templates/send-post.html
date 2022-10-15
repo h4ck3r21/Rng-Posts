@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Create post</title>
     <link rel="stylesheet" href="../static/css/send_post.css">
-    <link rel="stylesheet" href="../static/css/posts.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -18,10 +17,7 @@
 
         <div class="body-input input-text" id="body-input">
             <textarea name="body" id="body" class="body-input input-text" required></textarea>
-            <div class="img-container inv" id="imgPreviewContainer">
-                <object id='preview' alt="file cannot be loaded"></object>
-                <button type="button" class="btn left" onclick="move_image(-1)">&#10094;</button>
-                <button type="button" class="btn right" onclick="move_image(+1)">&#10095;</button>
+            <div class="img-container inv" id="PreviewContainer" style="position: relative">
             </div>
             <br>
 

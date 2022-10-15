@@ -65,16 +65,12 @@ body {
   background: #666;
 }
 
-.img-container .left {
-  position: absolute;
+.img-container button.left {
   left: 1%;
-  top: 50%;
 }
 
-.img-container .right {
-  position: absolute;
+.img-container button.right {
   right: 1%;
-  top: 50%;
 }
 
 .img-container .btn {
@@ -88,22 +84,9 @@ body {
   border: none;
   cursor: pointer;
   border-radius: 5px;
+  top: 50%;
+  position: absolute;
 }
 
 .img-container .btn:hover {
   background-color: black;
-}.img-container .left {
-   position: absolute;
-   left: 1%;
-   top: 50%;
- }
-
- .img-container .right {
-   position: absolute;
-   right: 1%;
-   top: 50%;
- }
-
- .img-container .btn:hover {
-   background-color: black;
- }
