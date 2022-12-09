@@ -3,28 +3,32 @@ files = files.split(",");
 console.log("files:" + files);
 var image_num = 0;
 
-function filePreview(n) {
+function filePreview() {
     if (image_num >= files.length) {
         image_num = 0
       } else if (image_num < 0) {
-        image_num = files.length
+        image_num = files.length - 1
       }
+    console.log(image_num)
     src = files[image_num]
     if (files[0] != "") {
         console.log(files)
         document.getElementById('imgContainer').classList.remove("inv");
         var fileFrame = document.getElementById("file");
-        fileFrame.src= src;
+        fileFrame.src = src;
         console.log(src);
-        fileFrame.addEventListener("load", resizeImageLoop(fileFrame));
+        resizeImageLoop(fileFrame, src);
     };
 };
 
-function resizeImageLoop(iframe) {
+function resizeImageLoop(iframe, src) {
     elements = iframe.contentWindow.document.body.getElementsByTagName("*")
-    if (elements.length == 0) {
-        setTimeout(() => {  resizeImageLoop(iframe); }, 1000);
+    console.log(elements)
+    console.log(src)
+    if (elements.length == 0 || !(elements[0].src.includes(src) || elements[0].baseURI.includes(src)))  {
+        setTimeout(() => {  resizeImageLoop(iframe, src); }, 1000);
     } else {
+        console.log(elements[0].src)
         if (elements[0].tagName == "IMG") {
             console.log("resizing image")
             resizeImage(iframe, elements[0])
@@ -44,7 +48,7 @@ function resizeImage(iframe, image) {
 function move_image(n){
     image_num += n;
     console.log(image_num);
-    filePreview(image_num);
+    filePreview();
 };
 
 document.getElementById('imgContainer').addEventListener("load", filePreview(0));
