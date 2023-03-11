@@ -220,7 +220,11 @@ def display_post(post_id):
     return render_template('posts.html', post_info={
         "title": post.title,
         "body": post.body,
-        "time": post.pub_date,
+        "time": "%s:%s %s/%s/%s" % (post.pub_date.hour,
+                                    post.pub_date.minute,
+                                    post.pub_date.day,
+                                    post.pub_date.month,
+                                    post.pub_date.year),
         "tags": " ".join([tag.name for tag in post.tags]),
         "user": post.user.username,
         "files": ",".join(map(lambda f: f.src, post.files))
@@ -229,6 +233,22 @@ def display_post(post_id):
 
 @app.route('/search-posts', methods=['GET', 'POST'])
 def search_posts():
+    search = request.form['search']
+
+    keywords = search.split()
+    posts = Post.query.all()
+    post_value = {}
+    for keyword in keywords:
+        print(keyword)
+        for post in posts:
+            if post not in post_value:
+                post_value[post] = assign_value(post, keyword)
+            else:
+                post_value[post] += assign_value(post, keyword)
+    return home(sorted(posts, key=lambda p: post_value[p]), msg=f"Search results for '{search}'")
+
+
+def old_search():
     search = request.form['search']
     print(search)
     keywords = search.split()
@@ -245,8 +265,28 @@ def search_posts():
             tag_posts = [post for tag in post.tags if tag in tags]
             matches.extend(tag_posts)
     counts = collections.Counter(matches)
-    posts = sorted(list(set(matches)), key=lambda x: -counts[x])
+    posts = sorted(matches, key=lambda x: 10000 * x.pub_date.year + 100 * x.pub_date.month + x.pub_date.day,
+                   reverse=True)
+    print([p.pub_date for p in posts])
+    posts = sorted(list(set(posts)), key=lambda x: -counts[x])
     return home(posts, msg=f"Search results for '{search}'")
+
+
+def assign_value(post: Post, search):
+    TITLE_VALUE = 3000000
+    TAG_VALUE = 2000000
+    BODY_VALUE = 1000000
+    DATE_VALUE = 1
+    value = 0
+    value += post.title.count(search) * TITLE_VALUE
+    value += [tag.name for tag in post.tags].count(search) * TAG_VALUE
+    value += post.body.count(search) * BODY_VALUE
+    value += (100000000 * post.pub_date.year +
+              1000000 * post.pub_date.month +
+              10000 * post.pub_date.day +
+              100 * post.pub_date.hour +
+              1 * post.pub_date.minute) * DATE_VALUE
+    return value
 
 
 @app.route("/logo")
