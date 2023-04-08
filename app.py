@@ -63,7 +63,9 @@ class User(db.Model):
 
 class Permissions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('permissions', lazy=True))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     category = db.relationship('Category', backref=db.backref('permissions', lazy=True))
     canPost = db.Column(db.Boolean, nullable=False, default=False)
     canDelete = db.Column(db.Boolean, nullable=False, default=False)
@@ -74,6 +76,7 @@ class Permissions(db.Model):
     canBan = db.Column(db.Boolean, nullable=False, default=False)
     canPromote = db.Column(db.Boolean, nullable=False, default=False)
     canModify = db.Column(db.Boolean, nullable=False, default=False)
+    level = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return "<%r's Permissions in %r>" % (self.user, self.category)
@@ -83,12 +86,16 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     is_public = db.Column(db.Boolean, nullable=False, default=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     owner = db.relationship('User', backref=db.backref('category', lazy=True))
     posts = db.relationship('Post', secondary=category_posts, lazy='subquery',
                             backref=db.backref('category', lazy=True))
 
     def __repr__(self):
-        return '<Category %r>' % self.name
+        return '<Category %r>' % self.id
+
+    def __str__(self):
+        return '<Category %r: %r>' % (self.id, self.name)
 
 
 class Post(db.Model):
@@ -106,7 +113,10 @@ class Post(db.Model):
                            backref=db.backref('posts', lazy=True))
 
     def __repr__(self):
-        return '<Post %r>' % self.title
+        return '<Post %r>' % self.id
+
+    def __str__(self):
+        return '<Post %r: %r>' % (self.id, self.name)
 
 
 class Tag(db.Model):
@@ -128,6 +138,10 @@ class File(db.Model):
 
     def __repr__(self):
         return "<File %r>" % self.name
+
+
+class InputError(Exception):
+    pass
 
 
 def reset_db():
@@ -232,6 +246,7 @@ def add_post():
         title = request.form['title']
         body = request.form['body']
         tags = request.form['tags']
+        categories = request.form['categories']
         files = request.files.getlist('files[]')
         print(f"________________________{title}\n{body}\n{tags}\n{files}")
         user_id = request.cookies.get('userID')
@@ -335,6 +350,103 @@ def assign_value(post: Post, search):
 @app.route("/logo")
 def logo():
     return send_file("images/icon-turtle.jpg", mimetype='image/jpg')
+
+
+@app.route("/category/<category_id>")
+def category(category_id):
+    user_id = request.cookies.get('userID')
+    user = User.query.filter_by(id=user_id).first()
+    cat = Category.query.filter_by(id=category_id).first()
+    permission = Permissions.query.filter_by(user=user, category=cat)
+    if user is not None and permission.canView or cat.is_public:
+        return home(cat.posts, msg=cat.name)
+    else:
+        return home(msg="you do not have permission to view this category")
+
+
+@app.route("/create-category", methods=["GET", "POST"])
+def create_category():
+    if request.method == 'POST':
+        name = request.form['name']
+        is_public = request.form['is_public']
+        print(f"new category:{name}")
+        user_id = request.cookies.get('userID')
+        user = User.query.filter_by(id=user_id).first()
+        cat = Category(name=name, is_public=is_public, owner=user)
+        perms = Permissions(
+            user=user,
+            category=cat,
+            canPost=True,
+            canDelete=True,
+            canView=True,
+            canTimeout=True,
+            canAttachFiles=True,
+            canMute=True,
+            canBan=True,
+            canPromote=True,
+            canModify=True,
+            level=0
+        )
+        db.session.add(perms)
+        db.session.commit()
+        return render_template('set-cookie.html')
+    else:
+        return render_template('homepage.html')
+
+
+@app.route("/add-categories", methods=["GET", "POST"])
+def add_post_to_category():
+    if request.method == 'POST':
+        post_id = request.form['post_id']
+        post = Post.query.filter_by(id=post_id).first()
+        cat_id = request.form['cat_id']
+        cat = Category.query.filter_by(id=cat_id).first()
+        user_id = request.cookies.get('userID')
+        user = User.query.filter_by(id=user_id).first()
+        perms = Permissions.query.filter_by(user=user, category=cat)
+
+        if perms.canPost() and (perms.canAttachFiles or post.files == []):
+            print(f"adding post, {post.title}, to category, {cat.name}.")
+            db.session.add(perms)
+            db.session.commit()
+            return render_template('set-cookie.html')
+        else:
+            return home(msg="You do not have permission to post in that category")
+    else:
+        return render_template('homepage.html')
+
+
+@app.route("/new-category")
+def new_category():
+    return render_template("create-category.html")
+
+
+@app.route("/select-category/<action>")
+def select_category(action):
+    user_id = request.cookies.get('userID')
+    user = User.query.filter_by(id=user_id).first()
+    if action == "view":
+        permissions = Permissions.query.filter_by(user=user, canView=True)
+    elif action == "post":
+        permissions = Permissions.query.filter_by(user=user, canPost=True)
+    elif action == "delete":
+        permissions = Permissions.query.filter_by(user=user, canDelete=True)
+    elif action == "timeout":
+        permissions = Permissions.query.filter_by(user=user, canTimeout=True)
+    elif action == "mute":
+        permissions = Permissions.query.filter_by(user=user, canMute=True)
+    elif action == "ban":
+        permissions = Permissions.query.filter_by(user=user, canBan=True)
+    elif action == "promote":
+        permissions = Permissions.query.filter_by(user=user, canPromote=True)
+    elif action == "modify":
+        permissions = Permissions.query.filter_by(user=user, canModify=True)
+    else:
+        raise InputError(f"Unknown action: {action}")
+    categories = []
+    for permission in permissions:
+        categories.append(permission.category)
+    return render_template("select-category.html")
 
 
 if __name__ == "__main__":
