@@ -7,6 +7,7 @@ from typing import List, Optional
 from flask import Flask, render_template, request, make_response, send_file, url_for, flash
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -368,7 +369,14 @@ def category(category_id):
 def create_category():
     if request.method == 'POST':
         name = request.form['name']
-        is_public = request.form['is_public']
+        publicity = request.form['publicity']
+        if publicity == "public":
+            is_public = True
+        elif publicity == "private":
+            is_public = False
+        else:
+            raise InputError(f"unknown publicity: {publicity}")
+
         print(f"new category:{name}")
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
@@ -424,6 +432,8 @@ def new_category():
 @app.route("/select-category/<action>")
 def select_category(action):
     user_id = request.cookies.get('userID')
+    if user_id is None:
+        abort(401)
     user = User.query.filter_by(id=user_id).first()
     if action == "view":
         permissions = Permissions.query.filter_by(user=user, canView=True)
@@ -445,8 +455,13 @@ def select_category(action):
         raise InputError(f"Unknown action: {action}")
     categories = []
     for permission in permissions:
-        categories.append(permission.category)
-    return render_template("select-category.html")
+        categories.append(permission.category.name)
+    return render_template("select-category.html", categories=categories, action="action")
+
+
+@app.route("/category-action/<category>/<action>")
+def action(action, category):
+    pass
 
 
 if __name__ == "__main__":

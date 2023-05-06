@@ -2,9 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>select categories</title>
 </head>
 <body>
+<div id="categories">
+    {{categories}}
+</div>
+<script>
+    var cat_div = document.getElementById('categories');
+    var categories = "{{categories}}";
+    console.log(categories);
+    if (categories == "[]") {
+        no_categories = document.createElement('p');
+        cat_div.append(no_categories);
+        no_categories.innerHTML = "none";
+    }
+    else {
+        categories = categories.substring(6, categories.length - 6);
+        categories = categories.split("&#39;, &#39;");
+        console.log(categories);
 
+        for (index in posts) {
+            console.log(posts[index]);
+            var btn = document.createElement('button');
+            btn.className = 'category';
+            btn.innerHTML = posts[index]
+            btn.onclick = Select(posts[index])
+        }
+    }
+
+    function Select(name) {
+        window.location.href = window.location.origin + "/category-action/" + name +"/"+ {{action}}
+    }
+</script>
 </body>
 </html>

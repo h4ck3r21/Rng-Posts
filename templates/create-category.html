@@ -2,9 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>create category</title>
+    <link rel="stylesheet" href="../static/css/send_post.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+    <center>
 
+        <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/create-category">
+            <label for="name">Name</label>
+            <input name="name" id="name" class="input-text" required>
+            <br>
+
+            <input type="radio" id="public" name="publicity" value="public">
+            <label for="public">Public</label>
+            <input type="radio" id="private" name="publicity" value="private">
+            <label for="private">Private</label>
+            <br><br>
+
+            <button type="submit" id="submit-post" class="btn">Submit</button>
+            <a href="/">
+                <button type="button" id="PostCloseButton" class="btn close">Close</button>
+            </a>
+        </form>
+    </center>
 </body>
 </html>
