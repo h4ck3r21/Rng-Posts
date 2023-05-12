@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>select categories</title>
+    <link rel="stylesheet" href="../static/css/select_category.css">
 </head>
 <body>
-<div id="categories">
-    {{categories}}
-</div>
+<div id="categories"></div>
 <script>
     var cat_div = document.getElementById('categories');
     var categories = "{{categories}}";
     console.log(categories);
     if (categories == "[]") {
         no_categories = document.createElement('p');
-        cat_div.append(no_categories);
+        cat_div.appendChild(no_categories);
         no_categories.innerHTML = "none";
     }
     else {
@@ -22,17 +21,21 @@
         categories = categories.split("&#39;, &#39;");
         console.log(categories);
 
-        for (index in posts) {
-            console.log(posts[index]);
+        for (index in categories) {
+            console.log(categories[index]);
             var btn = document.createElement('button');
-            btn.className = 'category';
-            btn.innerHTML = posts[index]
-            btn.onclick = Select(posts[index])
+            btn.className = 'category btn';
+            btn.innerHTML = categories[index]
+            btn.addEventListener("click", function() {
+                Select(categories[index])
+            }
+            );
+            cat_div.appendChild(btn);
         }
     }
 
     function Select(name) {
-        window.location.href = window.location.origin + "/category-action/" + name +"/"+ {{action}}
+        window.location.href = window.location.origin + "/category-action/" + name +"/"+ "{{action}}"
     }
 </script>
 </body>

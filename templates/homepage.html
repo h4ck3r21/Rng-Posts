@@ -51,8 +51,14 @@
             <div class="main-content">
                 <h1>{{msg}}</h1>
 
-                <a href="/create-post">
+                <a href="/create-post" style="display: inline-block;">
                 <button id="postButton" class="open-button">Post</button>
+                </a>
+                <a href="/new-category" style="display: inline-block;">
+                    <button id="new-category" class="open-button">Create Category</button>
+                </a>
+                <a href="/manage-category" style="display: inline-block;">
+                    <button id="new-category" class="open-button">Create Category</button>
                 </a>
 
                 <div id="content"></div>
@@ -70,6 +76,11 @@
                 no_posts = document.createElement('p')
                 no_posts.className = noPostsMessage
                 no_posts.innerHTML = "There seems to be no results for your search"
+            }
+            else if (posts = "") {
+                no_posts = document.createElement('p')
+                no_posts.className = noPostsMessage
+                no_posts.innerHTML = "There seems to be no posts"
             }
             else {
                 posts = posts.substring(9, posts.length - 5);

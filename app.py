@@ -436,33 +436,42 @@ def select_category(action):
         abort(401)
     user = User.query.filter_by(id=user_id).first()
     if action == "view":
-        permissions = Permissions.query.filter_by(user=user, canView=True)
+        permissions = Permissions.query.filter_by(user=user, canView=True).all()
     elif action == "post":
-        permissions = Permissions.query.filter_by(user=user, canPost=True)
+        permissions = Permissions.query.filter_by(user=user, canPost=True).all()
     elif action == "delete":
-        permissions = Permissions.query.filter_by(user=user, canDelete=True)
+        permissions = Permissions.query.filter_by(user=user, canDelete=True).all()
     elif action == "timeout":
-        permissions = Permissions.query.filter_by(user=user, canTimeout=True)
+        permissions = Permissions.query.filter_by(user=user, canTimeout=True).all()
     elif action == "mute":
-        permissions = Permissions.query.filter_by(user=user, canMute=True)
+        permissions = Permissions.query.filter_by(user=user, canMute=True).all()
     elif action == "ban":
-        permissions = Permissions.query.filter_by(user=user, canBan=True)
+        permissions = Permissions.query.filter_by(user=user, canBan=True).all()
     elif action == "promote":
-        permissions = Permissions.query.filter_by(user=user, canPromote=True)
+        permissions = Permissions.query.filter_by(user=user, canPromote=True).all()
     elif action == "modify":
-        permissions = Permissions.query.filter_by(user=user, canModify=True)
+        permissions = Permissions.query.filter_by(user=user, canModify=True).all()
     else:
         raise InputError(f"Unknown action: {action}")
     categories = []
+    print(permissions)
     for permission in permissions:
         categories.append(permission.category.name)
-    return render_template("select-category.html", categories=categories, action="action")
+    return render_template("select-category.html", categories=categories, action=action)
 
 
 @app.route("/category-action/<category>/<action>")
 def action(action, category):
-    pass
+    return render_template("select-category.html", categories=category, action=action)
 
+
+@app.route("/manage-category")
+def manage_category():
+    return render_template("manage-template.html")
+
+@app.route("/members/<category>")
+def members(category):
+    return render_template(members.html)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ['PORT']))
