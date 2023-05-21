@@ -161,7 +161,6 @@ def home(posts: Optional[List] = None, err: str = "", msg: str = ""):
             msg = "Welcome " + user.username
         if posts is None:
             posts = user.posts
-
     return render_template('homepage.html',
                            msg=msg,
                            user=user,
@@ -469,9 +468,11 @@ def action(action, category):
 def manage_category():
     return render_template("manage-template.html")
 
+
 @app.route("/members/<category>")
 def members(category):
     return render_template(members.html)
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ['PORT']))

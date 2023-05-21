@@ -58,7 +58,7 @@
                     <button id="new-category" class="open-button">Create Category</button>
                 </a>
                 <a href="/manage-category" style="display: inline-block;">
-                    <button id="new-category" class="open-button">Create Category</button>
+                    <button id="manage-category" class="open-button">Manage Categories</button>
                 </a>
 
                 <div id="content"></div>
@@ -68,16 +68,13 @@
         <script id="post-script">
 
             console.log("{{posts}}");
-
-
-
             var posts = "{{posts}}";
             if (posts == "[]") {
                 no_posts = document.createElement('p')
                 no_posts.className = noPostsMessage
                 no_posts.innerHTML = "There seems to be no results for your search"
             }
-            else if (posts = "") {
+            else if (posts == "") {
                 no_posts = document.createElement('p')
                 no_posts.className = noPostsMessage
                 no_posts.innerHTML = "There seems to be no posts"
@@ -85,7 +82,6 @@
             else {
                 posts = posts.substring(9, posts.length - 5);
                 posts = posts.split("&gt;, &lt;Post ");
-
 
                 console.log(posts);
 

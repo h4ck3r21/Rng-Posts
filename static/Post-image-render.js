@@ -11,15 +11,26 @@ function filePreview() {
       }
     console.log(image_num)
     src = files[image_num]
-    if (files[0] != "") {
+    if (files[image_num] != "") {
         console.log(files)
         document.getElementById('imgContainer').classList.remove("inv");
         var fileFrame = document.getElementById("file");
         fileFrame.src = src;
         console.log(src);
         resizeImageLoop(fileFrame, src);
+        console.log(files.length);
+        if (files.length >= 2) {
+            var buttons = document.querySelectorAll('.img-selector');
+            console.log(buttons);
+            buttons.forEach(showItem);
+        }
     };
 };
+
+function showItem(item, index) {
+    console.log("showing buttons")
+    item.classList.remove("inv");
+}
 
 function resizeImageLoop(iframe, src) {
     elements = iframe.contentWindow.document.body.getElementsByTagName("*")
@@ -37,12 +48,12 @@ function resizeImageLoop(iframe, src) {
 }
 
 function resizeImage(iframe, image) {
+    console.log(iframe + "\n" + image)
     height = iframe.offsetHeight;
     width = iframe.offsetWidth;
     console.log("height, width = " + height + " " + width);
     image.style.maxHeight = height + "px";
     image.style.maxWidth = width + "px";
-
 };
 
 function move_image(n){

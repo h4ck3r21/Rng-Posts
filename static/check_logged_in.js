@@ -18,13 +18,9 @@ if (document.getElementById("user").innerHTML == "None") {
 
 }
 
-if (document.getElementById("login-error").innerHTML != "") {
-    openLogin()
-}
 
-
-var login_error = document.getElementById("login-error")
 if (login_error.innerHTML == "") {
+    openLogin()
     login_error.style.display = "none"
 }
 
