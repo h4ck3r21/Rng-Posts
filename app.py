@@ -8,7 +8,7 @@ from flask import Flask, render_template, request, make_response, send_file, url
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import abort
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename, redirect
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'files'
@@ -353,7 +353,7 @@ def logo():
 
 
 @app.route("/category/<category_id>")
-def category(category_id):
+def view_category(category_id):
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
     cat = Category.query.filter_by(id=category_id).first()
@@ -401,7 +401,7 @@ def create_category():
         return render_template('homepage.html')
 
 
-@app.route("/add-categories", methods=["GET", "POST"])
+@app.route("/add-cat", methods=["GET", "POST"])
 def add_post_to_category():
     if request.method == 'POST':
         post_id = request.form['post_id']
@@ -459,9 +459,34 @@ def select_category(action):
     return render_template("select-category.html", categories=categories, action=action)
 
 
-@app.route("/category-action/<category>/<action>")
-def action(action, category):
-    return render_template("select-category.html", categories=category, action=action)
+@app.route("/category-action/<cat_name>/<action>")
+def action(action, cat_name):
+    print(cat_name)
+    user_id = request.cookies.get('userID')
+    if user_id is None:
+        abort(401)
+    user = User.query.filter_by(id=user_id).first()
+    cat = Category.query.filter_by(name=cat_name).first()
+    if action == "view":
+        redirect(url_for('/category/' + cat.id), code=302)
+    elif action == "post":
+        redirect(url_for('/add_to_category/' + cat.id), code=302)
+    elif action == "delete":
+        permissions = Permissions.query.filter_by(user=user, canDelete=True).all()
+    elif action == "timeout":
+        permissions = Permissions.query.filter_by(user=user, canTimeout=True).all()
+    elif action == "mute":
+        permissions = Permissions.query.filter_by(user=user, canMute=True).all()
+    elif action == "ban":
+        permissions = Permissions.query.filter_by(user=user, canBan=True).all()
+    elif action == "promote":
+        permissions = Permissions.query.filter_by(user=user, canPromote=True).all()
+    elif action == "modify":
+        permissions = Permissions.query.filter_by(user=user, canModify=True).all()
+    else:
+        raise InputError(f"Unknown action: {action}")
+
+    return render_template("select-category.html", categories=cat, action=action)
 
 
 @app.route("/manage-category")
@@ -472,6 +497,21 @@ def manage_category():
 @app.route("/members/<category>")
 def members(category):
     return render_template(members.html)
+
+
+@app.route("/add_to_category/<category_id>")
+def select_post(cat_id):
+    user_id = request.cookies.get('userID')
+    if user_id is None:
+        abort(401)
+    user = User.query.filter_by(id=user_id).first()
+    cat = Category.query.filter_by(id=cat_id).first()
+    permission = Permissions.query.filter_by(user=user, category=cat).first()
+    posts = Post.query.filter_by(user=user)
+    if user is not None and permission.canPost:
+        return render_template("add-post.html",  category=cat_id, posts=posts)
+    else:
+        redirect(url_for("/"), code=302)
 
 
 if __name__ == "__main__":

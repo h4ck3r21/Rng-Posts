@@ -25,9 +25,10 @@
             console.log(categories[index]);
             var btn = document.createElement('button');
             btn.className = 'category btn';
-            btn.innerHTML = categories[index]
+            btn.innerHTML = categories[index];
+            let cat = btn.innerHTML;
             btn.addEventListener("click", function() {
-                Select(categories[index])
+                Select(cat)
             }
             );
             cat_div.appendChild(btn);
@@ -35,6 +36,7 @@
     }
 
     function Select(name) {
+        console.log(name);
         window.location.href = window.location.origin + "/category-action/" + name +"/"+ "{{action}}"
     }
 </script>
