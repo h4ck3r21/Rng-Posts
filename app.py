@@ -502,8 +502,9 @@ def members(category):
 
 def get_users_of_lower_level(user, category):
     permission = Permissions.query.filter_by(user=user, category=category).first()
-    return [post.user for post in Post.query.filter_by(category=category)
-            if Permissions.query.filter_by(user=post.user, category=category).first().level > permission.level]
+    posts = category.posts
+    users = [post.user for post in posts]
+    return [poster for poster in users if Permissions.query.filter_by(user=poster, category=category).first().level > permission.level]
 
 
 @app.route("/delete-category/<category_id>")
@@ -615,9 +616,9 @@ def mute(category_id):
     permission = Permissions.query.filter_by(user=user, category=category).first()
     users = get_users_of_lower_level(user, category)
     if user is not None and permission.canMute:
-        render_template("mute.html", category=category_id, users=users)
+        return render_template("mute.html", category=category_id, users=users)
     else:
-        redirect(url_for("/"), code=302)
+        return redirect(url_for("/"), code=302)
 
 
 @app.route("/mute-form", methods=["GET", "POST"])
@@ -692,8 +693,9 @@ def promote(category_id):
     permission = Permissions.query.filter_by(user=user, category=category).first()
     users = [post.user for post in Post.query.filter_by(category=category)
              if Permissions.query.filter_by(user=post.user, category=category).first().level > permission.level + 1]
+    users_id = [poster.id for poster in users]
     if user is not None and permission.canPromote:
-        render_template("promote.html", category=category_id, users=users)
+        render_template("promote.html", category=category_id, users=users, users_id=users_id)
     else:
         redirect(url_for("/"), code=302)
 

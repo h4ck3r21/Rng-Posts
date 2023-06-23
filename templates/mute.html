@@ -2,9 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Mute</title>
+    <link rel="stylesheet" href="../static/css/send_post.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+<center>
+    <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/mute-form">
+        <label for="name">Name</label>
+        <input name="name" id="name" class="input-text" required>
+        <br>
 
+        <input name="category" id="category" class="input-text" value="{{category}}" required>
+        <label for="user">User</label>
+        <select name="user" id="user"></select>
+
+        <br><br>
+
+        <button type="submit" id="submit-post" class="btn">Submit</button>
+        <a href="/">
+            <button type="button" id="PostCloseButton" class="btn close">Close</button>
+        </a>
+    </form>
+</center>
+<script>
+    var user_dropdown = document.getElementById('user');
+    var users = "{{users}}";
+    var user_ids = "{{users}}"
+    console.log(users);
+    console.log(user_ids)
+</script>
 </body>
 </html>

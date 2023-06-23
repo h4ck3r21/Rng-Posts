@@ -2,9 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Add Post</title>
+    <link rel="stylesheet" href="../static/css/send_post.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+<center>
+    <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/mute-form">
+        <label for="name">Name</label>
+        <input name="name" id="name" class="input-text" required>
+        <br>
 
+        <input name="category" id="category" class="input-text" value="{{category}}" required>
+        <input name="post" id="post" class="input-text" required>
+        <div id="posts"></div>
+
+        <br><br>
+
+        <button type="submit" id="submit-post" class="btn">Submit</button>
+        <a href="/">
+            <button type="button" id="PostCloseButton" class="btn close">Close</button>
+        </a>
+    </form>
+</center>
+<script id="post-script">
+
+    console.log("{{posts}}");
+    var posts = "{{posts}}";
+    posts = posts.substring(9, posts.length - 5);
+    posts = posts.split("&gt;, &lt;Post ");
+
+    console.log(posts);
+    for (index in posts) {
+        console.log(posts[index])
+        addRow(posts[index])
+
+
+    function addRow(post) {
+
+        console.log(post)
+
+        const iframe = document.createElement('iframe');
+
+        iframe.className = 'post';
+
+        iframe.src = "/post/"+post;
+
+        iframe.addEventListener('load', function() {
+            this.style.height = this.contentWindow.document.body.scrollHeight + 25 + "px"
+        });
+
+        window.addEventListener('resize', function() {
+            iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 25 + "px"
+        });
+
+        document.getElementById('content').appendChild(iframe);
+    }
+</script>
 </body>
 </html>
