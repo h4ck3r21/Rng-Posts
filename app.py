@@ -246,7 +246,7 @@ def add_post():
         title = request.form['title']
         body = request.form['body']
         tags = request.form['tags']
-        categories = request.form['categories']
+        # categories = request.form['categories']
         files = request.files.getlist('files[]')
         print(f"________________________{title}\n{body}\n{tags}\n{files}")
         user_id = request.cookies.get('userID')
@@ -406,7 +406,7 @@ def add_post_to_category():
     if request.method == 'POST':
         post_id = request.form['post_id']
         post = Post.query.filter_by(id=post_id).first()
-        cat_id = request.form['cat_id']
+        cat_id = request.form['category']
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
@@ -460,36 +460,6 @@ def select_category(action):
     return render_template("select-category.html", categories=categories, action=action)
 
 
-@app.route("/category-action/<cat_name>/<action>")
-def run_action(action, cat_name):
-    print(cat_name)
-    user_id = request.cookies.get('userID')
-    if user_id is None:
-        abort(401)
-    user = User.query.filter_by(id=user_id).first()
-    cat = Category.query.filter_by(name=cat_name).first()
-    if action == "view":
-        redirect(url_for('/category/' + cat.id), code=302)
-    elif action == "post":
-        redirect(url_for('/add_to_category/' + cat.id), code=302)
-    elif action == "delete":
-        redirect(url_for('/delete-category/' + cat.id), code=302)
-    elif action == "timeout":
-        pass
-    elif action == "mute":
-        redirect(url_for('/mute/' + cat.id), code=302)
-    elif action == "ban":
-        redirect(url_for('/ban/' + cat.id), code=302)
-    elif action == "promote":
-        redirect(url_for('/promote/' + cat.id), code=302)
-    elif action == "modify":
-        pass
-    else:
-        raise InputError(f"Unknown action: {action}")
-
-    return render_template("select-category.html", categories=cat, action=action)
-
-
 @app.route("/manage-category")
 def manage_category():
     return render_template("manage-template.html")
@@ -504,7 +474,8 @@ def get_users_of_lower_level(user, category):
     permission = Permissions.query.filter_by(user=user, category=category).first()
     posts = category.posts
     users = [post.user for post in posts]
-    return [poster for poster in users if Permissions.query.filter_by(user=poster, category=category).first().level > permission.level]
+    return [poster for poster in users if
+            Permissions.query.filter_by(user=poster, category=category).first().level > permission.level]
 
 
 @app.route("/delete-category/<category_id>")
@@ -560,7 +531,7 @@ def select_post(category_id):
     user = User.query.filter_by(id=user_id).first()
     cat = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=cat).first()
-    posts = Post.query.filter_by(user=user)
+    posts = Post.query.filter_by(user=user).all()
     if user is not None and permission.canPost:
         return render_template("add-post.html", category=category_id, posts=posts)
     else:
@@ -721,6 +692,36 @@ def promote_user():
             return home(msg="You do not have permission to ban people in that category")
     else:
         redirect(url_for("/"), code=302)
+
+
+@app.route("/category-action/<cat_name>/<action>")
+def run_action(action, cat_name):
+    print(cat_name)
+    user_id = request.cookies.get('userID')
+    if user_id is None:
+        abort(401)
+    user = User.query.filter_by(id=user_id).first()
+    cat = Category.query.filter_by(name=cat_name).first()
+    if action == "view":
+        redirect(url_for('/category/' + str(cat.id)), code=302)
+    elif action == "post":
+        redirect(url_for('/add_to_category/' + str(cat.id)), code=302)
+    elif action == "delete":
+        redirect(url_for('/delete-category/' + str(cat.id)), code=302)
+    elif action == "timeout":
+        pass
+    elif action == "mute":
+        redirect(url_for('/mute/' + str(cat.id)), code=302)
+    elif action == "ban":
+        redirect(url_for('/ban/' + str(cat.id)), code=302)
+    elif action == "promote":
+        redirect(url_for('/promote/' + str(cat.id)), code=302)
+    elif action == "modify":
+        pass
+    else:
+        raise InputError(f"Unknown action: {action}")
+
+    return render_template("select-category.html", categories=cat, action=action)
 
 
 if __name__ == "__main__":

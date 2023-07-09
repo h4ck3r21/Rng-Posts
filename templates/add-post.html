@@ -8,13 +8,9 @@
 </head>
 <body>
 <center>
-    <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/mute-form">
-        <label for="name">Name</label>
-        <input name="name" id="name" class="input-text" required>
-        <br>
-
-        <input name="category" id="category" class="input-text" value="{{category}}" required>
-        <input name="post" id="post" class="input-text" required>
+    <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/add-cat">
+        <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
+        <input name="post" id="post" class="input-text" required hidden>
         <div id="posts"></div>
 
         <br><br>
@@ -36,6 +32,7 @@
     for (index in posts) {
         console.log(posts[index])
         addRow(posts[index])
+    }
 
 
     function addRow(post) {
@@ -43,6 +40,7 @@
         console.log(post)
 
         const iframe = document.createElement('iframe');
+        const container = document.createElement('p');
 
         iframe.className = 'post';
 
@@ -56,7 +54,12 @@
             iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 25 + "px"
         });
 
-        document.getElementById('content').appendChild(iframe);
+        iframe.addEventListener("click", function() {
+            console.log('click!')
+            iframe.addClass('selected');
+        });
+
+        document.getElementById('posts').appendChild(iframe);
     }
 </script>
 </body>
