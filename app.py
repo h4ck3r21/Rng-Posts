@@ -357,7 +357,7 @@ def view_category(category_id):
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
     cat = Category.query.filter_by(id=category_id).first()
-    permission = Permissions.query.filter_by(user=user, category=cat)
+    permission = Permissions.query.filter_by(user=user, category=cat).first()
     if user is not None and permission.canView or cat.is_public:
         return home(cat.posts, msg=cat.name)
     else:
@@ -404,15 +404,15 @@ def create_category():
 @app.route("/add-cat", methods=["GET", "POST"])
 def add_post_to_category():
     if request.method == 'POST':
-        post_id = request.form['post_id']
+        post_id = request.form['post']
         post = Post.query.filter_by(id=post_id).first()
         cat_id = request.form['category']
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
-        perms = Permissions.query.filter_by(user=user, category=cat)
+        perms = Permissions.query.filter_by(user=user, category=cat).first()
 
-        if perms.canPost() and (perms.canAttachFiles or post.files == []):
+        if perms.canPost and (perms.canAttachFiles or post.files == []):
             print(f"adding post, {post.title}, to category, {cat.name}.")
             cat.posts.append(post)
             db.session.add(cat)
@@ -705,7 +705,7 @@ def run_action(action, cat_name):
     if action == "view":
         redirect(url_for('/category/' + str(cat.id)), code=302)
     elif action == "post":
-        redirect(url_for('/add_to_category/' + str(cat.id)), code=302)
+        redirect(url_for('add_to_category/' + str(cat.id)), code=302)
     elif action == "delete":
         redirect(url_for('/delete-category/' + str(cat.id)), code=302)
     elif action == "timeout":

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Add Post</title>
     <link rel="stylesheet" href="../static/css/send_post.css">
+    <link rel="stylesheet" href="../static/css/add-post.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -47,17 +48,26 @@
         iframe.src = "/post/"+post;
 
         iframe.addEventListener('load', function() {
-            this.style.height = this.contentWindow.document.body.scrollHeight + 25 + "px"
+            this.style.height = this.contentWindow.document.body.scrollHeight + 25 + "px";
+            iframe.contentWindow.document.addEventListener("click", function() {
+                if (iframe.classList.contains('selected')) {
+                    iframe.classList.remove('selected');
+                }
+                else {
+                    selected_posts = document.getElementsByClassName('selected');
+                    Array.prototype.forEach.call(selected_posts, function(post) {post.classList.remove('selected')});
+                    document.getElementById('post').value = post;
+                    console.log(document.getElementById('post').value);
+                    iframe.classList.add('selected');
+                }
+            });
         });
 
         window.addEventListener('resize', function() {
             iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 25 + "px"
         });
 
-        iframe.addEventListener("click", function() {
-            console.log('click!')
-            iframe.addClass('selected');
-        });
+
 
         document.getElementById('posts').appendChild(iframe);
     }
