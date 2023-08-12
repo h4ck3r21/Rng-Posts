@@ -18,27 +18,31 @@
         no_categories.innerHTML = "none";
     }
     else {
-        categories = categories.substring(6, categories.length - 6);
-        categories = categories.split("&#39;, &#39;");
+        categories = categories.substring(7, categories.length - 2);
+        categories = categories.split("), (&#39;");
         console.log(categories);
 
         for (index in categories) {
-            console.log(categories[index]);
-            var btn = document.createElement('button');
+            let temp = categories[index].split("&#39;, ");
+            let name = temp[0];
+            let id = temp[1];
+            console.log(name);
+            console.log(id);
+            let btn = document.createElement('button');
             btn.className = 'category btn';
-            btn.innerHTML = categories[index];
+            btn.innerHTML = name;
             let cat = btn.innerHTML;
             btn.addEventListener("click", function() {
-                Select(cat)
+                Select(id)
             }
             );
             cat_div.appendChild(btn);
         }
     }
 
-    function Select(name) {
-        console.log(name);
-        window.location.href = window.location.origin + "/category-action/" + name +"/"+ "{{action}}"
+    function Select(id) {
+        console.log(id);
+        window.location.href = window.location.origin + "/category-action/" + id +"/"+ "{{action}}"
     }
 </script>
 </body>

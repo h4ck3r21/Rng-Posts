@@ -456,7 +456,7 @@ def select_category(action):
     categories = []
     print(permissions)
     for permission in permissions:
-        categories.append(permission.category.name)
+        categories.append((permission.category.name, permission.category.id))
     return render_template("select-category.html", categories=categories, action=action)
 
 
@@ -493,7 +493,7 @@ def delete_category(category_id):
     if user is not None and permission.canDelete:
         render_template("remove-post.html", category=category_id, posts=posts)
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/del-post", methods=["GET", "POST"])
@@ -520,7 +520,7 @@ def remove_post_to_category():
         else:
             return home(msg="You do not have permission to delete that post")
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/add_to_category/<category_id>")
@@ -535,7 +535,7 @@ def select_post(category_id):
     if user is not None and permission.canPost:
         return render_template("add-post.html", category=category_id, posts=posts)
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/timeout/<category_id>")
@@ -550,7 +550,7 @@ def timeout(category_id):
     if user is not None and permission.canTimeout:
         render_template("timeout.html", category=category_id, users=users)
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/timeout-form", methods=["GET", "POST"])
@@ -574,7 +574,7 @@ def timeout_user():
         else:
             return home(msg="You do not have permission to timeout that person")
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/mute/<category_id>")
@@ -589,7 +589,7 @@ def mute(category_id):
     if user is not None and permission.canMute:
         return render_template("mute.html", category=category_id, users=users)
     else:
-        return redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/mute-form", methods=["GET", "POST"])
@@ -612,7 +612,7 @@ def mute_user():
         else:
             return home(msg="You do not have permission to mute that person")
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/ban/<category_id>")
@@ -627,7 +627,7 @@ def ban(category_id):
     if user is not None and permission.canBan:
         render_template("ban.html", category=category_id, users=users)
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/ban-form", methods=["GET", "POST"])
@@ -651,7 +651,7 @@ def ban_user():
         else:
             return home(msg="You do not have permission to ban that person")
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/promote/<category_id>")
@@ -668,7 +668,7 @@ def promote(category_id):
     if user is not None and permission.canPromote:
         render_template("promote.html", category=category_id, users=users, users_id=users_id)
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
 @app.route("/promote-form", methods=["GET", "POST"])
@@ -691,37 +691,66 @@ def promote_user():
         else:
             return home(msg="You do not have permission to ban people in that category")
     else:
-        redirect(url_for("/"), code=302)
+        return redirect("/", code=302)
 
 
-@app.route("/category-action/<cat_name>/<action>")
-def run_action(action, cat_name):
-    print(cat_name)
+@app.route("/modify/<category_id>")
+def modify(category_id):
+    actions = []
     user_id = request.cookies.get('userID')
     if user_id is None:
         abort(401)
     user = User.query.filter_by(id=user_id).first()
-    cat = Category.query.filter_by(name=cat_name).first()
+    category = Category.query.filter_by(id=category_id).first()
+    permission = Permissions.query.filter_by(user=user, category=category).first()
+
+    if permission.canView:
+        actions.append("view")
+    if permission.canPost:
+        actions.append("post")
+    if permission.canDelete:
+        actions.append("delete")
+    if permission.canTimeout:
+        pass
+    if permission.canMute:
+        actions.append("mute")
+    if permission.canBan:
+        actions.append("ban")
+    if permission.canPromote:
+        actions.append("promote")
+
+    if user is not None:
+        return render_template('modify.html', actions=actions, category_id=category_id)
+    else:
+        return redirect("/", code=302)
+
+
+@app.route("/category-action/<cat_id>/<action>")
+def run_action(action, cat_id):
+    user_id = request.cookies.get('userID')
+    if user_id is None:
+        abort(401)
+    user = User.query.filter_by(id=user_id).first()
     if action == "view":
-        redirect(url_for('/category/' + str(cat.id)), code=302)
+        return redirect('/category/' + cat_id, code=302)
     elif action == "post":
-        redirect(url_for('add_to_category/' + str(cat.id)), code=302)
+        return redirect('add_to_category/' + cat_id, code=302)
     elif action == "delete":
-        redirect(url_for('/delete-category/' + str(cat.id)), code=302)
+        return redirect('/delete-category/' + cat_id, code=302)
     elif action == "timeout":
         pass
     elif action == "mute":
-        redirect(url_for('/mute/' + str(cat.id)), code=302)
+        return redirect('/mute/' + cat_id, code=302)
     elif action == "ban":
-        redirect(url_for('/ban/' + str(cat.id)), code=302)
+        return redirect('/ban/' + cat_id, code=302)
     elif action == "promote":
-        redirect(url_for('/promote/' + str(cat.id)), code=302)
+        return redirect('/promote/' + cat_id, code=302)
     elif action == "modify":
-        pass
+        return redirect('/modify/' + cat_id, code=302)
     else:
         raise InputError(f"Unknown action: {action}")
+    raise NotImplementedError(f"Unimplemented action: {action}")
 
-    return render_template("select-category.html", categories=cat, action=action)
 
 
 if __name__ == "__main__":

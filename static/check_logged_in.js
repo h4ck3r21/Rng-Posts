@@ -18,7 +18,7 @@ if (document.getElementById("user").innerHTML == "None") {
 
 }
 
-
+login_error = document.getElementById("login-error").innerHTML
 if (login_error.innerHTML == "") {
     openLogin()
     login_error.style.display = "none"

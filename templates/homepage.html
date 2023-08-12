@@ -71,12 +71,12 @@
             var posts = "{{posts}}";
             if (posts == "[]") {
                 no_posts = document.createElement('p')
-                no_posts.className = noPostsMessage
+                no_posts.className += "noPostsMessage"
                 no_posts.innerHTML = "There seems to be no results for your search"
             }
             else if (posts == "") {
                 no_posts = document.createElement('p')
-                no_posts.className = noPostsMessage
+                no_posts.className += "noPostsMessage"
                 no_posts.innerHTML = "There seems to be no posts"
             }
             else {
