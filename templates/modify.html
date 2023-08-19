@@ -3,8 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>Modify</title>
+    <link rel="stylesheet" href="../static/css/select_category.css">
 </head>
 <body>
+    <div id="actions">
 
+    </div>
+    <script>
+        var actions_div = document.getElementById('actions');
+        var actions = "{{actions}}";
+        console.log(actions);
+        if (actions == "[]") {
+            no_actions = document.createElement('p');
+            actions_div.appendChild(no_actions);
+            no_actions.innerHTML = "No access";
+        }
+        else {
+            actions = actions.substring(6, actions.length - 6);
+            actions = actions.split("&#39;, &#39;");
+            console.log(actions);
+
+            for (index in actions) {
+                let name = actions[index];
+                console.log(name);
+                let btn = document.createElement('button');
+                btn.className = 'category btn';
+                btn.innerHTML = name;
+                let cat = btn.innerHTML;
+                btn.addEventListener("click", function() {
+                    Select(name)
+                }
+                );
+                actions_div.appendChild(btn);
+            }
+        }
+
+        function Select(name) {
+            console.log(name);
+            if ({{category_id}} != "") {
+                window.location.href = window.location.origin + "/category-action/" + {{category_id}} +"/"+ name
+            }
+            else {
+                window.location.href = window.location.origin + "/select-category/" + name
+            }
+        }
+    </script>
 </body>
 </html>

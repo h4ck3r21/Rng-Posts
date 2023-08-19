@@ -8,12 +8,9 @@
 </head>
 <body>
 <center>
+    <h1>Mute</h1>
     <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/mute-form">
-        <label for="name">Name</label>
-        <input name="name" id="name" class="input-text" required>
-        <br>
-
-        <input name="category" id="category" class="input-text" value="{{category}}" required>
+        <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
         <label for="user">User</label>
         <select name="user" id="user"></select>
 

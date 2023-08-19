@@ -462,7 +462,7 @@ def select_category(action):
 
 @app.route("/manage-category")
 def manage_category():
-    return render_template("manage-template.html")
+    return select_category("modify")
 
 
 @app.route("/members/<category>")
@@ -491,7 +491,7 @@ def delete_category(category_id):
     for poster in users:
         posts.extend(Post.query.filter_by(category=category, user=poster))
     if user is not None and permission.canDelete:
-        render_template("remove-post.html", category=category_id, posts=posts)
+        return render_template("remove-post.html", category=category_id, posts=posts)
     else:
         return redirect("/", code=302)
 
@@ -600,7 +600,7 @@ def mute_user():
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat)
-        username = request.form["username"]
+        username = request.form["id"]
         user_to_mute = User.query.filter_by(name=username)
         user_mute_perms = Permissions.query.filter_by(user=user_to_mute, category=cat)
 
@@ -727,26 +727,23 @@ def modify(category_id):
 
 @app.route("/category-action/<cat_id>/<action>")
 def run_action(action, cat_id):
-    user_id = request.cookies.get('userID')
-    if user_id is None:
-        abort(401)
-    user = User.query.filter_by(id=user_id).first()
+    print(request.environ["HTTP_HOST"])
     if action == "view":
-        return redirect('/category/' + cat_id, code=302)
+        return redirect(url_for("view_category", category_id=cat_id), code=302)
     elif action == "post":
-        return redirect('add_to_category/' + cat_id, code=302)
+        return redirect(url_for("select_post", category_id=cat_id), code=302)
     elif action == "delete":
-        return redirect('/delete-category/' + cat_id, code=302)
+        return redirect(url_for("delete_category", category_id=cat_id), code=302)
     elif action == "timeout":
         pass
     elif action == "mute":
-        return redirect('/mute/' + cat_id, code=302)
+        return redirect(url_for("mute", category_id=cat_id), code=302)
     elif action == "ban":
-        return redirect('/ban/' + cat_id, code=302)
+        return redirect(url_for("ban", category_id=cat_id), code=302)
     elif action == "promote":
-        return redirect('/promote/' + cat_id, code=302)
+        return redirect(url_for("promote", category_id=cat_id), code=302)
     elif action == "modify":
-        return redirect('/modify/' + cat_id, code=302)
+        return redirect(url_for("modify", category_id=cat_id), code=302)
     else:
         raise InputError(f"Unknown action: {action}")
     raise NotImplementedError(f"Unimplemented action: {action}")
