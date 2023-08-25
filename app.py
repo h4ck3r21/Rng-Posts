@@ -112,6 +112,7 @@ class Post(db.Model):
                            backref=db.backref('posts', lazy=True))
     tags = db.relationship('Tag', secondary=post_tags, lazy='subquery',
                            backref=db.backref('posts', lazy=True))
+    #category = db.relationship('Category', secondary=category_posts, lazy='subquery', backref=db.backref)
 
     def __repr__(self):
         return '<Post %r>' % self.id
@@ -487,10 +488,12 @@ def delete_category(category_id):
     category = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=category).first()
     users = get_users_of_lower_level(user, category)
-    posts = []
-    for poster in users:
-        posts.extend(Post.query.filter_by(category=category, user=poster))
-    if user is not None and permission.canDelete:
+    print(users, user, category, permission, sep="\n***")
+    posts = [post for post in Post.query.filter_by(user=user).all() if category in post.category]
+    if permission.canDelete:
+        for poster in users:
+            posts.extend([post for post in Post.query.filter_by(user=poster).all() if category in post.category])
+    if user is not None:
         return render_template("remove-post.html", category=category_id, posts=posts)
     else:
         return redirect("/", code=302)
@@ -499,15 +502,15 @@ def delete_category(category_id):
 @app.route("/del-post", methods=["GET", "POST"])
 def remove_post_to_category():
     if request.method == 'POST':
-        post_id = request.form['post_id']
+        post_id = request.form['post']
         post = Post.query.filter_by(id=post_id).first()
-        cat_id = request.form['cat_id']
+        cat_id = request.form['category']
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat).first()
 
-        if perms.canDelete() and Permissions.query.filter_by(user=post.user, category=cat).first().level > perms.level \
+        if perms.canDelete and Permissions.query.filter_by(user=post.user, category=cat).first().level > perms.level \
                 or post.user == user:
             print(f"adding post, {post.title}, to category, {cat.name}.")
             if post in cat.posts:
@@ -516,11 +519,11 @@ def remove_post_to_category():
                 db.session.commit()
             else:
                 return home(msg="post is not in that category")
-            return render_template('set-cookie.html')
+            return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
-            return home(msg="You do not have permission to delete that post")
+            return redirect(url_for("home", msg="You do not have permission to delete that post"), code=302)
     else:
-        return redirect("/", code=302)
+        return redirect(url_for("home", code=302))
 
 
 @app.route("/add_to_category/<category_id>")
@@ -570,11 +573,11 @@ def timeout_user():
             user_timeout_perms.canPost = False
             db.session.add(user_timeout_perms)
             db.session.commit()
-            return render_template('set-cookie.html')
+            return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
-            return home(msg="You do not have permission to timeout that person")
+            return redirect(url_for("home", msg="You do not have permission to timeout that person"), code=302)
     else:
-        return redirect("/", code=302)
+        return redirect(url_for("home", code=302))
 
 
 @app.route("/mute/<category_id>")
