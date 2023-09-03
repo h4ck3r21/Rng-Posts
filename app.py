@@ -93,7 +93,7 @@ class Category(db.Model):
                             backref=db.backref('category', lazy=True))
 
     def __repr__(self):
-        return '<Category %r>' % self.id
+        return '<Category %r: %r>' % (self.id, self.name)
 
     def __str__(self):
         return '<Category %r: %r>' % (self.id, self.name)
@@ -162,6 +162,10 @@ def home(posts: Optional[List] = None, err: str = "", msg: str = ""):
             msg = "Welcome " + user.username
         if posts is None:
             posts = user.posts
+            categories = Category.query.all()
+            categories = [cat for cat in categories if cat.owner == user]
+            print(categories)
+            posts = categories + posts
     return render_template('homepage.html',
                            msg=msg,
                            user=user,
@@ -271,6 +275,7 @@ def add_post():
         return render_template('homepage.html')
 
 
+#@app.route("/post/<post_id>", defaults={'category': False})
 @app.route("/post/<post_id>")
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
@@ -296,6 +301,7 @@ def search_posts():
 
     keywords = search.split()
     posts = Post.query.all()
+    categories = Category.query.all()
     post_value = {}
     for keyword in keywords:
         print(keyword)

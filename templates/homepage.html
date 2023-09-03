@@ -80,15 +80,18 @@
                 no_posts.innerHTML = "There seems to be no posts"
             }
             else {
-                posts = posts.substring(9, posts.length - 5);
-                posts = posts.split("&gt;, &lt;Post ");
+                posts = posts.substring(4, posts.length - 5);
+                posts = posts.split("&gt;, &lt;");
 
                 console.log(posts);
 
                 for (index in posts) {
-                    console.log(posts[index])
-                    addRow(posts[index])
-
+                    if (posts[index].startsWith("Post ")) {
+                        addRow(posts[index].substring(5, posts[index].length));
+                    }
+                    if (posts[index].startsWith("Category ")) {
+                        addCat(posts[index].substring(9, posts[index].length - 5));
+                    }
                 }
             }
 
@@ -113,6 +116,34 @@
 
                 document.getElementById('content').appendChild(iframe);
             }
+
+            function addCat(category) {
+
+                console.log(category)
+                let temp = category.split(": &#39;");
+                let name = temp[1];
+                let id = temp[0];
+                console.log(name)
+                console.log(id)
+
+                const btn = document.createElement('button');
+
+                btn.className = 'category';
+                btn.innerHTML = name;
+                btn.addEventListener("click", function() {
+                    Select(id)
+                });
+
+                document.getElementById('content').appendChild(btn);
+            }
+
+            function Select(id) {
+                console.log(id);
+                if (id != "") {
+                    window.location.href = window.location.origin + "/category-action/" + id +"/modify"
+                }
+            }
+
         </script>
         <script src="../static/check_logged_in.js"></script>
 

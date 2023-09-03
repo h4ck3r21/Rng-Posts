@@ -118,6 +118,21 @@ img.logo {
   align-items: center;
 }
 
+.category {
+    background-color: #040404;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 80%;
+    margin-bottom:10px;
+    opacity: 0.8;
+}
 
+.category:hover {
+    background-color: #444444;
+    color: white;
+    opacity: 0.8;
+}
 
 
