@@ -112,7 +112,8 @@ class Post(db.Model):
                            backref=db.backref('posts', lazy=True))
     tags = db.relationship('Tag', secondary=post_tags, lazy='subquery',
                            backref=db.backref('posts', lazy=True))
-    #category = db.relationship('Category', secondary=category_posts, lazy='subquery', backref=db.backref)
+
+    # category = db.relationship('Category', secondary=category_posts, lazy='subquery', backref=db.backref)
 
     def __repr__(self):
         return '<Post %r>' % self.id
@@ -152,7 +153,7 @@ def reset_db():
 
 
 @app.route('/')
-def home(posts: Optional[List] = None, err: str = "", msg: str = ""):
+def home(items: Optional[List] = None, err: str = "", msg: str = ""):
     print('rendering home page')
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
@@ -160,16 +161,16 @@ def home(posts: Optional[List] = None, err: str = "", msg: str = ""):
         print(user.posts)
         if msg == "":
             msg = "Welcome " + user.username
-        if posts is None:
-            posts = user.posts
+        if items is None:
+            items = user.posts
             categories = Category.query.all()
             categories = [cat for cat in categories if cat.owner == user]
             print(categories)
-            posts = categories + posts
+            items = categories + items
     return render_template('homepage.html',
                            msg=msg,
                            user=user,
-                           posts=posts,
+                           posts=items,
                            login_error=err)
 
 
@@ -275,7 +276,7 @@ def add_post():
         return render_template('homepage.html')
 
 
-#@app.route("/post/<post_id>", defaults={'category': False})
+# @app.route("/post/<post_id>", defaults={'category': False})
 @app.route("/post/<post_id>")
 def display_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
@@ -303,6 +304,7 @@ def search_posts():
     posts = Post.query.all()
     categories = Category.query.all()
     post_value = {}
+    category_value = {}
     for keyword in keywords:
         print(keyword)
         for post in posts:
@@ -310,7 +312,13 @@ def search_posts():
                 post_value[post] = assign_value(post, keyword)
             else:
                 post_value[post] += assign_value(post, keyword)
-    return home(sorted(posts, key=lambda p: post_value[p]), msg=f"Search results for '{search}'")
+        for category in categories:
+            if category not in category_value:
+                category_value[category] = category.name.count(keyword)
+    print(post_value, sorted(posts, key=lambda p: post_value[p]), category_value, sep="\n***\n")
+    results = sorted(categories, key=lambda c: category_value[c], reverse=True) + \
+              sorted(posts, key=lambda p: post_value[p], reverse=True)
+    return home(results, msg=f"Search results for '{search}'")
 
 
 def old_search():
@@ -338,9 +346,9 @@ def old_search():
 
 
 def assign_value(post: Post, search):
-    TITLE_VALUE = 3000000
-    TAG_VALUE = 2000000
-    BODY_VALUE = 1000000
+    TITLE_VALUE = 300000000
+    TAG_VALUE = 200000000
+    BODY_VALUE = 100000000
     DATE_VALUE = 1
     value = 0
     value += post.title.count(search) * TITLE_VALUE
@@ -365,10 +373,39 @@ def view_category(category_id):
     user = User.query.filter_by(id=user_id).first()
     cat = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=cat).first()
+    if permission is None:
+        permission = create_permission(user, cat)
     if user is not None and permission.canView or cat.is_public:
         return home(cat.posts, msg=cat.name)
     else:
         return home(msg="you do not have permission to view this category")
+
+
+def create_permission(user, category):
+    print(f"new permission:{user}, {category}")
+    user_id = request.cookies.get('userID')
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        redirect(url_for("home", msg="You need to sign in to perform this action"), code=302)
+    perms = Permissions(
+        user=user,
+        category=category,
+        canPost=False,
+        canDelete=False,
+        canView=False,
+        canTimeout=False,
+        canAttachFiles=False,
+        canMute=False,
+        canBan=False,
+        canPromote=False,
+        canModify=False,
+        level=100
+    )
+    if category.is_public:
+        perms.canView = True
+    db.session.add(perms)
+    db.session.commit()
+    return perms
 
 
 @app.route("/create-category", methods=["GET", "POST"])
@@ -418,7 +455,8 @@ def add_post_to_category():
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat).first()
-
+        if perms is None:
+            perms = create_permission(user, cat)
         if perms.canPost and (perms.canAttachFiles or post.files == []):
             print(f"adding post, {post.title}, to category, {cat.name}.")
             cat.posts.append(post)
@@ -479,6 +517,8 @@ def members(category):
 
 def get_users_of_lower_level(user, category):
     permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
     posts = category.posts
     users = [post.user for post in posts]
     return [poster for poster in users if
@@ -493,6 +533,8 @@ def delete_category(category_id):
     user = User.query.filter_by(id=user_id).first()
     category = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     print(users, user, category, permission, sep="\n***")
     posts = [post for post in Post.query.filter_by(user=user).all() if category in post.category]
@@ -502,7 +544,7 @@ def delete_category(category_id):
     if user is not None:
         return render_template("remove-post.html", category=category_id, posts=posts)
     else:
-        return redirect("/", code=302)
+        return redirect(url_for("home", msg="You do need to sign in to delete that post"), code=302)
 
 
 @app.route("/del-post", methods=["GET", "POST"])
@@ -515,7 +557,8 @@ def remove_post_to_category():
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat).first()
-
+        if perms is None:
+            perms = create_permission(user, cat)
         if perms.canDelete and Permissions.query.filter_by(user=post.user, category=cat).first().level > perms.level \
                 or post.user == user:
             print(f"adding post, {post.title}, to category, {cat.name}.")
@@ -540,11 +583,13 @@ def select_post(category_id):
     user = User.query.filter_by(id=user_id).first()
     cat = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=cat).first()
+    if permission is None:
+        permission = create_permission(user, cat)
     posts = Post.query.filter_by(user=user).all()
     if user is not None and permission.canPost:
         return render_template("add-post.html", category=category_id, posts=posts)
     else:
-        return redirect("/", code=302)
+        redirect(url_for("home", msg="You do not have permission to add posts to this category"), code=302)
 
 
 @app.route("/timeout/<category_id>")
@@ -555,11 +600,13 @@ def timeout(category_id):
     user = User.query.filter_by(id=user_id).first()
     category = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     if user is not None and permission.canTimeout:
         render_template("timeout.html", category=category_id, users=users)
     else:
-        return redirect("/", code=302)
+        return redirect(url_for("home", msg="You do not have permission to timeout"), code=302)
 
 
 @app.route("/timeout-form", methods=["GET", "POST"])
@@ -569,7 +616,9 @@ def timeout_user():
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
-        perms = Permissions.query.filter_by(user=user, category=cat)
+        perms = Permissions.query.filter_by(user=user, category=cat).first()
+        if perms is None:
+            perms = create_permission(user, cat)
         username = request.form["username"]
         user_to_timeout = User.query.filter_by(name=username)
         user_timeout_perms = Permissions.query.filter_by(user=user_to_timeout, category=cat)
@@ -594,11 +643,13 @@ def mute(category_id):
     user = User.query.filter_by(id=user_id).first()
     category = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     if user is not None and permission.canMute:
         return render_template("mute.html", category=category_id, users=users)
     else:
-        return redirect("/", code=302)
+        redirect(url_for("home", msg="You do not have permission to mute"), code=302)
 
 
 @app.route("/mute-form", methods=["GET", "POST"])
@@ -609,6 +660,8 @@ def mute_user():
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat)
+        if perms is None:
+            perms = create_permission(user, cat)
         username = request.form["id"]
         user_to_mute = User.query.filter_by(name=username)
         user_mute_perms = Permissions.query.filter_by(user=user_to_mute, category=cat)
@@ -619,9 +672,9 @@ def mute_user():
             db.session.commit()
             return render_template('set-cookie.html')
         else:
-            return home(msg="You do not have permission to mute that person")
+            redirect(url_for("home", msg="You do not have permission to mute that person"), code=302)
     else:
-        return redirect("/", code=302)
+        redirect(url_for("home"), code=302)
 
 
 @app.route("/ban/<category_id>")
@@ -632,11 +685,13 @@ def ban(category_id):
     user = User.query.filter_by(id=user_id).first()
     category = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     if user is not None and permission.canBan:
         render_template("ban.html", category=category_id, users=users)
     else:
-        return redirect("/", code=302)
+        redirect(url_for("home", msg="You do not have permission to ban"), code=302)
 
 
 @app.route("/ban-form", methods=["GET", "POST"])
@@ -647,6 +702,8 @@ def ban_user():
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat)
+        if perms is None:
+            perms = create_permission(user, cat)
         username = request.form["username"]
         user_to_ban = User.query.filter_by(name=username)
         user_ban_perms = Permissions.query.filter_by(user=user_to_ban, category=cat)
@@ -658,9 +715,9 @@ def ban_user():
             db.session.commit()
             return render_template('set-cookie.html')
         else:
-            return home(msg="You do not have permission to ban that person")
+            redirect(url_for("home", msg="You do not have permission to ban that person"), code=302)
     else:
-        return redirect("/", code=302)
+        redirect(url_for("home"), code=302)
 
 
 @app.route("/promote/<category_id>")
@@ -671,13 +728,15 @@ def promote(category_id):
     user = User.query.filter_by(id=user_id).first()
     category = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
     users = [post.user for post in Post.query.filter_by(category=category)
              if Permissions.query.filter_by(user=post.user, category=category).first().level > permission.level + 1]
     users_id = [poster.id for poster in users]
     if user is not None and permission.canPromote:
         render_template("promote.html", category=category_id, users=users, users_id=users_id)
     else:
-        return redirect("/", code=302)
+        redirect(url_for("home", msg="You do not have permission to promote"), code=302)
 
 
 @app.route("/promote-form", methods=["GET", "POST"])
@@ -688,6 +747,8 @@ def promote_user():
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat)
+        if perms is None:
+            perms = create_permission(user, cat)
         username = request.form["username"]
         user_to_ban = User.query.filter_by(name=username)
         user_promote_perms = Permissions.query.filter_by(user=user_to_ban, category=cat)
@@ -698,9 +759,9 @@ def promote_user():
             db.session.commit()
             return render_template('set-cookie.html')
         else:
-            return home(msg="You do not have permission to ban people in that category")
+            redirect(url_for("home", msg="You do not have permission to promote that person"), code=302)
     else:
-        return redirect("/", code=302)
+        redirect(url_for("home"), code=302)
 
 
 @app.route("/modify/<category_id>")
@@ -712,6 +773,8 @@ def modify(category_id):
     user = User.query.filter_by(id=user_id).first()
     category = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
 
     if permission.canView:
         actions.append("view")
@@ -731,7 +794,7 @@ def modify(category_id):
     if user is not None:
         return render_template('modify.html', actions=actions, category_id=category_id)
     else:
-        return redirect("/", code=302)
+        redirect(url_for("home", msg="You need to sign in to access categories"), code=302)
 
 
 @app.route("/category-action/<cat_id>/<action>")
@@ -756,7 +819,6 @@ def run_action(action, cat_id):
     else:
         raise InputError(f"Unknown action: {action}")
     raise NotImplementedError(f"Unimplemented action: {action}")
-
 
 
 if __name__ == "__main__":
