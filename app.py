@@ -496,6 +496,12 @@ def select_category(action):
         permissions = Permissions.query.filter_by(user=user, canPromote=True).all()
     elif action == "modify":
         permissions = Permissions.query.filter_by(user=user, canModify=True).all()
+    elif action == "modify roles":
+        permissions = Permissions.query.filter_by(user=user, canModify=True).all()
+        permissions = [perm for perm in permissions if perm.CanPromote]
+    elif action == "invite":
+        permissions = Permissions.query.filter_by(user=user, canModify=True).all()
+        permissions = [perm for perm in permissions if perm.CanPromote]
     else:
         raise InputError(f"Unknown action: {action}")
     categories = []
@@ -730,11 +736,10 @@ def promote(category_id):
     permission = Permissions.query.filter_by(user=user, category=category).first()
     if permission is None:
         permission = create_permission(user, category)
-    users = [post.user for post in Post.query.filter_by(category=category)
-             if Permissions.query.filter_by(user=post.user, category=category).first().level > permission.level + 1]
+    users = get_users_of_lower_level(user, category)
     users_id = [poster.id for poster in users]
     if user is not None and permission.canPromote:
-        render_template("promote.html", category=category_id, users=users, users_id=users_id)
+        return render_template("promote.html", category=category_id, users=users, users_id=users_id)
     else:
         redirect(url_for("home", msg="You do not have permission to promote"), code=302)
 
@@ -775,7 +780,6 @@ def modify(category_id):
     permission = Permissions.query.filter_by(user=user, category=category).first()
     if permission is None:
         permission = create_permission(user, category)
-
     if permission.canView:
         actions.append("view")
     if permission.canPost:
@@ -790,11 +794,114 @@ def modify(category_id):
         actions.append("ban")
     if permission.canPromote:
         actions.append("promote")
-
+    if permission.canModify and permission.canPromote:
+        actions.append("modify roles")
+    if permission.canModify and permission.canPromote:
+        actions.append("invite")
     if user is not None:
         return render_template('modify.html', actions=actions, category_id=category_id)
     else:
         redirect(url_for("home", msg="You need to sign in to access categories"), code=302)
+
+
+@app.route("/roles/<category_id>")
+def roles(category_id):
+    user_id = request.cookies.get('userID')
+    if user_id is None:
+        abort(401)
+    user = User.query.filter_by(id=user_id).first()
+    category = Category.query.filter_by(id=category_id).first()
+    permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
+    users = get_users_of_lower_level(user, category)
+    users_id = [poster.id for poster in users]
+    if user is not None and permission.canPromote and permission.canModify:
+        return render_template("roles.html", category=category_id, users=users, users_id=users_id, perms=permission)
+    else:
+        redirect(url_for("home", msg="You do not have permission to modify roles"), code=302)
+
+
+@app.route("/change-role", methods=["GET", "POST"])
+def change_role():
+    if request.method == 'POST':
+        cat_id = request.form['cat_id']
+        cat = Category.query.filter_by(id=cat_id).first()
+        user_id = request.cookies.get('userID')
+        user = User.query.filter_by(id=user_id).first()
+        perms = Permissions.query.filter_by(user=user, category=cat)
+        if perms is None:
+            perms = create_permission(user, cat)
+        username = request.form["username"]
+        user_to_change_roles = User.query.filter_by(name=username)
+        user_change_perms = Permissions.query.filter_by(user=user_to_change_roles, category=cat)
+
+        if perms.canPromote and perms.canModify and perms.level < user_to_change_roles.level:
+            user_change_perms.canPost = request.form["post"] == "true" and perms.canPost
+            user_change_perms.canDelete = request.form["delete"] == "true" and perms.canDelete
+            user_change_perms.canView = request.form["view"] == "true" and perms.canView
+            user_change_perms.canTimeout = request.form["timeout"] == "true" and perms.canTimeout
+            user_change_perms.canAttachFiles = request.form["files"] == "true" and perms.canAttachFiles
+            user_change_perms.canMute = request.form["mute"] == "true" and perms.canMute
+            user_change_perms.canBan = request.form["ban"] == "true" and perms.canBan
+            user_change_perms.canPromote = request.form["promote"] == "true" and perms.canPromote
+            user_change_perms.canModify = request.form["modify"] == "true" and perms.Modify
+            if request.form["level"].isdigit() and int(request.form["level"]) > perms.level:
+                user_change_perms.level = int(request.form["level"])
+            db.session.add(user_change_perms)
+            db.session.commit()
+            return render_template('set-cookie.html')
+        else:
+            redirect(url_for("home", msg="You do not have permission to promote that person"), code=302)
+    else:
+        redirect(url_for("home"), code=302)
+
+
+@app.route("/invite/<category_id>")
+def roles(category_id, msg):
+    user_id = request.cookies.get('userID')
+    if user_id is None:
+        abort(401)
+    user = User.query.filter_by(id=user_id).first()
+    category = Category.query.filter_by(id=category_id).first()
+    permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
+    if user is not None and permission.canPromote and permission.canModify:
+        return render_template("invite.html", category=category_id, msg=msg)
+    else:
+        redirect(url_for("home", msg="You do not have permission to modify roles"), code=302)
+
+
+@app.route("/change-role", methods=["GET", "POST"])
+def change_role():
+    if request.method == 'POST':
+        cat_id = request.form['cat_id']
+        cat = Category.query.filter_by(id=cat_id).first()
+        user_id = request.cookies.get('userID')
+        user = User.query.filter_by(id=user_id).first()
+        perms = Permissions.query.filter_by(user=user, category=cat)
+        if perms is None:
+            perms = create_permission(user, cat)
+        invitee = User.query.filter_by(name=request.form['username']).all()
+        if not invitee:
+            return redirect(url_for("roles", msg="No one by that username found", category_id=cat_id), code=302)
+        elif len(invitee) > 1:
+            return redirect(url_for("roles", msg="multiple users by that username found", category_id=cat_id), code=302)
+        invitee_perms = Permissions.query.filter_by(user=invitee, category=cat)
+        if invitee_perms is None:
+            invitee_perms = create_permission(invitee, cat)
+
+        if perms.canPromote and perms.canModify and perms.canView and perms.canPost:
+            invitee_perms.canPost = request.form["post"] == "true" and perms.canPost
+            invitee_perms.canView = request.form["view"] == "true" and perms.canView
+            db.session.add(invitee_perms)
+            db.session.commit()
+            return render_template('set-cookie.html')
+        else:
+            redirect(url_for("home", msg="You do not have permission to promote that person"), code=302)
+    else:
+        redirect(url_for("home"), code=302)
 
 
 @app.route("/category-action/<cat_id>/<action>")
@@ -816,6 +923,10 @@ def run_action(action, cat_id):
         return redirect(url_for("promote", category_id=cat_id), code=302)
     elif action == "modify":
         return redirect(url_for("modify", category_id=cat_id), code=302)
+    elif action == "modify roles":
+        pass
+    elif action == "invite":
+        pass
     else:
         raise InputError(f"Unknown action: {action}")
     raise NotImplementedError(f"Unimplemented action: {action}")
