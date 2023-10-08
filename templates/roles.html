@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Roles</title>
+    <link rel="stylesheet" href="../static/css/send_post.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<center>
+
+    <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/change-role">
+        <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
+        <label for="user">User</label>
+        <select name="user" id="user"></select>
+        <br><br>
+        <input type="checkbox" id="post" name="post" value="true">
+        <label for="post">Can Post</label><br>
+        <input type="checkbox" id="delete" name="delete" value="true">
+        <label for="delete">Can Delete</label><br>
+        <input type="checkbox" id="view" name="view" value="true">
+        <label for="view">Can View</label><br>
+        <input type="checkbox" id="timeout" name="timeout" value="true">
+        <label for="delete">Can Timeout</label><br>
+        <input type="checkbox" id="files" name="files" value="true">
+        <label for="files">Can Post Files</label><br>
+        <input type="checkbox" id="mute" name="mute" value="true">
+        <label for="mute">Can Mute</label><br>
+        <input type="checkbox" id="ban" name="ban" value="true">
+        <label for="ban">Can Ban</label><br>
+        <input type="checkbox" id="promote" name="promote" value="true">
+        <label for="promote">Can Promote</label><br>
+        <input type="checkbox" id="modify" name="modify" value="true">
+        <label for="modify">Can Modify</label><br>
+        <br><br>
+
+        <button type="submit" id="submit-post" class="btn">Submit</button>
+        <a href="/">
+            <button type="button" id="PostCloseButton" class="btn close">Close</button>
+        </a>
+    </form>
+    <script>
+        var user_dropdown = document.getElementById('user');
+        var users = "{{users}}";
+        var user_ids = "{{users}}"
+        console.log(users);
+        console.log(user_ids)
+    </script>
+</center>
+</body>
+</html>

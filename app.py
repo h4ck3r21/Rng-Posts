@@ -825,14 +825,14 @@ def roles(category_id):
 @app.route("/change-role", methods=["GET", "POST"])
 def change_role():
     if request.method == 'POST':
-        cat_id = request.form['cat_id']
+        cat_id = request.form['category']
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat)
         if perms is None:
             perms = create_permission(user, cat)
-        username = request.form["username"]
+        username = request.form["user"]
         user_to_change_roles = User.query.filter_by(name=username)
         user_change_perms = Permissions.query.filter_by(user=user_to_change_roles, category=cat)
 
@@ -858,7 +858,7 @@ def change_role():
 
 
 @app.route("/invite/<category_id>")
-def roles(category_id, msg):
+def invite(category_id):
     user_id = request.cookies.get('userID')
     if user_id is None:
         abort(401)
@@ -868,27 +868,29 @@ def roles(category_id, msg):
     if permission is None:
         permission = create_permission(user, category)
     if user is not None and permission.canPromote and permission.canModify:
-        return render_template("invite.html", category=category_id, msg=msg)
+        return render_template("invite.html", category=category_id)
     else:
         redirect(url_for("home", msg="You do not have permission to modify roles"), code=302)
 
 
-@app.route("/change-role", methods=["GET", "POST"])
-def change_role():
+@app.route("/invite-user", methods=["GET", "POST"])
+def invite_user():
     if request.method == 'POST':
-        cat_id = request.form['cat_id']
+        cat_id = request.form['category']
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
-        perms = Permissions.query.filter_by(user=user, category=cat)
+        perms = Permissions.query.filter_by(user=user, category=cat).first()
         if perms is None:
             perms = create_permission(user, cat)
-        invitee = User.query.filter_by(name=request.form['username']).all()
+        invitee = User.query.filter_by(username=request.form['name']).all()
         if not invitee:
-            return redirect(url_for("roles", msg="No one by that username found", category_id=cat_id), code=302)
+            return redirect(url_for("home", msg="No one by that username found", category_id=cat_id), code=302)
         elif len(invitee) > 1:
-            return redirect(url_for("roles", msg="multiple users by that username found", category_id=cat_id), code=302)
-        invitee_perms = Permissions.query.filter_by(user=invitee, category=cat)
+            return redirect(url_for("home", msg="multiple users by that username found", category_id=cat_id), code=302)
+        else:
+            invitee = invitee[0]
+        invitee_perms = Permissions.query.filter_by(user_id=invitee.id, category_id=cat.id).first()
         if invitee_perms is None:
             invitee_perms = create_permission(invitee, cat)
 
@@ -924,9 +926,9 @@ def run_action(action, cat_id):
     elif action == "modify":
         return redirect(url_for("modify", category_id=cat_id), code=302)
     elif action == "modify roles":
-        pass
+        return redirect(url_for("roles", category_id=cat_id), code=302)
     elif action == "invite":
-        pass
+        return redirect(url_for("invite", category_id=cat_id), code=302)
     else:
         raise InputError(f"Unknown action: {action}")
     raise NotImplementedError(f"Unimplemented action: {action}")
