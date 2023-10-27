@@ -14,9 +14,17 @@
         var actions = "{{actions}}";
         console.log(actions);
         if (actions == "[]") {
-            no_actions = document.createElement('p');
-            actions_div.appendChild(no_actions);
-            no_actions.innerHTML = "No access";
+            let name = "request access";
+            console.log(name);
+            let btn = document.createElement('button');
+            btn.className = 'category btn';
+            btn.innerHTML = name;
+            let cat = btn.innerHTML;
+            btn.addEventListener("click", function() {
+                Select(name)
+            }
+            );
+            actions_div.appendChild(btn);
         }
         else {
             actions = actions.substring(6, actions.length - 6);

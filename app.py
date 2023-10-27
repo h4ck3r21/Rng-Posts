@@ -155,12 +155,18 @@ def reset_db():
 @app.route('/')
 def home(items: Optional[List] = None, err: str = "", msg: str = ""):
     print('rendering home page')
+    if err == "":
+        err = request.args.get('err')
+        if err is None or err == "None":
+            err = ""
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
     if user is not None:
         print(user.posts)
         if msg == "":
-            msg = "Welcome " + user.username
+            msg = request.args.get('msg')
+            if msg is None:
+                msg = "Welcome " + user.username
         if items is None:
             items = user.posts
             categories = Category.query.all()
@@ -376,17 +382,15 @@ def view_category(category_id):
     if permission is None:
         permission = create_permission(user, cat)
     if user is not None and permission.canView or cat.is_public:
-        return home(cat.posts, msg=cat.name)
+        return home(cat.posts, msg=cat.name, err=request.args.get('err'))
     else:
-        return home(msg="you do not have permission to view this category")
+        return home(err="you do not have permission to view this category")
 
 
 def create_permission(user, category):
     print(f"new permission:{user}, {category}")
-    user_id = request.cookies.get('userID')
-    user = User.query.filter_by(id=user_id).first()
     if user is None:
-        redirect(url_for("home", msg="You need to sign in to perform this action"), code=302)
+        redirect(url_for("home", err="You need to sign in to perform this action"), code=302)
     perms = Permissions(
         user=user,
         category=category,
@@ -405,6 +409,7 @@ def create_permission(user, category):
         perms.canView = True
     db.session.add(perms)
     db.session.commit()
+    print("new perm:", perms)
     return perms
 
 
@@ -464,7 +469,7 @@ def add_post_to_category():
             db.session.commit()
             return render_template('set-cookie.html')
         else:
-            return home(msg="You do not have permission to post in that category")
+            return home(err="You do not have permission to post in that category")
     else:
         return render_template('homepage.html')
 
@@ -573,7 +578,7 @@ def remove_post_to_category():
                 db.session.add(cat)
                 db.session.commit()
             else:
-                return home(msg="post is not in that category")
+                return home(err="post is not in that category")
             return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
             return redirect(url_for("home", msg="You do not have permission to delete that post"), code=302)
@@ -881,27 +886,46 @@ def invite_user():
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat).first()
+        post = request.form.get("post")
+        view = request.form.get("view")
         if perms is None:
             perms = create_permission(user, cat)
         invitee = User.query.filter_by(username=request.form['name']).all()
         if not invitee:
-            return redirect(url_for("home", msg="No one by that username found", category_id=cat_id), code=302)
+            return redirect(url_for("view_category",
+                                    err="No one by that username found",
+                                    category_id=cat_id),
+                            code=302)
         elif len(invitee) > 1:
-            return redirect(url_for("home", msg="multiple users by that username found", category_id=cat_id), code=302)
+            return redirect(url_for("view_category", err="multiple users by that username found", category_id=cat_id),
+                            code=302)
         else:
             invitee = invitee[0]
         invitee_perms = Permissions.query.filter_by(user_id=invitee.id, category_id=cat.id).first()
+        print("*"*10)
+        print(invitee_perms)
+        print(invitee)
         if invitee_perms is None:
             invitee_perms = create_permission(invitee, cat)
-
+        print("*"*10)
+        print(invitee_perms)
+        print(invitee)
         if perms.canPromote and perms.canModify and perms.canView and perms.canPost:
-            invitee_perms.canPost = request.form["post"] == "true" and perms.canPost
-            invitee_perms.canView = request.form["view"] == "true" and perms.canView
+            invitee_perms.canPost = post == "true" and perms.canPost
+            invitee_perms.canView = view == "true" and perms.canView
+            print("*"*10)
+            print(invitee_perms)
+            print(invitee_perms.canPost)
+            print(invitee_perms.canView)
+            print("*"*10)
             db.session.add(invitee_perms)
             db.session.commit()
             return render_template('set-cookie.html')
         else:
-            redirect(url_for("home", msg="You do not have permission to promote that person"), code=302)
+            redirect(url_for("view_category",
+                             err="You do not have permission to promote that person",
+                             category_id=cat_id),
+                     code=302)
     else:
         redirect(url_for("home"), code=302)
 
@@ -929,6 +953,8 @@ def run_action(action, cat_id):
         return redirect(url_for("roles", category_id=cat_id), code=302)
     elif action == "invite":
         return redirect(url_for("invite", category_id=cat_id), code=302)
+    elif action == "request access":
+        pass
     else:
         raise InputError(f"Unknown action: {action}")
     raise NotImplementedError(f"Unimplemented action: {action}")
