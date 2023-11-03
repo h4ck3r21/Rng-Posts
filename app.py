@@ -76,7 +76,8 @@ class Permissions(db.Model):
     canMute = db.Column(db.Boolean, nullable=False, default=False)
     canBan = db.Column(db.Boolean, nullable=False, default=False)
     canPromote = db.Column(db.Boolean, nullable=False, default=False)
-    canModify = db.Column(db.Boolean, nullable=False, default=False)
+    followed = db.Column(db.Boolean, nullable=False, default=False)
+    CanInvite = db.Column(db.Boolean, nullable=False, default=False)
     level = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
@@ -153,9 +154,9 @@ def reset_db():
 
 
 @app.route('/')
-def home(items: Optional[List] = None, err: str = "", msg: str = ""):
+def home(items: Optional[List] = None, err: str = "", msg: str = "", category="None"):
     print('rendering home page')
-    if err == "":
+    if err == "" or err is None:
         err = request.args.get('err')
         if err is None or err == "None":
             err = ""
@@ -177,7 +178,8 @@ def home(items: Optional[List] = None, err: str = "", msg: str = ""):
                            msg=msg,
                            user=user,
                            posts=items,
-                           login_error=err)
+                           login_error=err,
+                           category=category)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -382,7 +384,7 @@ def view_category(category_id):
     if permission is None:
         permission = create_permission(user, cat)
     if user is not None and permission.canView or cat.is_public:
-        return home(cat.posts, msg=cat.name, err=request.args.get('err'))
+        return home(cat.posts, msg=cat.name, err=request.args.get('err'), category=category_id)
     else:
         return home(err="you do not have permission to view this category")
 
@@ -402,7 +404,8 @@ def create_permission(user, category):
         canMute=False,
         canBan=False,
         canPromote=False,
-        canModify=False,
+        followed=False,
+        canInvite=False,
         level=100
     )
     if category.is_public:
@@ -440,7 +443,8 @@ def create_category():
             canMute=True,
             canBan=True,
             canPromote=True,
-            canModify=True,
+            followed=True,
+            canInvite=True,
             level=0
         )
         db.session.add(perms)
@@ -500,12 +504,12 @@ def select_category(action):
     elif action == "promote":
         permissions = Permissions.query.filter_by(user=user, canPromote=True).all()
     elif action == "modify":
-        permissions = Permissions.query.filter_by(user=user, canModify=True).all()
+        permissions = Permissions.query.filter_by(user=user, followed=True).all()
     elif action == "modify roles":
-        permissions = Permissions.query.filter_by(user=user, canModify=True).all()
+        permissions = Permissions.query.filter_by(user=user, canPromote=True).all()
         permissions = [perm for perm in permissions if perm.CanPromote]
     elif action == "invite":
-        permissions = Permissions.query.filter_by(user=user, canModify=True).all()
+        permissions = Permissions.query.filter_by(user=user, canInvite=True).all()
         permissions = [perm for perm in permissions if perm.CanPromote]
     else:
         raise InputError(f"Unknown action: {action}")
@@ -799,9 +803,9 @@ def modify(category_id):
         actions.append("ban")
     if permission.canPromote:
         actions.append("promote")
-    if permission.canModify and permission.canPromote:
+    if permission.canPromote:
         actions.append("modify roles")
-    if permission.canModify and permission.canPromote:
+    if permission.canInvite:
         actions.append("invite")
     if user is not None:
         return render_template('modify.html', actions=actions, category_id=category_id)
@@ -821,7 +825,7 @@ def roles(category_id):
         permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     users_id = [poster.id for poster in users]
-    if user is not None and permission.canPromote and permission.canModify:
+    if user is not None and permission.canPromote and permission.followed:
         return render_template("roles.html", category=category_id, users=users, users_id=users_id, perms=permission)
     else:
         redirect(url_for("home", msg="You do not have permission to modify roles"), code=302)
@@ -841,7 +845,7 @@ def change_role():
         user_to_change_roles = User.query.filter_by(name=username)
         user_change_perms = Permissions.query.filter_by(user=user_to_change_roles, category=cat)
 
-        if perms.canPromote and perms.canModify and perms.level < user_to_change_roles.level:
+        if perms.canPromote and perms.level < user_to_change_roles.level:
             user_change_perms.canPost = request.form["post"] == "true" and perms.canPost
             user_change_perms.canDelete = request.form["delete"] == "true" and perms.canDelete
             user_change_perms.canView = request.form["view"] == "true" and perms.canView
@@ -850,7 +854,6 @@ def change_role():
             user_change_perms.canMute = request.form["mute"] == "true" and perms.canMute
             user_change_perms.canBan = request.form["ban"] == "true" and perms.canBan
             user_change_perms.canPromote = request.form["promote"] == "true" and perms.canPromote
-            user_change_perms.canModify = request.form["modify"] == "true" and perms.Modify
             if request.form["level"].isdigit() and int(request.form["level"]) > perms.level:
                 user_change_perms.level = int(request.form["level"])
             db.session.add(user_change_perms)
@@ -872,7 +875,7 @@ def invite(category_id):
     permission = Permissions.query.filter_by(user=user, category=category).first()
     if permission is None:
         permission = create_permission(user, category)
-    if user is not None and permission.canPromote and permission.canModify:
+    if user is not None and permission.canPromote:
         return render_template("invite.html", category=category_id)
     else:
         redirect(url_for("home", msg="You do not have permission to modify roles"), code=302)
@@ -902,22 +905,11 @@ def invite_user():
         else:
             invitee = invitee[0]
         invitee_perms = Permissions.query.filter_by(user_id=invitee.id, category_id=cat.id).first()
-        print("*"*10)
-        print(invitee_perms)
-        print(invitee)
         if invitee_perms is None:
             invitee_perms = create_permission(invitee, cat)
-        print("*"*10)
-        print(invitee_perms)
-        print(invitee)
-        if perms.canPromote and perms.canModify and perms.canView and perms.canPost:
+        if perms.canInvite and perms.canView and perms.canPost:
             invitee_perms.canPost = post == "true" and perms.canPost
             invitee_perms.canView = view == "true" and perms.canView
-            print("*"*10)
-            print(invitee_perms)
-            print(invitee_perms.canPost)
-            print(invitee_perms.canView)
-            print("*"*10)
             db.session.add(invitee_perms)
             db.session.commit()
             return render_template('set-cookie.html')
@@ -958,6 +950,17 @@ def run_action(action, cat_id):
     else:
         raise InputError(f"Unknown action: {action}")
     raise NotImplementedError(f"Unimplemented action: {action}")
+
+
+@app.route("/follow/<category_id>")
+def follow(category_id):
+    category = Category.query.filter_by(id=category_id).first()
+    user_id = request.cookies.get('userID')
+    user = User.query.filter_by(id=user_id).first()
+    perms = Permissions.query.filter_by(user=user, category=category).first()
+    if perms is None:
+        perms = create_permission(user, category)
+
 
 
 if __name__ == "__main__":

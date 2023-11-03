@@ -58,7 +58,7 @@
                 <a href="/new-category" style="display: inline-block;">
                     <button id="new-category" class="open-button">Create Category</button>
                 </a>
-                <a href="/manage-category" style="display: inline-block;">
+                <a href="/manage-category" style="display: inline-block;" id="manage-btn">
                     <button id="manage-category" class="open-button">Manage Categories</button>
                 </a>
 
@@ -70,6 +70,14 @@
 
             console.log("{{posts}}");
             var posts = "{{posts}}";
+
+            if ("{{category}}" != "None") {
+                btn = document.getElementById("manage-btn");
+                btn.href = "/modify/{{category}}";
+                follow_btn_link = document.createElement('a');
+                follow_btn_link.href = "/follow/{{category}}"
+            }
+
             if (posts == "[]") {
                 no_posts = document.createElement('p')
                 no_posts.className += "noPostsMessage"
@@ -81,7 +89,7 @@
                 no_posts.innerHTML = "There seems to be no posts"
             }
             else {
-                posts = posts.substring(4, posts.length - 5);
+                posts = posts.substring(5, posts.length - 5);
                 posts = posts.split("&gt;, &lt;");
 
                 console.log(posts);
