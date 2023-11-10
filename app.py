@@ -77,7 +77,7 @@ class Permissions(db.Model):
     canBan = db.Column(db.Boolean, nullable=False, default=False)
     canPromote = db.Column(db.Boolean, nullable=False, default=False)
     followed = db.Column(db.Boolean, nullable=False, default=False)
-    CanInvite = db.Column(db.Boolean, nullable=False, default=False)
+    canInvite = db.Column(db.Boolean, nullable=False, default=False)
     level = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
@@ -156,6 +156,7 @@ def reset_db():
 @app.route('/')
 def home(items: Optional[List] = None, err: str = "", msg: str = "", category="None"):
     print('rendering home page')
+    followed = "false"
     if err == "" or err is None:
         err = request.args.get('err')
         if err is None or err == "None":
@@ -174,12 +175,17 @@ def home(items: Optional[List] = None, err: str = "", msg: str = "", category="N
             categories = [cat for cat in categories if cat.owner == user]
             print(categories)
             items = categories + items
+       # if category is not None or category != "None":
+        #    perm = Permissions.query.filter(Permissions.user == user, Permissions.category == category).first()
+        #    if perm is not None:
+         #       followed = perm.followed
     return render_template('homepage.html',
                            msg=msg,
                            user=user,
                            posts=items,
                            login_error=err,
-                           category=category)
+                           category=category,
+                           followed=followed)
 
 
 @app.route('/login', methods=['GET', 'POST'])

@@ -58,8 +58,14 @@
                 <a href="/new-category" style="display: inline-block;">
                     <button id="new-category" class="open-button">Create Category</button>
                 </a>
-                <a href="/manage-category" style="display: inline-block;" id="manage-btn">
-                    <button id="manage-category" class="open-button">Manage Categories</button>
+                <a href="/manage-category" style="display: inline-block;" id="view-btn">
+                    <button id="view-category" class="open-button">Followed Categories</button>
+                </a>
+                <a href="/modify/{{category}}" style="display: none;" id="manage-btn">
+                    <button id="manage-category" class="open-button">Manage</button>
+                </a>
+                <a href="/follow/{{category}}" style="display: none;" id="follow-btn">
+                    <button id="follow" class="open-button">Follow</button>
                 </a>
 
                 <div id="content"></div>
@@ -72,10 +78,23 @@
             var posts = "{{posts}}";
 
             if ("{{category}}" != "None") {
-                btn = document.getElementById("manage-btn");
-                btn.href = "/modify/{{category}}";
-                follow_btn_link = document.createElement('a');
-                follow_btn_link.href = "/follow/{{category}}"
+                let btn_link = document.getElementById("manage-btn");
+                btn_link.style.display = "inline-block";
+
+
+                let follow_btn_link = document.getElementById("follow-btn");
+                follow_btn_link.style.display = "inline-block";
+
+                if ("{{followed}}" == "True") {
+                    follow_btn_link.addClass("followed");
+                    follow_btn_link.innerHTML = "Followed"
+                    follow_btn_link.addEventListener("mouseover", function() {
+                        follow_btn_link.innerHTML = "Unfollow";
+                    });
+                    follow_btn_link.addEventListener("mouseout", function() {
+                        follow_btn_link.innerHTML = "Followed";
+                    });
+                }
             }
 
             if (posts == "[]") {

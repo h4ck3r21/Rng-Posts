@@ -1,10 +1,17 @@
-body {
-  background-color: #EEE;
+/* color palette
+    #08D9D6
+    #252A34
+    #FF2E63
+    #EAEAEA
+*/
 
+body {
+  background-color: #252A34;
+  color: #EAEAEA;
 }
 
 .header {
-    background-color: #333;
+    background-color: #252A34;
     padding: 10px;
 }
 
@@ -32,16 +39,17 @@ body {
 
 .open-button {
   display: block;
-  background-color: #555;
-  color: white;
+  background-color: #08D9D6;
+  color: #EAEAEA;
   padding: 16px 20px;
-  border: none;
+  border: 3px solid ;
+  border-radius: 5px;
   cursor: pointer;
   opacity: 0.8;
 }
 
 p.error-text {
-    color: red;
+    color: #FF2E63;
 }
 
 #loginPopUp  {
@@ -51,9 +59,13 @@ p.error-text {
 
 .popup {
   display: none;
+  background: #EAEAEA;
+  color: #252A34;
   position: fixed;
-  border: 3px solid #f1f1f1;
+  border: 3px solid #08D9D6;
+  border-radius: 5px;
   z-index: 9;
+  box-shadow: -10px 10px 10px 3px #00ADB5;
 }
 
 .login-form {
@@ -73,20 +85,23 @@ p.error-text {
   width: 90%;
   padding: 15px;
   margin: 5px 0 22px 0;
-  border: none;
-  background: #f1f1f1;
+  border: 1px solid #252A34;
+  border-radius: 1px;
+  background: #EAEAEA;
 }
 
 .input-text:focus {
-  background-color: #ddd;
+  background-color: #DADADA;
+  border: 1px solid #FF2E63;
   outline: none;
 }
 
 .form-container .btn {
-  background-color: #04AA6D;
-  color: white;
+  background-color: #08D9D6;
+  color: #EAEAEA;
   padding: 16px 20px;
   border: none;
+  border-radius: 3px;
   cursor: pointer;
   width: 100%;
   margin-bottom:10px;
@@ -94,7 +109,7 @@ p.error-text {
 }
 
 .form-container .close {
-  background-color: red;
+  background-color: #FF2E63;
 }
 
 .form-container .btn:hover, .open-button:hover {
@@ -119,20 +134,28 @@ img.logo {
 }
 
 .category {
-    background-color: #040404;
-    color: white;
+    background-color: #08D9D6;
+    color: #252A34;
     padding: 16px 20px;
     border: none;
     cursor: pointer;
     width: 80%;
     margin-bottom:10px;
     opacity: 0.8;
+    border-radius: 3px;
 }
 
 .category:hover {
-    background-color: #444444;
-    color: white;
     opacity: 0.8;
 }
 
+.followed {
+    background-color: #252A34;
+    color: #EAEAEA;
+    border: #EAEAEA;
+}
 
+.followed:hover {
+    color: #FF2E63;
+    border: #FF2E63;
+}
