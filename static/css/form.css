@@ -1,0 +1,69 @@
+#loginPopUp  {
+  top: 0;
+  right: 15px;
+}
+
+.popup {
+  display: none;
+  position: fixed;
+}
+
+.login-form {
+  max-width: 300px;
+}
+
+.form-container {
+  padding: 10px;
+  background: #252A34;
+  color: #08D9D6;
+
+  border: 3px solid #08D9D6;
+  border-radius: 5px;
+  z-index: 9;
+  box-shadow: -10px 10px 10px 3px #08D9D6;
+}
+
+.post-form {
+  max-width: 500px
+}
+
+.input-text {
+  width: 90%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border-radius: 5px;
+  color: #08D9D6;
+  background-color: #252A34;
+  border: 3px solid #08D9D6;
+}
+
+.input-text:focus {
+  color: #252A34;
+  background: #08D9D6;
+  border: 3px solid #EAEAEA;
+  outline: none;
+}
+
+.form-container .btn {
+  background-color: #08D9D6;
+  color: #252A34;
+  padding: 16px 20px;
+  border: 3px solid #EAEAEA;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+.form-container .close {
+  background-color: #FF2E63;
+}
+
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
+
+a {
+  color: #08D9D6;
+}

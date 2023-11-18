@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>select categories</title>
     <link rel="stylesheet" href="../static/css/select_category.css">
+    <link rel="stylesheet" href="../static/css/Styling.css">
 </head>
 <body>
 <div id="categories"></div>
@@ -29,7 +30,7 @@
             console.log(name);
             console.log(id);
             let btn = document.createElement('button');
-            btn.className = 'category btn';
+            btn.className = 'btn open-button';
             btn.innerHTML = name;
             let cat = btn.innerHTML;
             btn.addEventListener("click", function() {

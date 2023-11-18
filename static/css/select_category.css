@@ -1,23 +1,5 @@
 .btn {
-  background-color: #040404;
-  color: white;
-  padding: 16px 20px;
-  border: none;
   cursor: pointer;
-  width: 100%;
-  margin-bottom:10px;
-  opacity: 0.8;
+  width: 80%;
+  margin:10px;
 }
-
-.btn:hover {
-  opacity: 1;
-}
-
-
-body {
-  background-color: #EEE;
-
-}
-
-.btn:hover {
-  background-color: black;

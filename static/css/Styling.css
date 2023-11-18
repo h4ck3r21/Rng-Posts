@@ -11,23 +11,28 @@ body {
 }
 
 .header {
-    background-color: #252A34;
-    padding: 10px;
+    background-color: #FF2E63;
+    padding: 5px;
+    border: 3px solid #EAEAEA;
+    border-radius: 5px;
+    margin: 3px;
 }
 
 .search-form {
     display: inline;
     float: center;
     width: auto;
+    color: #08D9D6;
 }
 
 .main-content {
     position: absolute;
-    top: 100px;
+    top: 120px;
     left:0px;
     right:0px;
     bottom:0px;
     overflow-y:scroll;
+    padding: 10px;
 }
 
 #loginButton {
@@ -39,86 +44,48 @@ body {
 
 .open-button {
   display: block;
-  background-color: #08D9D6;
-  color: #EAEAEA;
+  background-color: #252A34;
+  color: #08D9D6;
   padding: 16px 20px;
-  border: 3px solid ;
+  border: 3px solid #08D9D6;
   border-radius: 5px;
   cursor: pointer;
-  opacity: 0.8;
+  opacity: 1;
+  margin: 5px;
+}
+
+.open-button:hover {
+  animation-name: shift;
+  animation-duration: 0.5s;
+  background-color: #08D9D6;
+  color: #252A34;
+  border: 3px solid #EAEAEA;
+}
+
+@keyframes shift {
+  0% {
+    background-color: #252A34;
+    color: #08D9D6;
+    border: 3px solid #08D9D6;
+  }
+  100% {
+    background-color: #08D9D6;
+    color: #252A34;
+    border: 3px solid #EAEAEA;
+  }
 }
 
 p.error-text {
     color: #FF2E63;
 }
 
-#loginPopUp  {
-  top: 0;
-  right: 15px;
-}
 
-.popup {
-  display: none;
-  background: #EAEAEA;
-  color: #252A34;
-  position: fixed;
-  border: 3px solid #08D9D6;
-  border-radius: 5px;
-  z-index: 9;
-  box-shadow: -10px 10px 10px 3px #00ADB5;
-}
-
-.login-form {
-  max-width: 300px;
-}
-
-.form-container {
-  padding: 10px;
-  background-color: white;
-}
-
-.post-form {
-  max-width: 500px
-}
-
-.input-text {
-  width: 90%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  border: 1px solid #252A34;
-  border-radius: 1px;
-  background: #EAEAEA;
-}
-
-.input-text:focus {
-  background-color: #DADADA;
-  border: 1px solid #FF2E63;
-  outline: none;
-}
-
-.form-container .btn {
-  background-color: #08D9D6;
-  color: #EAEAEA;
-  padding: 16px 20px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom:10px;
-  opacity: 0.8;
-}
-
-.form-container .close {
-  background-color: #FF2E63;
-}
-
-.form-container .btn:hover, .open-button:hover {
-  opacity: 1;
-}
 
 .search-bar {
     width: 80%;
-    height: 25px;
+    height:0px;
+    border: 3px solid #08D9D6;
+    border-radius: 5px;
 }
 
 img.logo {
@@ -133,20 +100,25 @@ img.logo {
   align-items: center;
 }
 
+.search-button {
+  border: 1px solid #08D9D6;
+  border-radius: 5px;
+}
+
 .category {
     background-color: #08D9D6;
     color: #252A34;
     padding: 16px 20px;
-    border: none;
+    border: 3px solid #EAEAEA;
     cursor: pointer;
     width: 80%;
-    margin-bottom:10px;
+    margin:10px;
     opacity: 0.8;
-    border-radius: 3px;
+    border-radius: 5px;
 }
 
 .category:hover {
-    opacity: 0.8;
+    opacity: 1;
 }
 
 .followed {

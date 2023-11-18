@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <title>Duke of Edinburgh Website</title>
         <link rel="stylesheet" href="../static/css/Styling.css">
+        <link rel="stylesheet" href="../static/css/form.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="../static/scripts.js"></script>
 
@@ -44,8 +45,8 @@
             <div class="header">
                 <a href="/"><img src="\logo" alt="logo" class="logo" /></a>
                 <form action="/search-posts" method="post" class="search-form">
-                    <input type="text" placeholder="Search" name="search" class="input-text search-bar" required>
-                    <button type="submit"><i class="fa fa-search"></i></button>
+                    <input type="text" placeholder="Search" name="search" class="input-text search-bar" required align="center">
+                    <button type="submit" class="search-button"><i class="fa fa-search"></i></button>
                 </form>
             </div>
             <div class="main-content">
@@ -163,7 +164,6 @@
                     Select(id)
                 });
 
-                document.getElementById('content').appendChild(linebreak);
                 document.getElementById('content').appendChild(btn);
                 document.getElementById('content').appendChild(linebreak);
             }
