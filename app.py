@@ -966,7 +966,24 @@ def follow(category_id):
     perms = Permissions.query.filter_by(user=user, category=category).first()
     if perms is None:
         perms = create_permission(user, category)
+    perms.followed = True
+    db.session.add(perms)
+    db.session.commit()
+    return render_template('set-cookie.html')
 
+
+@app.route("/unfollow/<category_id>")
+def unfollow(category_id):
+    category = Category.query.filter_by(id=category_id).first()
+    user_id = request.cookies.get('userID')
+    user = User.query.filter_by(id=user_id).first()
+    perms = Permissions.query.filter_by(user=user, category=category).first()
+    if perms is None:
+        perms = create_permission(user, category)
+    perms.followed = False
+    db.session.add(perms)
+    db.session.commit()
+    return render_template('set-cookie.html')
 
 
 if __name__ == "__main__":

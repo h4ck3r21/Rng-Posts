@@ -106,28 +106,47 @@ img.logo {
 }
 
 .category {
+    width: 80%;
+    margin:10px;
+}
+
+.solid-button:hover, .category:hover {
+    opacity: 1;
+    animation-name: none;
+}
+
+.solid-button, .category {
     background-color: #08D9D6;
     color: #252A34;
     padding: 16px 20px;
     border: 3px solid #EAEAEA;
     cursor: pointer;
-    width: 80%;
-    margin:10px;
     opacity: 0.8;
     border-radius: 5px;
 }
 
-.category:hover {
-    opacity: 1;
-}
-
 .followed {
     background-color: #252A34;
-    color: #EAEAEA;
-    border: #EAEAEA;
+    color: #08D9D6;
+    border-color: #08D9D6;
 }
 
 .followed:hover {
     color: #FF2E63;
-    border: #FF2E63;
+    border-color: #FF2E63;
+    background-color: #252A34;
+    animation-name: follow-shift;
+}
+
+@keyframes follow-shift {
+  0% {
+    color: #08D9D6;
+    border: 3px solid #08D9D6;
+    background-color: #252A34;
+  }
+  100% {
+    color: #FF2E63;
+    border: 3px solid #FF2E63;
+    background-color: #252A34;
+  }
 }

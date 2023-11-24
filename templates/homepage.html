@@ -59,15 +59,16 @@
                 <a href="/new-category" style="display: inline-block;">
                     <button id="new-category" class="open-button">Create Category</button>
                 </a>
-                <a href="/manage-category" style="display: inline-block;" id="view-btn">
+                <a href="/manage-category" style="display: inline-block;">
                     <button id="view-category" class="open-button">Followed Categories</button>
                 </a>
+                <iframe style="display: none;" src="" id="follow-form"></iframe>
                 <a href="/modify/{{category}}" style="display: none;" id="manage-btn">
                     <button id="manage-category" class="open-button">Manage</button>
                 </a>
-                <a href="/follow/{{category}}" style="display: none;" id="follow-btn">
-                    <button id="follow" class="open-button">Follow</button>
-                </a>
+                <span id="follow-btn">
+                    <button style="display: none;" id="follow" class="open-button">Follow</button>
+                </span>
 
                 <div id="content"></div>
             </div>
@@ -77,25 +78,16 @@
 
             console.log("{{posts}}");
             var posts = "{{posts}}";
+            var followed = "{{followed}}"
+            var follow_btn_link = document.getElementById("follow");
 
             if ("{{category}}" != "None") {
                 let btn_link = document.getElementById("manage-btn");
                 btn_link.style.display = "inline-block";
 
-
-                let follow_btn_link = document.getElementById("follow-btn");
                 follow_btn_link.style.display = "inline-block";
 
-                if ("{{followed}}" == "True") {
-                    follow_btn_link.addClass("followed");
-                    follow_btn_link.innerHTML = "Followed"
-                    follow_btn_link.addEventListener("mouseover", function() {
-                        follow_btn_link.innerHTML = "Unfollow";
-                    });
-                    follow_btn_link.addEventListener("mouseout", function() {
-                        follow_btn_link.innerHTML = "Followed";
-                    });
-                }
+                checkFollowed();
             }
 
             if (posts == "[]") {
@@ -121,6 +113,35 @@
                     if (posts[index].startsWith("Category ")) {
                         addCat(posts[index].substring(9, posts[index].length - 5));
                     }
+                }
+            }
+
+            function checkFollowed() {
+                if (followed == "true") {
+                    follow_btn_link.classList.add("followed");
+                    follow_btn_link.innerHTML = "Followed";
+                    follow_btn_link.addEventListener("mouseover", function() {
+                        follow_btn_link.innerHTML = "Unfollow";
+                    });
+                    follow_btn_link.addEventListener("mouseout", function() {
+                        follow_btn_link.innerHTML = "Followed";
+                    });
+                    follow_btn_link.addEventListener("click", function() {
+                        let iframe = document.getElementById("follow-form");
+                        iframe.src = "/unfollow/{{category}}";
+                        followed = "false";
+                        checkFollowed();
+                    });
+
+                }
+                else {
+                     follow_btn_link.classList.add("solid-button");
+                     follow_btn_link.addEventListener("click", function() {
+                        let iframe = document.getElementById("follow-form");
+                        iframe.src = "/follow/{{category}}";
+                        followed = "false";
+                        checkFollowed();
+                     });
                 }
             }
 
