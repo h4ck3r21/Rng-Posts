@@ -30,9 +30,11 @@
     posts = posts.split("&gt;, &lt;Post ");
 
     console.log(posts);
-    for (index in posts) {
-        console.log(posts[index])
-        addRow(posts[index])
+    if (posts != "[]") {
+        for (index in posts) {
+            console.log(posts[index])
+            addRow(posts[index])
+        }
     }
 
 

@@ -171,14 +171,17 @@ def home(items: Optional[List] = None, err: str = "", msg: str = "", category="N
                 msg = "Welcome " + user.username
         if items is None:
             items = user.posts
-            categories = Category.query.all()
-            categories = [cat for cat in categories if cat.owner == user]
+            categories = Category.query.filter_by(owner=user).all()
+            permissions = Permissions.query.filter_by(user=user, followed=True).all()
+            for permission in permissions:
+                categories.append(permission.category)
+            categories = list(set(categories))
             print(categories)
             items = categories + items
-       # if category is not None or category != "None":
-        #    perm = Permissions.query.filter(Permissions.user == user, Permissions.category == category).first()
-        #    if perm is not None:
-         #       followed = perm.followed
+        if category is not None and category != "None":
+            perm = Permissions.query.filter_by(user=user, category_id=category).first()
+            if perm is not None:
+                followed = perm.followed
     return render_template('homepage.html',
                            msg=msg,
                            user=user,
@@ -475,7 +478,6 @@ def add_post_to_category():
         if perms.canPost and (perms.canAttachFiles or post.files == []):
             print(f"adding post, {post.title}, to category, {cat.name}.")
             cat.posts.append(post)
-            db.session.add(cat)
             db.session.commit()
             return render_template('set-cookie.html')
         else:
@@ -585,7 +587,6 @@ def remove_post_to_category():
             print(f"adding post, {post.title}, to category, {cat.name}.")
             if post in cat.posts:
                 cat.posts.remove(post)
-                db.session.add(cat)
                 db.session.commit()
             else:
                 return home(err="post is not in that category")
@@ -647,7 +648,6 @@ def timeout_user():
 
         if perms.canTimeout and perms.level < user_timeout_perms.level:
             user_timeout_perms.canPost = False
-            db.session.add(user_timeout_perms)
             db.session.commit()
             return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
@@ -689,7 +689,6 @@ def mute_user():
 
         if perms.canMute and perms.level < user_mute_perms.level:
             user_mute_perms.canPost = False
-            db.session.add(user_mute_perms)
             db.session.commit()
             return render_template('set-cookie.html')
         else:
@@ -732,7 +731,6 @@ def ban_user():
         if perms.canBan and perms.level < user_ban_perms.level:
             user_ban_perms.canPost = False
             user_ban_perms.canView = False
-            db.session.add(user_ban_perms)
             db.session.commit()
             return render_template('set-cookie.html')
         else:
@@ -775,7 +773,6 @@ def promote_user():
 
         if perms.canPromote and perms.level + 1 < user_promote_perms.level:
             user_promote_perms.level += 1
-            db.session.add(user_promote_perms)
             db.session.commit()
             return render_template('set-cookie.html')
         else:
@@ -831,7 +828,7 @@ def roles(category_id):
         permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     users_id = [poster.id for poster in users]
-    if user is not None and permission.canPromote and permission.followed:
+    if user is not None and permission.canPromote:
         return render_template("roles.html", category=category_id, users=users, users_id=users_id, perms=permission)
     else:
         redirect(url_for("home", msg="You do not have permission to modify roles"), code=302)
@@ -862,7 +859,6 @@ def change_role():
             user_change_perms.canPromote = request.form["promote"] == "true" and perms.canPromote
             if request.form["level"].isdigit() and int(request.form["level"]) > perms.level:
                 user_change_perms.level = int(request.form["level"])
-            db.session.add(user_change_perms)
             db.session.commit()
             return render_template('set-cookie.html')
         else:
@@ -916,7 +912,6 @@ def invite_user():
         if perms.canInvite and perms.canView and perms.canPost:
             invitee_perms.canPost = post == "true" and perms.canPost
             invitee_perms.canView = view == "true" and perms.canView
-            db.session.add(invitee_perms)
             db.session.commit()
             return render_template('set-cookie.html')
         else:
@@ -966,9 +961,8 @@ def follow(category_id):
     perms = Permissions.query.filter_by(user=user, category=category).first()
     if perms is None:
         perms = create_permission(user, category)
-        db.session.add(perms)
     print(perms.followed)
-    Permissions.query.filter_by(user=user, category=category).update(dict(followed=True))
+    perms.followed = True
     db.session.commit()
     print(perms.followed)
     return render_template('blank.html')
@@ -982,10 +976,8 @@ def unfollow(category_id):
     perms = Permissions.query.filter_by(user=user, category=category).first()
     if perms is None:
         perms = create_permission(user, category)
-        db.session.add(perms)
     print(perms.followed)
     perms.followed = False
-    db.session.update(perms)
     db.session.commit()
     print(perms.followed)
     return render_template('blank.html')

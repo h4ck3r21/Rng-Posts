@@ -124,7 +124,7 @@
             }
 
             function checkFollowed() {
-                if (followed == "true") {
+                if (followed == "True") {
                     console.log(followed)
                     follow_btn_link.classList.add("followed");
                     follow_btn_link.classList.remove("solid-button");
@@ -158,14 +158,14 @@
             function unfollow() {
                 let iframe = document.getElementById("follow-form");
                 iframe.src = "/unfollow/{{category}}";
-                followed = "false";
+                followed = "False";
                 checkFollowed();
             }
 
             function follow() {
                 let iframe = document.getElementById("follow-form");
                 iframe.src = "/follow/{{category}}";
-                followed = "true";
+                followed = "True";
                 checkFollowed();
             }
 
