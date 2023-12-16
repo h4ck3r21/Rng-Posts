@@ -59,7 +59,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User%s %s>' % (self.id, self.username)
 
 
 class Permissions(db.Model):
@@ -458,7 +458,9 @@ def create_category():
         )
         db.session.add(perms)
         db.session.commit()
-        return render_template('set-cookie.html')
+        return redirect(url_for("view_category",
+                                category_id=cat.id),
+                        code=302)
     else:
         return render_template('homepage.html')
 
@@ -479,11 +481,16 @@ def add_post_to_category():
             print(f"adding post, {post.title}, to category, {cat.name}.")
             cat.posts.append(post)
             db.session.commit()
-            return render_template('set-cookie.html')
+            return redirect(url_for("view_category",
+                                    category_id=cat_id),
+                            code=302)
         else:
-            return home(err="You do not have permission to post in that category")
+            return redirect(url_for("view_category",
+                                    err="You do not have permission to post in that category",
+                                    category_id=cat_id),
+                            code=302)
     else:
-        return render_template('homepage.html')
+        return render_template('set-cookie.html')
 
 
 @app.route("/new-category")
@@ -567,7 +574,10 @@ def delete_category(category_id):
     if user is not None:
         return render_template("remove-post.html", category=category_id, posts=posts)
     else:
-        return redirect(url_for("home", msg="You do need to sign in to delete that post"), code=302)
+        return redirect(url_for("view_category",
+                                err="You need to sign in to delete that post",
+                                category_id=category_id),
+                        code=302)
 
 
 @app.route("/del-post", methods=["GET", "POST"])
@@ -592,7 +602,10 @@ def remove_post_to_category():
                 return home(err="post is not in that category")
             return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
-            return redirect(url_for("home", msg="You do not have permission to delete that post"), code=302)
+            return redirect(url_for("view_category",
+                                    err="You do not have permission to delete that post",
+                                    category_id=cat_id),
+                            code=302)
     else:
         return redirect(url_for("home", code=302))
 
@@ -611,7 +624,10 @@ def select_post(category_id):
     if user is not None and permission.canPost:
         return render_template("add-post.html", category=category_id, posts=posts)
     else:
-        redirect(url_for("home", msg="You do not have permission to add posts to this category"), code=302)
+        return redirect(url_for("view_category",
+                                err="You do not have permission to add posts to this category",
+                                category_id=category_id),
+                        code=302)
 
 
 @app.route("/timeout/<category_id>")
@@ -628,7 +644,10 @@ def timeout(category_id):
     if user is not None and permission.canTimeout:
         render_template("timeout.html", category=category_id, users=users)
     else:
-        return redirect(url_for("home", msg="You do not have permission to timeout"), code=302)
+        return redirect(url_for("view_category",
+                                err="You do not have permission to timeout in that category",
+                                category_id=category_id),
+                        code=302)
 
 
 @app.route("/timeout-form", methods=["GET", "POST"])
@@ -651,7 +670,10 @@ def timeout_user():
             db.session.commit()
             return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
-            return redirect(url_for("home", msg="You do not have permission to timeout that person"), code=302)
+            return redirect(url_for("view_category",
+                                    err="You do not have permission to timeout that person",
+                                    category_id=cat_id),
+                            code=302)
     else:
         return redirect(url_for("home", code=302))
 
@@ -670,7 +692,10 @@ def mute(category_id):
     if user is not None and permission.canMute:
         return render_template("mute.html", category=category_id, users=users)
     else:
-        redirect(url_for("home", msg="You do not have permission to mute"), code=302)
+        return redirect(url_for("view_category",
+                                err="You do not have permission to mute",
+                                category_id=category_id),
+                        code=302)
 
 
 @app.route("/mute-form", methods=["GET", "POST"])
@@ -690,9 +715,12 @@ def mute_user():
         if perms.canMute and perms.level < user_mute_perms.level:
             user_mute_perms.canPost = False
             db.session.commit()
-            return render_template('set-cookie.html')
+            return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
-            redirect(url_for("home", msg="You do not have permission to mute that person"), code=302)
+            return redirect(url_for("view_category",
+                                    err="You do not have permission to mute that person",
+                                    category_id=cat_id),
+                            code=302)
     else:
         redirect(url_for("home"), code=302)
 
@@ -709,9 +737,12 @@ def ban(category_id):
         permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     if user is not None and permission.canBan:
-        render_template("ban.html", category=category_id, users=users)
+        return render_template("ban.html", category=category_id, users=users)
     else:
-        redirect(url_for("home", msg="You do not have permission to ban"), code=302)
+        return redirect(url_for("view_category",
+                                err="You do not have permission to ban in that category",
+                                category_id=category_id),
+                        code=302)
 
 
 @app.route("/ban-form", methods=["GET", "POST"])
@@ -734,7 +765,10 @@ def ban_user():
             db.session.commit()
             return render_template('set-cookie.html')
         else:
-            redirect(url_for("home", msg="You do not have permission to ban that person"), code=302)
+            return redirect(url_for("view_category",
+                                    err="You do not have permission to ban that person",
+                                    category_id=cat_id),
+                            code=302)
     else:
         redirect(url_for("home"), code=302)
 
@@ -754,7 +788,10 @@ def promote(category_id):
     if user is not None and permission.canPromote:
         return render_template("promote.html", category=category_id, users=users, users_id=users_id)
     else:
-        redirect(url_for("home", msg="You do not have permission to promote"), code=302)
+        return redirect(url_for("view_category",
+                                err="You do not have permission to promote in this category",
+                                category_id=category_id),
+                        code=302)
 
 
 @app.route("/promote-form", methods=["GET", "POST"])
@@ -774,9 +811,14 @@ def promote_user():
         if perms.canPromote and perms.level + 1 < user_promote_perms.level:
             user_promote_perms.level += 1
             db.session.commit()
-            return render_template('set-cookie.html')
+            return redirect(url_for("view_category",
+                                    category_id=cat_id),
+                            code=302)
         else:
-            redirect(url_for("home", msg="You do not have permission to promote that person"), code=302)
+            return redirect(url_for("view_category",
+                                    err="You do not have permission to promote that person",
+                                    category_id=cat_id),
+                            code=302)
     else:
         redirect(url_for("home"), code=302)
 
@@ -831,7 +873,10 @@ def roles(category_id):
     if user is not None and permission.canPromote:
         return render_template("roles.html", category=category_id, users=users, users_id=users_id, perms=permission)
     else:
-        redirect(url_for("home", msg="You do not have permission to modify roles"), code=302)
+        return redirect(url_for("view_category",
+                                err="You do not have permission to modify roles in that category",
+                                category_id=category_id),
+                        code=302)
 
 
 @app.route("/change-role", methods=["GET", "POST"])
@@ -862,7 +907,10 @@ def change_role():
             db.session.commit()
             return render_template('set-cookie.html')
         else:
-            redirect(url_for("home", msg="You do not have permission to promote that person"), code=302)
+            return redirect(url_for("view_category",
+                                    err="You do not have permission to promote that person",
+                                    category_id=cat_id),
+                            code=302)
     else:
         redirect(url_for("home"), code=302)
 
@@ -880,7 +928,10 @@ def invite(category_id):
     if user is not None and permission.canPromote:
         return render_template("invite.html", category=category_id)
     else:
-        redirect(url_for("home", msg="You do not have permission to modify roles"), code=302)
+        return redirect(url_for("view_category",
+                                err="You do not have permission to modify roles",
+                                category_id=category_id),
+                        code=302)
 
 
 @app.route("/invite-user", methods=["GET", "POST"])

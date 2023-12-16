@@ -5,6 +5,7 @@
     <title>Mute</title>
     <link rel="stylesheet" href="../static/css/send_post.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="../static/createUserDropDown.js"></script>
 </head>
 <body>
 <center>
@@ -21,6 +22,7 @@
             <button type="button" id="PostCloseButton" class="btn close">Close</button>
         </a>
     </form>
+    <p style="display:none;" id="users">{{users}}</p>
 </center>
 <script>
     var user_dropdown = document.getElementById('user');
@@ -28,6 +30,8 @@
     var user_ids = "{{users}}"
     console.log(users);
     console.log(user_ids)
+    userList = setupUserList(users)
+    createDropDown(userList, 'user')
 </script>
 </body>
 </html>
