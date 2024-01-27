@@ -802,13 +802,14 @@ def promote_user():
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
         perms = Permissions.query.filter_by(user=user, category=cat)
+        new_level = request.form['level']
         if perms is None:
             perms = create_permission(user, cat)
         username = request.form["username"]
-        user_to_ban = User.query.filter_by(name=username)
-        user_promote_perms = Permissions.query.filter_by(user=user_to_ban, category=cat)
+        user_to_promote = User.query.filter_by(name=username)
+        user_promote_perms = Permissions.query.filter_by(user=user_to_promote, category=cat)
 
-        if perms.canPromote and perms.level + 1 < user_promote_perms.level:
+        if perms.canPromote and perms.level + 1 < user_promote_perms.level and perms.level + 1 < user_promote_perms.level:
             user_promote_perms.level += 1
             db.session.commit()
             return redirect(url_for("view_category",
@@ -1035,4 +1036,8 @@ def unfollow(category_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ['PORT']))
+    if 'PORT' in os.environ:
+        port = os.environ['PORT']
+    else:
+        port = 5000
+    app.run(debug=True, host="0.0.0.0", port=int(port))

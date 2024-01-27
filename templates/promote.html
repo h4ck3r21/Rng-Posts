@@ -2,9 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Promote</title>
+    <title>Mute</title>
+    <link rel="stylesheet" href="../static/css/send_post.css">
+    <link rel="stylesheet" href="../static/css/Styling.css">
+    <link rel="stylesheet" href="../static/css/form.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="../static/createUserDropDown.js"></script>
 </head>
 <body>
+    <center>
+        <h1>Mute</h1>
+        <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/mute-form">
+            <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
+            <label for="user">User</label>
+            <select name="user" id="user" required></select>
+            <br>
+            <label for="level">Level</label>
+            <p>lower level allows the user more power</p>
+            <input name="level" id="level" type="number" inputmode="numeric" required>
 
+            <br><br>
+
+            <button type="submit" id="submit-post" class="btn">Submit</button>
+            <a href="/category/{{category}}">
+                <button type="button" id="PostCloseButton" class="btn close">Close</button>
+            </a>
+        </form>
+        <p style="display:none;" id="users">{{users}}</p>
+    </center>
+    <script>
+    var user_dropdown = document.getElementById('user');
+    var users = "{{users}}";
+    var user_ids = "{{users}}"
+    console.log(users);
+    console.log(user_ids)
+    userList = setupUserList(users)
+    createDropDown(userList, 'user')
+    </script>
 </body>
 </html>

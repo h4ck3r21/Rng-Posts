@@ -5,6 +5,8 @@
     <title>Delete Post</title>
     <link rel="stylesheet" href="../static/css/send_post.css">
     <link rel="stylesheet" href="../static/css/delete-post.css">
+    <link rel="stylesheet" href="../static/css/Styling.css">
+    <link rel="stylesheet" href="../static/css/form.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -17,7 +19,7 @@
         <br><br>
 
         <button type="submit" id="submit-post" class="btn">Submit</button>
-        <a href="/">
+        <a href="/category/{{category}}">
             <button type="button" id="PostCloseButton" class="btn close">Close</button>
         </a>
     </form>
@@ -35,6 +37,13 @@
             console.log(posts[index])
             addRow(posts[index])
         }
+    }
+    else {
+        const msg = document.createElement('p');
+        msg.innerHTML = "There are no posts available to add to this category";
+        msg.classList.add("error-text");
+        document.getElementById('posts').appendChild(msg);
+        document.getElementById('submit-post').hidden = true;
     }
 
 
