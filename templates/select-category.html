@@ -16,7 +16,7 @@
     if (categories == "[]") {
         no_categories = document.createElement('p');
         cat_div.appendChild(no_categories);
-        no_categories.innerHTML = "none";
+        no_categories.innerHTML = "You are currently following no categories.\nUse the search bar to find some that are of interest to you.";
     }
     else {
         categories = categories.substring(7, categories.length - 2);

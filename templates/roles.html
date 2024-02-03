@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../static/css/Styling.css">
     <link rel="stylesheet" href="../static/css/form.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="../static/createUserDropDown.js"></script>
 </head>
 <body>
 <center>
@@ -34,6 +35,8 @@
         <label for="promote">Can Promote</label><br>
         <input type="checkbox" id="modify" name="modify" value="true">
         <label for="modify">Can Modify</label><br>
+        <input type="checkbox" id="invite" name="invite" value="true">
+        <label for="invite">Can Invite</label><br>
         <br><br>
 
         <button type="submit" id="submit-post" class="btn">Submit</button>
@@ -47,6 +50,8 @@
         var user_ids = "{{users}}"
         console.log(users);
         console.log(user_ids)
+        userList = setupUserList(users)
+        createDropDown(userList, 'user')
     </script>
 </center>
 </body>

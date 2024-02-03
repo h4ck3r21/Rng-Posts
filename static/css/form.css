@@ -67,3 +67,7 @@
 a {
   color: #08D9D6;
 }
+
+.no-border {
+    border: none;
+}

@@ -551,6 +551,7 @@ def get_users_of_lower_level(user, category):
         permission = create_permission(user, category)
     posts = category.posts
     users = [post.user for post in posts]
+    print(users)
     return [poster for poster in users if
             Permissions.query.filter_by(user=poster, category=category).first().level > permission.level]
 
@@ -701,16 +702,16 @@ def mute(category_id):
 @app.route("/mute-form", methods=["GET", "POST"])
 def mute_user():
     if request.method == 'POST':
-        cat_id = request.form['cat_id']
+        cat_id = request.form['category']
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
-        perms = Permissions.query.filter_by(user=user, category=cat)
+        perms = Permissions.query.filter_by(user=user, category=cat).first()
         if perms is None:
             perms = create_permission(user, cat)
-        username = request.form["id"]
-        user_to_mute = User.query.filter_by(name=username)
-        user_mute_perms = Permissions.query.filter_by(user=user_to_mute, category=cat)
+        user_mute_id = request.form["user"]
+        user_to_mute = User.query.filter_by(id=user_mute_id).first()
+        user_mute_perms = Permissions.query.filter_by(user=user_to_mute, category=cat).first()
 
         if perms.canMute and perms.level < user_mute_perms.level:
             user_mute_perms.canPost = False
@@ -748,22 +749,23 @@ def ban(category_id):
 @app.route("/ban-form", methods=["GET", "POST"])
 def ban_user():
     if request.method == 'POST':
-        cat_id = request.form['cat_id']
+        cat_id = request.form['category']
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
-        perms = Permissions.query.filter_by(user=user, category=cat)
+        perms = Permissions.query.filter_by(user=user, category=cat).first()
         if perms is None:
             perms = create_permission(user, cat)
-        username = request.form["username"]
-        user_to_ban = User.query.filter_by(name=username)
-        user_ban_perms = Permissions.query.filter_by(user=user_to_ban, category=cat)
+        user_ban_id = request.form["user"]
+        user_to_ban = User.query.filter_by(id=user_ban_id).first()
+        user_ban_perms = Permissions.query.filter_by(user=user_to_ban, category=cat).first()
+        print(user_ban_id)
 
         if perms.canBan and perms.level < user_ban_perms.level:
             user_ban_perms.canPost = False
             user_ban_perms.canView = False
             db.session.commit()
-            return render_template('set-cookie.html')
+            return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
             return redirect(url_for("view_category",
                                     err="You do not have permission to ban that person",
@@ -887,26 +889,25 @@ def change_role():
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
-        perms = Permissions.query.filter_by(user=user, category=cat)
+        perms = Permissions.query.filter_by(user=user, category=cat).first()
         if perms is None:
             perms = create_permission(user, cat)
-        username = request.form["user"]
-        user_to_change_roles = User.query.filter_by(name=username)
-        user_change_perms = Permissions.query.filter_by(user=user_to_change_roles, category=cat)
+        changed_userID = request.form["user"]
+        user_to_change_roles = User.query.filter_by(id=changed_userID).first()
+        user_change_perms = Permissions.query.filter_by(user=user_to_change_roles, category=cat).first()
 
-        if perms.canPromote and perms.level < user_to_change_roles.level:
-            user_change_perms.canPost = request.form["post"] == "true" and perms.canPost
-            user_change_perms.canDelete = request.form["delete"] == "true" and perms.canDelete
-            user_change_perms.canView = request.form["view"] == "true" and perms.canView
-            user_change_perms.canTimeout = request.form["timeout"] == "true" and perms.canTimeout
-            user_change_perms.canAttachFiles = request.form["files"] == "true" and perms.canAttachFiles
-            user_change_perms.canMute = request.form["mute"] == "true" and perms.canMute
-            user_change_perms.canBan = request.form["ban"] == "true" and perms.canBan
-            user_change_perms.canPromote = request.form["promote"] == "true" and perms.canPromote
-            if request.form["level"].isdigit() and int(request.form["level"]) > perms.level:
-                user_change_perms.level = int(request.form["level"])
+        if perms.canPromote and perms.level < user_change_perms.level:
+            user_change_perms.canPost = request.form.get("post") == "true" and perms.canPost
+            user_change_perms.canDelete = request.form.get("delete") == "true" and perms.canDelete
+            user_change_perms.canView = request.form.get("view") == "true" and perms.canView
+            user_change_perms.canTimeout = request.form.get("timeout") == "true" and perms.canTimeout
+            user_change_perms.canAttachFiles = request.form.get("files") == "true" and perms.canAttachFiles
+            user_change_perms.canMute = request.form.get("mute") == "true" and perms.canMute
+            user_change_perms.canBan = request.form.get("ban") == "true" and perms.canBan
+            user_change_perms.canPromote = request.form.get("promote") == "true" and perms.canPromote
+            user_change_perms.canInvite = request.form.get("invite") == "true" and perms.canInvite
             db.session.commit()
-            return render_template('set-cookie.html')
+            return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
             return redirect(url_for("view_category",
                                     err="You do not have permission to promote that person",
@@ -945,6 +946,7 @@ def invite_user():
         perms = Permissions.query.filter_by(user=user, category=cat).first()
         post = request.form.get("post")
         view = request.form.get("view")
+        embed = request.form.get("embed")
         if perms is None:
             perms = create_permission(user, cat)
         invitee = User.query.filter_by(username=request.form['name']).all()
@@ -962,10 +964,11 @@ def invite_user():
         if invitee_perms is None:
             invitee_perms = create_permission(invitee, cat)
         if perms.canInvite and perms.canView and perms.canPost:
-            invitee_perms.canPost = post == "true" and perms.canPost
-            invitee_perms.canView = view == "true" and perms.canView
+            invitee_perms.canPost = post == ("true" and perms.canPost) or invitee_perms.canPost
+            invitee_perms.canView = view == ("true" and perms.canView) or invitee_perms.canView
+            invitee_perms.canAttachFiles = embed == ("true" and perms.canAttachFiles) or invitee_perms.canAttachFiles
             db.session.commit()
-            return render_template('set-cookie.html')
+            return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
             redirect(url_for("view_category",
                              err="You do not have permission to promote that person",
