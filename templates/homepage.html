@@ -49,6 +49,7 @@
                     <button type="submit" class="search-button"><i class="fa fa-search"></i></button>
                 </form>
             </div>
+            <br>
             <div class="main-content">
                 <h1>{{msg}}</h1>
                 <p class="error-text" id="error">{{login_error}}</p>
@@ -180,13 +181,13 @@
                 iframe.src = "/post/"+post;
 
                 iframe.addEventListener('load', function() {
-                    this.style.height = this.contentWindow.document.body.scrollHeight + 25 + "px"
+                    this.style.height = iframe.contentWindow.document.body.scrollHeight + 50 + "px";
                 });
 
                 window.addEventListener('resize', function() {
-                    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 25 + "px"
+                    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 50 + "px"
+                    console.log(iframe.contentWindow.document.body.scrollHeight);
                 });
-
                 document.getElementById('content').appendChild(iframe);
             }
 

@@ -12,10 +12,11 @@
     <div class="post-body-holder">
         <p class="post-body">{{post_info['body']}}</p>
     </div>
-    <p class="post-tags">tags: {{post_info['tags']}}</p>
-    <span class="post-user">Posted by {{post_info['user']}}</span>
-    <span class="post-time">at {{post_info['time']}}</span>
-    
+    <div class="post-metadata-holder">
+        <p class="post-tags">tags: {{post_info['tags']}}</p>
+        <span class="post-user">Posted by {{post_info['user']}}</span>
+        <span class="post-time">at {{post_info['time']}}</span>
+    </div>
     <div class="img-container container inv" id="imgContainer">
         <iframe id='file' class="file responsive-iframe"></iframe>
         <button type="button" class="btn left img-selector inv" onclick="move_image(-1)">&#10094;</button>

@@ -52,8 +52,11 @@ function resizeImage(iframe, image) {
     height = iframe.offsetHeight;
     width = iframe.offsetWidth;
     console.log("height, width = " + height + " " + width);
-    image.style.maxHeight = height + "px";
     image.style.maxWidth = width + "px";
+    image.style.borderRadius = "5px";
+    iframe.style = "height:" + image.height + "px";
+    document.getElementById("imgContainer").style = "height:" + image.height + "px";
+    console.log(document.body.scrollHeight);
 };
 
 function move_image(n){
@@ -62,4 +65,10 @@ function move_image(n){
     filePreview();
 };
 
-document.getElementById('imgContainer').addEventListener("load", filePreview(0));
+imageContainer = document.getElementById('imgContainer');
+imageContainer.addEventListener("load", filePreview(0));
+window.addEventListener("resize", function () {
+    iframe = document.getElementById("file");
+    src = iframe.src;
+    resizeImageLoop(iframe, src);
+})

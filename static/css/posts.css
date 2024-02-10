@@ -1,11 +1,16 @@
+body {
+    color: #EAEAEA;
+}
+
 .post {
     width: 80%;
     border: 3px solid grey;
     margin: 20px 10px;
     padding: 10px 10px;
     font-family: "Times New Roman", Times, serif;
-    background-color: #CCC;
+    background-color: #252A34;
     z-index: 10;
+    color: #EAEAEA;
 }
 
 .post-title {
@@ -14,11 +19,15 @@
     font-weight: bold;
     font-style: normal;
     font-size: 2em;
-    background-color: #EED
+    background-color: #FF2E63;
+    color: #252A34;
+    border-radius: 7px;
 }
 
 .post-body-holder {
-    background-color: #DEE
+    background-color: #08D9D6;
+    color: #252A34;
+    border-radius: 5px;
 }
 
 .post-body {
@@ -30,7 +39,10 @@
 }
 
 .post-metadata-holder {
-    background-color:#EDE
+    background-color: #252A34;
+    border: 3px solid #08D9D6;
+    border-radius: 5px;
+    padding: 3px;
 }
 
 .post-time {
@@ -54,7 +66,7 @@
 }
 
 .file-button:hover {
-  background: #AAA;
+  opacity: 70%;
 }
 
 .inv {
@@ -62,16 +74,15 @@
 }
 
 .img-container .btn {
-  width: auto;
-  height: auto;
-  transform: translate(-0%, -50%);
-  -ms-transform: translate(-0%, -50%);
-  background-color: #555;
-  color: white;
-  font-size: 100%;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+    width: auto;
+    height: auto;
+    transform: translate(-0%, -50%);
+    -ms-transform: translate(-0%, -50%);
+    background-color: #555;
+    color: #EAEAEA;
+    font-size: 100%;
+    border: none;
+    cursor: pointer;
 }
 
 .img-container .left {
@@ -87,13 +98,13 @@
 }
 
 .img-container .btn:hover {
-  background-color: black;
+    background-color: #252A34;
 }
 
 .container {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    /*overflow: hidden;
   padding-top: 66.66%; /* 3:2 Aspect Ratio */
 }
 

@@ -964,9 +964,9 @@ def invite_user():
         if invitee_perms is None:
             invitee_perms = create_permission(invitee, cat)
         if perms.canInvite and perms.canView and perms.canPost:
-            invitee_perms.canPost = post == ("true" and perms.canPost) or invitee_perms.canPost
-            invitee_perms.canView = view == ("true" and perms.canView) or invitee_perms.canView
-            invitee_perms.canAttachFiles = embed == ("true" and perms.canAttachFiles) or invitee_perms.canAttachFiles
+            invitee_perms.canPost = (post == "true" and perms.canPost) or invitee_perms.canPost
+            invitee_perms.canView = (view == "true" and perms.canView) or invitee_perms.canView
+            invitee_perms.canAttachFiles = (embed == "true" and perms.canAttachFiles) or invitee_perms.canAttachFiles
             db.session.commit()
             return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
