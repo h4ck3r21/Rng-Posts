@@ -54,8 +54,8 @@ function resizeImage(iframe, image) {
     console.log("height, width = " + height + " " + width);
     image.style.maxWidth = width + "px";
     image.style.borderRadius = "5px";
-    iframe.style = "height:" + image.height + "px";
-    document.getElementById("imgContainer").style = "height:" + image.height + "px";
+    iframe.style = "height:" + (image.height + 1) + "px";
+    document.getElementById("imgContainer").style = "height:" + (image.height + 1) + "px";
     console.log(document.body.scrollHeight);
 };
 

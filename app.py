@@ -796,6 +796,27 @@ def promote(category_id):
                         code=302)
 
 
+@app.route("/get-level/<category_id>/<user_promote_id>")
+def getLevel(category_id, user_promote_id):
+    user_id = request.cookies.get('userID')
+    if user_id is None:
+        abort(401)
+    user = User.query.filter_by(id=user_id).first()
+    category = Category.query.filter_by(id=category_id).first()
+    permission = Permissions.query.filter_by(user=user, category=category).first()
+    if permission is None:
+        permission = create_permission(user, category)
+    user_to_promote = User.query.filter_by(id=user_promote_id).first()
+    user_promote_permission = Permissions.query.filter_by(user=user_to_promote, category=category).first()
+    if user is not None and permission.canPromote:
+        return "fish"
+    else:
+        return redirect(url_for("view_category",
+                                err="You do not have permission to promote in this category",
+                                category_id=category_id),
+                        code=302)
+
+
 @app.route("/promote-form", methods=["GET", "POST"])
 def promote_user():
     if request.method == 'POST':

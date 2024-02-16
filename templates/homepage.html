@@ -181,11 +181,16 @@
                 iframe.src = "/post/"+post;
 
                 iframe.addEventListener('load', function() {
-                    this.style.height = iframe.contentWindow.document.body.scrollHeight + 50 + "px";
+                    this.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px";
+                    iframe.contentWindow.addEventListener('resize', function () {
+                        iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
+                        console.log(iframe.contentWindow.document.body.scrollHeight);
+                    });
+                    console.log(iframe.contentWindow.getComputedStyle(iframe, null).getPropertyValue('margin-top'));
                 });
 
                 window.addEventListener('resize', function() {
-                    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 50 + "px"
+                    iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
                     console.log(iframe.contentWindow.document.body.scrollHeight);
                 });
                 document.getElementById('content').appendChild(iframe);
