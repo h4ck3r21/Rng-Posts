@@ -79,7 +79,9 @@ p.error-text {
     color: #FF2E63;
 }
 
-
+p.msg-text {
+    color: #08D9D6;
+}
 
 .search-bar {
     width: 80%;

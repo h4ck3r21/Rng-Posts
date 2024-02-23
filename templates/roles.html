@@ -24,7 +24,7 @@
         <input type="checkbox" id="view" name="view" value="true">
         <label for="view">Can View</label><br>
         <input type="checkbox" id="timeout" name="timeout" value="true">
-        <label for="delete">Can Timeout</label><br>
+        <label for="timeout">Can Timeout</label><br>
         <input type="checkbox" id="files" name="files" value="true">
         <label for="files">Can Post Files</label><br>
         <input type="checkbox" id="mute" name="mute" value="true">
@@ -33,8 +33,6 @@
         <label for="ban">Can Ban</label><br>
         <input type="checkbox" id="promote" name="promote" value="true">
         <label for="promote">Can Promote</label><br>
-        <input type="checkbox" id="modify" name="modify" value="true">
-        <label for="modify">Can Modify</label><br>
         <input type="checkbox" id="invite" name="invite" value="true">
         <label for="invite">Can Invite</label><br>
         <br><br>
@@ -52,6 +50,38 @@
         console.log(user_ids)
         userList = setupUserList(users)
         createDropDown(userList, 'user')
+        getPermissionValue("canPost", "post")
+        getPermissionValue("canDelete", "delete")
+        getPermissionValue("canAttachFiles", "files")
+        getPermissionValue("canMute", "mute")
+        getPermissionValue("canView", "view")
+        getPermissionValue("canTimeout", "timeout")
+        getPermissionValue("canBan", "ban")
+        getPermissionValue("canPromote", "promote")
+        getPermissionValue("canInvite", "invite")
+
+
+        function getPermissionValue(property, input) {
+            const http = new XMLHttpRequest();
+            const url = "/get-roles/" + {{ category }} + "/" + user_dropdown.value + "/" + property;
+            http.open("GET", url);
+            http.send();
+
+            http.onreadystatechange = (e) => {
+                console.log(http.responseText);
+                if (http.responseText == "True") {
+                    document.getElementById(input).checked = true;
+                }
+                else if (http.responseText == "False") {
+                    document.getElementById(input).checked = false;
+                }
+            }
+            user_dropdown.addEventListener("change", function () {
+                http.open("GET", url);
+                http.send();
+            })
+        }
+
     </script>
 </center>
 </body>

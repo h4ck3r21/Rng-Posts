@@ -154,21 +154,25 @@ def reset_db():
 
 
 @app.route('/')
-def home(items: Optional[List] = None, err: str = "", msg: str = "", category="None"):
+def home(items: Optional[List] = None, err: str = "", title: str = "", msg: str = "", category="None"):
     print('rendering home page')
     followed = "false"
     if err == "" or err is None:
         err = request.args.get('err')
         if err is None or err == "None":
             err = ""
+    if msg == "" or msg is None:
+        msg = request.args.get('msg')
+        if msg is None or msg == "None":
+            msg = ""
     user_id = request.cookies.get('userID')
     user = User.query.filter_by(id=user_id).first()
     if user is not None:
         print(user.posts)
-        if msg == "":
-            msg = request.args.get('msg')
-            if msg is None:
-                msg = "Welcome " + user.username
+        if title == "":
+            title = request.args.get('title')
+            if title is None:
+                title = "Welcome " + user.username
         if items is None:
             items = user.posts
             categories = Category.query.filter_by(owner=user).all()
@@ -183,6 +187,7 @@ def home(items: Optional[List] = None, err: str = "", msg: str = "", category="N
             if perm is not None:
                 followed = perm.followed
     return render_template('homepage.html',
+                           title=title,
                            msg=msg,
                            user=user,
                            posts=items,
@@ -335,7 +340,7 @@ def search_posts():
     print(post_value, sorted(posts, key=lambda p: post_value[p]), category_value, sep="\n***\n")
     results = sorted(categories, key=lambda c: category_value[c], reverse=True) + \
               sorted(posts, key=lambda p: post_value[p], reverse=True)
-    return home(results, msg=f"Search results for '{search}'")
+    return home(results, title=f"Search results for '{search}'")
 
 
 def old_search():
@@ -359,7 +364,7 @@ def old_search():
                    reverse=True)
     print([p.pub_date for p in posts])
     posts = sorted(list(set(posts)), key=lambda x: -counts[x])
-    return home(posts, msg=f"Search results for '{search}'")
+    return home(posts, title=f"Search results for '{search}'")
 
 
 def assign_value(post: Post, search):
@@ -393,7 +398,7 @@ def view_category(category_id):
     if permission is None:
         permission = create_permission(user, cat)
     if user is not None and permission.canView or cat.is_public:
-        return home(cat.posts, msg=cat.name, err=request.args.get('err'), category=category_id)
+        return home(cat.posts, title=cat.name, err=request.args.get('err'), category=category_id)
     else:
         return home(err="you do not have permission to view this category")
 
@@ -796,46 +801,55 @@ def promote(category_id):
                         code=302)
 
 
-@app.route("/get-level/<category_id>/<user_promote_id>")
+@app.route("/get-level/<category_id>/<user_promote_id>", methods=["GET", "POST"])
 def getLevel(category_id, user_promote_id):
-    user_id = request.cookies.get('userID')
-    if user_id is None:
-        abort(401)
-    user = User.query.filter_by(id=user_id).first()
-    category = Category.query.filter_by(id=category_id).first()
-    permission = Permissions.query.filter_by(user=user, category=category).first()
-    if permission is None:
-        permission = create_permission(user, category)
-    user_to_promote = User.query.filter_by(id=user_promote_id).first()
-    user_promote_permission = Permissions.query.filter_by(user=user_to_promote, category=category).first()
-    if user is not None and permission.canPromote:
-        return "fish"
+    if request.method == "GET":
+        user_id = request.cookies.get('userID')
+        if user_id is None:
+            abort(401)
+        user = User.query.filter_by(id=user_id).first()
+        category = Category.query.filter_by(id=category_id).first()
+        permission = Permissions.query.filter_by(user=user, category=category).first()
+        if permission is None:
+            permission = create_permission(user, category)
+        user_to_promote = User.query.filter_by(id=user_promote_id).first()
+        user_promote_permission = Permissions.query.filter_by(user=user_to_promote, category=category).first()
+        if user is not None and permission.canPromote:
+            return str(user_promote_permission.level)
+        else:
+            return "fail"
     else:
-        return redirect(url_for("view_category",
-                                err="You do not have permission to promote in this category",
-                                category_id=category_id),
-                        code=302)
+        redirect(url_for("home"), code=302)
 
 
 @app.route("/promote-form", methods=["GET", "POST"])
 def promote_user():
     if request.method == 'POST':
-        cat_id = request.form['cat_id']
+        cat_id = request.form['category']
         cat = Category.query.filter_by(id=cat_id).first()
         user_id = request.cookies.get('userID')
         user = User.query.filter_by(id=user_id).first()
-        perms = Permissions.query.filter_by(user=user, category=cat)
+        perms = Permissions.query.filter_by(user=user, category=cat).first()
         new_level = request.form['level']
         if perms is None:
             perms = create_permission(user, cat)
-        username = request.form["username"]
-        user_to_promote = User.query.filter_by(name=username)
-        user_promote_perms = Permissions.query.filter_by(user=user_to_promote, category=cat)
-
-        if perms.canPromote and perms.level + 1 < user_promote_perms.level and perms.level + 1 < user_promote_perms.level:
-            user_promote_perms.level += 1
+        promoteID = request.form["user"]
+        user_to_promote = User.query.filter_by(id=promoteID).first()
+        user_promote_perms = Permissions.query.filter_by(user=user_to_promote, category=cat).first()
+        if user_promote_perms is None:
+            user_promote_perms = create_permission(user, cat)
+        if not new_level.isdigit():
+            return redirect(url_for("promote",
+                                    err="%s is not a valid number" % (new_level),
+                                    category_id=cat_id),
+                            code=302)
+        
+        if perms.canPromote and perms.level + 1 < user_promote_perms.level and perms.level + 1 < int(new_level):
+            user_promote_perms.level = int(new_level)
             db.session.commit()
+            print(new_level)
             return redirect(url_for("view_category",
+                                    msg="You have successfully promoted %s to level %s" % (user_to_promote.username, user_promote_perms.level),
                                     category_id=cat_id),
                             code=302)
         else:
@@ -901,6 +915,29 @@ def roles(category_id):
                                 err="You do not have permission to modify roles in that category",
                                 category_id=category_id),
                         code=302)
+
+
+@app.route("/get-roles/<category_id>/<changed_user_id>/<role_name>", methods=["GET", "POST"])
+def get_roles(category_id, changed_user_id, role_name):
+    if request.method == 'GET':
+        cat = Category.query.filter_by(id=category_id).first()
+        user_id = request.cookies.get('userID')
+        user = User.query.filter_by(id=user_id).first()
+        perms = Permissions.query.filter_by(user=user, category=cat).first()
+        if perms is None:
+            perms = create_permission(user, cat)
+        user_to_change_roles = User.query.filter_by(id=changed_user_id).first()
+        user_change_perms = Permissions.query.filter_by(user=user_to_change_roles, category=cat).first()
+
+        if perms.canPromote and perms.level < user_change_perms.level:
+            if role_name in user_change_perms.__dir__():
+                return str(user_change_perms.__getattribute__(role_name))
+            return "No permission by that name. Please check the spelling."
+        else:
+            return "Unauthorised for this access"
+    else:
+        redirect(url_for("home"), code=302)
+    
 
 
 @app.route("/change-role", methods=["GET", "POST"])

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mute</title>
+    <title>Promote</title>
     <link rel="stylesheet" href="../static/css/send_post.css">
     <link rel="stylesheet" href="../static/css/Styling.css">
     <link rel="stylesheet" href="../static/css/form.css">
@@ -12,14 +12,13 @@
 <body>
     <center>
         <h1>Promote</h1>
-        <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/mute-form">
+        <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/promote-form">
             <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
             <label for="user">User</label>
             <select name="user" id="user" required></select>
             <br>
             <label for="level">Level</label>
             <span id="levelPreview"></span>
-            <iframe src="" id="levelObtainer" hidden></iframe>
             <p>lower level allows the user more power</p>
             <input name="level" id="level" type="number" inputmode="numeric" required>
 
@@ -37,28 +36,23 @@
         var users = "{{users}}";
         var user_ids = "{{users}}";
         var level_preview = document.getElementById("levelPreview");
-        var level_obtainer = document.getElementById("levelObtainer");
-        observer = new MutationObserver(function (mutationsList, observer) {
-            console.log(mutationsList);
-            level_preview.innerHTML = "fish";
-        });
         console.log(users);;
         console.log(user_ids);
         userList = setupUserList(users);
         createDropDown(userList, 'user');
-        level_obtainer.src = "/get-level/" + {{ category }} + "/" + user_dropdown.value;
-        level_preview.innerHTML = level_obtainer.innerHTML;
-        console.log(fetch(""))
 
+        const http = new XMLHttpRequest();
+        const url = "/get-level/" + {{ category }} + "/" + user_dropdown.value;
+        http.open("GET", url);
+        http.send();
+
+        http.onreadystatechange = (e) => {
+            console.log(http.responseText);
+            level_preview.innerHTML = http.responseText;
+        }
         user_dropdown.addEventListener("change", function () {
-            level_obtainer.src = "/get-level/" + {{ category }} + "/" + user_dropdown.value;
-            level_preview.innerHTML = level_obtainer.innerHTML;
-            console.log("working");
-        })
-        observer.observe(level_obtainer, { characterData: true, childList: true, attributes: true, subtree: true });
-        level_obtainer.addEventListener("change", function () {
-            level_preview.innerHTML = level_obtainer.innerHTML;
-            console.log("working")
+            http.open("GET", url);
+            http.send();
         })
     </script>
 </body>
