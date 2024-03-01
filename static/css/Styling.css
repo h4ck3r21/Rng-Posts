@@ -108,7 +108,7 @@ img.logo {
 }
 
 .category {
-    width: 80%;
+    width: 300px;
     margin:10px;
 }
 
@@ -156,4 +156,11 @@ img.logo {
 .post {
     border: 3px solid #EAEAEA;
     border-radius: 5px;
+    margin: 0px 0px 0px 0px;
+}
+
+#content {
+    columns: 300px 3;
+    column-fill: balance;
+    column-rule-width: 16px;
 }

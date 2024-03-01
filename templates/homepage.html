@@ -176,6 +176,12 @@
                 console.log(post)
 
                 const iframe = document.createElement('iframe');
+                const content = document.getElementById('content');
+                const main_content = document.getElementsByClassName('main-content')[0];
+                newWidth = (main_content.offsetWidth - 15) - ((main_content.offsetWidth - 15) % 320) - 20
+                console.log(main_content.offsetWidth);
+                content.style.maxWidth = newWidth;
+                
 
                 iframe.className = 'post';
 
@@ -193,6 +199,9 @@
                 window.addEventListener('resize', function() {
                     iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
                     console.log(iframe.contentWindow.document.body.scrollHeight);
+                    //content.style.width = 
+                    console.log(content.style.width);
+
                 });
                 document.getElementById('content').appendChild(iframe);
             }
@@ -216,7 +225,7 @@
                 });
 
                 document.getElementById('content').appendChild(btn);
-                document.getElementById('content').appendChild(linebreak);
+                //document.getElementById('content').appendChild(linebreak);
             }
 
             function Select(id) {

@@ -34,9 +34,13 @@ function showItem(item, index) {
 
 function resizeImageLoop(iframe, src) {
     elements = iframe.contentWindow.document.body.getElementsByTagName("*")
+    console.log(iframe)
     console.log(elements)
     console.log(src)
-    if (elements.length == 0 || !(elements[0].src.includes(src) || elements[0].baseURI.includes(src)))  {
+    if (src == "") {
+        return
+    }
+    else if (elements.length == 0 || !(elements[0].src.includes(src) || elements[0].baseURI.includes(src)))  {
         setTimeout(() => {  resizeImageLoop(iframe, src); }, 1000);
     } else {
         console.log(elements[0].src)

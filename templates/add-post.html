@@ -56,11 +56,15 @@
 
         iframe.className = 'post';
 
-        iframe.src = "/post/"+post;
+        iframe.src = "/post/" + post;
 
         iframe.addEventListener('load', function() {
-            this.style.height = this.contentWindow.document.body.scrollHeight + 25 + "px";
-            iframe.contentWindow.document.addEventListener("click", function() {
+            this.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px";
+            iframe.contentWindow.addEventListener('resize', function () {
+                iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
+                console.log(iframe.contentWindow.document.body.scrollHeight);
+            });
+            iframe.addEventListener("click", function() {
                 if (iframe.classList.contains('selected')) {
                     iframe.classList.remove('selected');
                 }
@@ -74,8 +78,10 @@
             });
         });
 
+
         window.addEventListener('resize', function() {
-            iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 25 + "px"
+            iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
+            console.log(iframe.contentWindow.document.body.scrollHeight);
         });
 
 
