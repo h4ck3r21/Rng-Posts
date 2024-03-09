@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Modify</title>
-    <link rel="stylesheet" href="../static/css/select_category.css">
     <link rel="stylesheet" href="../static/css/Styling.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/select_category.css">
 </head>
 <body>
     <div id="actions">
@@ -46,14 +47,21 @@
                 actions_div.appendChild(btn);
             }
         }
+        let btn = document.createElement('button');
+        let link = document.createElement("a");
+        btn.className = 'open-close open-button btn';
+        btn.innerHTML = "Close";
+        link.appendChild(btn);
+        link.href = "javascript:history.back()";
+        actions_div.appendChild(link);
 
-        function Select(name) {
-            console.log(name);
+        function Select(action) {
+            console.log(action);
             if ({{category_id}} != "") {
-                window.location.href = window.location.origin + "/category-action/" + {{category_id}} +"/"+ name
+                window.location.href = window.location.origin + "/category-action/" + {{category_id}} +"/"+ action
             }
             else {
-                window.location.href = window.location.origin + "/select-category/" + name
+                window.location.href = window.location.origin + "/select-category/" + action
             }
         }
     </script>

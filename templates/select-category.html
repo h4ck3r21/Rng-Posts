@@ -39,6 +39,13 @@
             );
             cat_div.appendChild(btn);
         }
+        let btn = document.createElement('button');
+        let link = document.createElement("a");
+        btn.className = 'open-close open-button btn';
+        btn.innerHTML = "Close";
+        link.appendChild(btn);
+        link.href = "javascript:history.back()";
+        cat_div.appendChild(link);
     }
 
     function Select(id) {

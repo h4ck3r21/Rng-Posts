@@ -55,7 +55,7 @@
                 <p class="error-text" id="error">{{login_error}}</p>
                 <p class="msg-text" id="msg">{{msg}}</p>
 
-                <a href="/create-post" style="display: inline-block;">
+                <a id="post-redirect" href="/create-post" style="display: inline-block;">
                 <button id="postButton" class="open-button">Post</button>
                 </a>
                 <a href="/new-category" style="display: inline-block;">
@@ -81,8 +81,12 @@
             var followed;
             var posts;
             var follow_btn_link;
+            
 
             function startup() {
+                resizeContent()
+                window.addEventListener("resize", resizeContent)
+
                 console.log("{{posts}}");
                 posts = "{{posts}}";
                 followed = "{{followed}}";
@@ -93,6 +97,7 @@
                     let btn_link = document.getElementById("manage-btn");
                     btn_link.style.display = "inline-block";
 
+                    document.getElementById("post-redirect").href = "/add_to_category/{{category}}"
                     follow_btn_link.style.display = "inline-block";
 
                     checkFollowed();
@@ -123,6 +128,21 @@
                         }
                     }
                 }
+            }
+
+            function resizeContent() {
+                const content = document.getElementById('content');
+                const main_content = document.getElementsByClassName('main-content')[0];
+                newWidth = (main_content.offsetWidth - 15) - ((main_content.offsetWidth - 15) % 320) - 20
+                console.log(newWidth);
+                content.style.maxWidth = newWidth + "px";
+                //655/620 975/940 1295/1260 1615/1580
+
+                const searchBar = document.getElementsByClassName("search-bar")[0];
+                const header = document.getElementsByClassName("header")[0];
+                width = header.offsetWidth - 148 ;
+                searchBar.style.maxWidth = width + "px";
+                console.log(width);
             }
 
             function checkFollowed() {
@@ -174,13 +194,8 @@
             function addRow(post) {
 
                 console.log(post)
-
                 const iframe = document.createElement('iframe');
                 const content = document.getElementById('content');
-                const main_content = document.getElementsByClassName('main-content')[0];
-                newWidth = (main_content.offsetWidth - 15) - ((main_content.offsetWidth - 15) % 320) - 20
-                console.log(main_content.offsetWidth);
-                content.style.maxWidth = newWidth;
                 
 
                 iframe.className = 'post';
@@ -198,9 +213,6 @@
 
                 window.addEventListener('resize', function() {
                     iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
-                    console.log(iframe.contentWindow.document.body.scrollHeight);
-                    //content.style.width = 
-                    console.log(content.style.width);
 
                 });
                 document.getElementById('content').appendChild(iframe);
