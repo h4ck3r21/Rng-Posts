@@ -6,67 +6,30 @@
   display: none;
 }
 
-.input-text {
-  width: 90%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  border: none;
-  background: #f1f1f1;
-}
-
-.input-text:focus {
-  background-color: #ddd;
-  outline: none;
-}
-
-.form-container .btn {
-  background-color: #04AA6D;
-  color: white;
-  padding: 16px 20px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom:10px;
-  opacity: 0.8;
-}
-
-.form-container .close {
-  background-color: red;
-}
-
 .form-container .btn:hover, .open-button:hover {
   opacity: 1;
-}
-
-.form-container {
-  padding: 10px;
-  background-color: white;
 }
 
 .post-form {
   max-width: 500px
 }
 
-body {
-  background-color: #EEE;
-
-}
-
 .file-button {
-  -webkit-appearance: none;
-  background: #FFF;
-  border: 1px solid black;
-  border-radius: 3px;
-  padding: 0.1em 0.2em;
-  cursor: pointer;
+    -webkit-appearance: none;
+    background: #EAEAEA;
+    border: 1px solid #252A34;
+    color: #252A34;
+    border-radius: 3px;
+    padding: 0.1em 0.2em;
+    cursor: pointer;
 }
 
-.file-button:active {
-  background: #666;
+.file-button:hover {
+    background: #FF2E63;
 }
 
 .img-container button.left {
-  left: 1%;
+    left: 1%;
 }
 
 .img-container button.right {
@@ -89,4 +52,5 @@ body {
 }
 
 .img-container .btn:hover {
-  background-color: black;
+    background-color: black;
+}

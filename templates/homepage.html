@@ -131,8 +131,8 @@
             }
 
             function resizeContent() {
-                const content = document.getElementById('content');
-                const main_content = document.getElementsByClassName('main-content')[0];
+                const content = document.getElementById('content'); 
+                const main_content = document.getElementsByClassName('main-content')[0]
                 newWidth = (main_content.offsetWidth - 15) - ((main_content.offsetWidth - 15) % 320) - 20
                 console.log(newWidth);
                 content.style.maxWidth = newWidth + "px";
