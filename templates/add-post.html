@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Add Post</title>
     <link rel="stylesheet" href="../static/css/send_post.css">
+    <link rel="stylesheet" href="../static/css/add-post.css">
     <link rel="stylesheet" href="../static/css/Styling.css">
     <link rel="stylesheet" href="../static/css/form.css">
-    <link rel="stylesheet" href="../static/css/add-post.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -19,7 +19,9 @@
         <br><br>
 
         <button type="submit" id="submit-post" class="btn">Submit</button>
-        <button type="button" id="PostCloseButton" class="btn close" onclick="history.back()">Close</button>
+        <a href="javascript:history.back()">
+            <button type="button" id="PostCloseButton" class="btn close">Close</button>
+        </a>
     </form>
 </center>
 <script id="post-script">
@@ -62,38 +64,18 @@
                 iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
                 console.log(iframe.contentWindow.document.body.scrollHeight);
             });
-            let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            if (typeof iframeDoc.addEventListener != "undefined") {
-                iframeDoc.addEventListener("click", iframeClickHandler, false);
-            } else if (typeof iframeDoc.attachEvent != "undefined") {
-                iframeDoc.attachEvent("onclick", iframeClickHandler);
-            }
-            const embeds = iframeDoc.getElementsByTagName("iframe");
-            console.log(embeds);
-            for (i = 0; i < embeds.length; i++) {
-                let embedDoc = embeds[i].contentDocument || embeds[i].contentWindow.document;
-                if (typeof embedDoc.addEventListener != "undefined") {
-                    embedDoc.addEventListener("click", iframeClickHandler, false);
-                } else if (typeof embedDoc.attachEvent != "undefined") {
-                    embedDoc.attachEvent("onclick", iframeClickHandler);
-                }
-                console.log(embeds[i].src)
-            }
-
-            function iframeClickHandler() {
-                console.log("click");
+            iframe.addEventListener("click", function() {
                 if (iframe.classList.contains('selected')) {
                     iframe.classList.remove('selected');
                 }
                 else {
                     selected_posts = document.getElementsByClassName('selected');
-                    Array.prototype.forEach.call(selected_posts, function (post) { post.classList.remove('selected') });
+                    Array.prototype.forEach.call(selected_posts, function(post) {post.classList.remove('selected')});
                     document.getElementById('post').value = post;
                     console.log(document.getElementById('post').value);
                     iframe.classList.add('selected');
                 }
-            }
-// iframe.contentWindow.document.addEventListener("click", iframeClick);
+            });
         });
 
 
@@ -106,8 +88,6 @@
 
         document.getElementById('posts').appendChild(iframe);
     }
-
-    
 </script>
 </body>
 </html>
