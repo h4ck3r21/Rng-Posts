@@ -41,7 +41,7 @@ function resizeImageLoop(iframe, src) {
         return
     }
     else if (elements.length == 0 || !(elements[0].src.includes(src) || elements[0].baseURI.includes(src)))  {
-        setTimeout(() => {  resizeImageLoop(iframe, src); }, 1000);
+        setTimeout(() => {  resizeImageLoop(iframe, src); }, 10);
     } else {
         console.log(elements[0].src)
         if (elements[0].tagName == "IMG") {

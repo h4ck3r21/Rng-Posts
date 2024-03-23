@@ -627,6 +627,7 @@ def select_post(category_id):
     if permission is None:
         permission = create_permission(user, cat)
     posts = Post.query.filter_by(user=user).all()
+    posts = [post for post in posts if cat not in post.category]
     if user is not None and permission.canPost:
         return render_template("add-post.html", category=category_id, posts=posts)
     else:
