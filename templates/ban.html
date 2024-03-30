@@ -15,14 +15,12 @@
         <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/ban-form">
             <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
             <label for="user">User</label>
-            <select name="user" id="user"></select>
+            <select name="user" id="user" required></select>
 
             <br><br>
 
             <button type="submit" id="submit-post" class="btn">Submit</button>
-            <a href="javascript:history.back()">
-                <button type="button" id="PostCloseButton" class="btn close">Close</button>
-            </a>
+            <button type="button" id="PostCloseButton" class="btn close" onclick="history.back()">Close</button>
         </form>
         <p style="display:none;" id="users">{{users}}</p>
     </center>
