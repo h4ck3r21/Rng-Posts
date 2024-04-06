@@ -14,7 +14,7 @@
         <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/del-post">
             <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
             <input name="post" id="post" class="input-text" required hidden>
-            <div id="posts"></div>
+            <div id="posts" style="max-height: 600px; overflow-y:auto;"></div>
 
             <br><br>
 

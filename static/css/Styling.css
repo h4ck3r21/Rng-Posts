@@ -133,7 +133,7 @@ img.logo {
 
 .category {
     width: 300px;
-    margin:10px;
+    margin: 0px 2px 5px 2px;
 }
 
 .solid-button:hover, .category:hover {
@@ -209,10 +209,22 @@ img.logo {
     border: 3px solid #EAEAEA;
     border-radius: 5px;
     margin: 0px 0px 0px 0px;
+    width: 300px;
+    /*flex-grow: 1;*/
 }
 
 #content {
-    columns: 300px 12;
+    columns: 300px 100;
     column-fill: balance;
     column-rule-width: 16px;
+    /*display: flex;
+    flex-wrap: wrap;*/
+    /*display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-auto-rows: auto; 
+    gap: 10px;*/
+}
+
+.content {
+
 }

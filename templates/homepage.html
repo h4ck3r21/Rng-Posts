@@ -131,12 +131,33 @@
             }
 
             function resizeContent() {
-                const content = document.getElementById('content'); 
-                const main_content = document.getElementsByClassName('main-content')[0]
+                /*const content = document.getElementById('content'); 
+                
                 newWidth = (main_content.offsetWidth - 15) - ((main_content.offsetWidth - 15) % 320) - 20
                 console.log(newWidth);
-                content.style.maxWidth = newWidth + "px";
+                content.style.maxWidth = newWidth + "px";*/
                 //655/620 975/940 1295/1260 1615/1580
+                const main_content = document.getElementsByClassName('main-content')[0]
+                finished = false;
+                let i = 1
+                while (!finished) {
+                    let div = document.getElementById('content' + i);
+                    if (div != null) {
+                        main_content.removeChild(div);
+                        i++;
+                    }
+                    else {
+                        finished = true;
+                    }
+                }
+
+                for (i = 1; i < (main_content.offsetWidth - 15) / 320; i++) {
+                    let div = document.createElement("div");
+                    div.classList.add("content")
+                    div.maxWidth = "300px";
+                    div.id = "content" + i;
+                    main_content.appendChild(div);
+                }
 
                 const searchBar = document.getElementsByClassName("search-bar")[0];
                 const header = document.getElementsByClassName("header")[0];
@@ -195,7 +216,25 @@
 
                 console.log(post)
                 const iframe = document.createElement('iframe');
-                const content = document.getElementById('content');
+
+                height = Infinity;
+                finished = false;
+                content = null;
+                let i = 1
+                while (!finished) {
+                    let div = document.getElementById('content' + i);
+                    if (div != null) {
+                        console.log(div.clientHeight);
+                        if (div.clientHeight < height) {
+                            content = div;
+                        }
+                        i++;
+                    }
+                    else {
+                        finished = true;
+                    }
+                }
+                
                 
 
                 iframe.className = 'post';
@@ -215,7 +254,7 @@
                     iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
 
                 });
-                document.getElementById('content').appendChild(iframe);
+                content.appendChild(iframe);
             }
 
             function addCat(category) {
@@ -236,7 +275,25 @@
                     Select(id)
                 });
 
-                document.getElementById('content').appendChild(btn);
+                height = Infinity;
+                finished = false;
+                content = null;
+                let i = 1
+                while (!finished) {
+                    let div = document.getElementById('content' + i);
+                    if (div != null) {
+                        console.log(div.clientHeight);
+                        if (div.clientHeight < height) {
+                            content = div;
+                        }
+                        i++;
+                    }
+                    else {
+                        finished = true;
+                    }
+                }
+
+                content.appendChild(btn);
                 //document.getElementById('content').appendChild(linebreak);
             }
 
