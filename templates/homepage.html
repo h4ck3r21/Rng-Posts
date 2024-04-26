@@ -81,6 +81,7 @@
             var followed;
             var posts;
             var follow_btn_link;
+            var elementList = [];
             
 
             function startup() {
@@ -118,8 +119,8 @@
                     posts = posts.split("&gt;, &lt;");
 
                     console.log(posts);
-
-                    for (index in posts) {
+                    
+                    for (index = 0; index < posts.length; index++) {
                         if (posts[index].startsWith("Post ")) {
                             addRow(posts[index].substring(5, posts[index].length));
                         }
@@ -127,17 +128,43 @@
                             addCat(posts[index].substring(9, posts[index].length - 5));
                         }
                     }
+                    addElementsToDivs();
+                }
+            }
+
+            function getShortestContent() {
+                const main_content = document.getElementsByClassName('main-content')[0]
+                height = Infinity;
+                content = null;
+                columns = Math.floor((main_content.offsetWidth - 15) / 320);
+                for (i = 1; i <= columns; i++) {
+                    let div = document.getElementById('content' + i);
+                    if (div.clientHeight < height) {
+                        content = div;
+                        height = div.clientHeight;
+                    }
+                }
+                return content;
+            }
+
+            function addElementsToDivs() {
+                for (i = 0; i < elementList.length; i++) {
+                    let content = getShortestContent();
+                    content.appendChild(elementList[i]);
                 }
             }
 
             function resizeContent() {
-                /*const content = document.getElementById('content'); 
+                const content = document.getElementById('content'); 
+                const main_content = document.getElementsByClassName('main-content')[0]
                 
                 newWidth = (main_content.offsetWidth - 15) - ((main_content.offsetWidth - 15) % 320) - 20
                 console.log(newWidth);
-                content.style.maxWidth = newWidth + "px";*/
+                content.style.maxWidth = newWidth + "px";
                 //655/620 975/940 1295/1260 1615/1580
-                const main_content = document.getElementsByClassName('main-content')[0]
+
+
+
                 finished = false;
                 let i = 1
                 while (!finished) {
@@ -215,27 +242,8 @@
             function addRow(post) {
 
                 console.log(post)
-                const iframe = document.createElement('iframe');
-
-                height = Infinity;
-                finished = false;
-                content = null;
-                let i = 1
-                while (!finished) {
-                    let div = document.getElementById('content' + i);
-                    if (div != null) {
-                        console.log(div.clientHeight);
-                        if (div.clientHeight < height) {
-                            content = div;
-                        }
-                        i++;
-                    }
-                    else {
-                        finished = true;
-                    }
-                }
-                
-                
+                const iframe = document.createElement('iframe');       
+                //content = document.getElementById("content");
 
                 iframe.className = 'post';
 
@@ -254,7 +262,10 @@
                     iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
 
                 });
-                content.appendChild(iframe);
+
+                /*content = getShortestContent();
+                content.appendChild(iframe);*/
+                elementList.push(iframe);
             }
 
             function addCat(category) {
@@ -268,6 +279,7 @@
 
                 const btn = document.createElement('button');
                 const linebreak = document.createElement("br");
+                content = document.getElementById("content");
 
                 btn.className = 'category';
                 btn.innerHTML = name;
@@ -275,25 +287,9 @@
                     Select(id)
                 });
 
-                height = Infinity;
-                finished = false;
-                content = null;
-                let i = 1
-                while (!finished) {
-                    let div = document.getElementById('content' + i);
-                    if (div != null) {
-                        console.log(div.clientHeight);
-                        if (div.clientHeight < height) {
-                            content = div;
-                        }
-                        i++;
-                    }
-                    else {
-                        finished = true;
-                    }
-                }
-
-                content.appendChild(btn);
+                /*content = getShortestContent();
+                content.appendChild(btn);*/
+                elementList.push(btn);
                 //document.getElementById('content').appendChild(linebreak);
             }
 
