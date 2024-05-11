@@ -82,6 +82,7 @@
             var posts;
             var follow_btn_link;
             var elementList = [];
+            var contentGenerated = [];
             
 
             function startup() {
@@ -125,19 +126,19 @@
                             addRow(posts[index].substring(5, posts[index].length));
                         }
                         if (posts[index].startsWith("Category ")) {
-                            addCat(posts[index].substring(9, posts[index].length - 5));
+                            //addCat(posts[index].substring(9, posts[index].length - 5));
                         }
                     }
-                    addElementsToDivs();
+                    addInitialElementsToDivs();
                 }
             }
 
-            function getShortestContent() {
+            function getInitialShortestContent() {
                 const main_content = document.getElementsByClassName('main-content')[0]
                 height = Infinity;
                 content = null;
                 columns = Math.floor((main_content.offsetWidth - 15) / 320);
-                for (i = 1; i <= columns; i++) {
+                for (let i = 1; i <= columns; i++) {
                     let div = document.getElementById('content' + i);
                     if (div.clientHeight < height) {
                         content = div;
@@ -147,11 +148,53 @@
                 return content;
             }
 
-            function addElementsToDivs() {
-                for (i = 0; i < elementList.length; i++) {
-                    let content = getShortestContent();
-                    content.appendChild(elementList[i]);
+            function addInitialElementsToDivs() {
+                console.log("add");
+                for (let i = 0; i < elementList.length; i = i + 1) {
+                    let content = getInitialShortestContent();
+                    if (!isIframeInDiv(content, elementList[i])) {
+                        content.appendChild(elementList[i]);
+                        contentGenerated[i] += content.clientHeight;
+                    }
                 }
+            }
+
+            function getShortestContent() {
+                const main_content = document.getElementsByClassName('main-content')[0]
+                let height = Infinity;
+                let index = 1;
+                const columns = Math.floor((main_content.offsetWidth - 15) / 320);
+                for (let i = 1; i <= columns; i++) {
+                    if (contentGenerated[i-1] < height) {
+                        height = contentGenerated[i-1];
+                        index = i;
+                    }
+                }
+                return index;
+            }
+
+            function addElementsToDivs() {
+                const main_content = document.getElementsByClassName('main-content')[0];
+                const columns = Math.floor((main_content.offsetWidth - 15) / 320);
+                console.log("add");
+                contentGenerated = Array(columns).fill(0);
+                for (let i = 0; i < elementList.length; i = i+1) {
+                    let index = getShortestContent();
+                    let content = document.getElementById('content' + index);
+                    if (!isIframeInDiv(content, elementList[i])) {
+                        content.appendChild(elementList[i]);
+                    }   
+                    contentGenerated[index - 1] += elementList[i].clientHeight;
+                }
+            }
+
+            function isIframeInDiv(div, iframe) {
+                for (let i = 0; i < div.childElementCount; i = i + 1) {
+                    if (div.children.item(i).src == iframe.src) {
+                        return true;
+                    }
+                }
+                return false;
             }
 
             function resizeContent() {
@@ -161,29 +204,28 @@
                 newWidth = (main_content.offsetWidth - 15) - ((main_content.offsetWidth - 15) % 320) - 20
                 console.log(newWidth);
                 content.style.maxWidth = newWidth + "px";
+                const columns = (main_content.offsetWidth - 15) / 320
                 //655/620 975/940 1295/1260 1615/1580
 
 
 
-                finished = false;
-                let i = 1
-                while (!finished) {
-                    let div = document.getElementById('content' + i);
-                    if (div != null) {
-                        main_content.removeChild(div);
-                        i++;
-                    }
-                    else {
-                        finished = true;
-                    }
+                let i = Math.floor(columns) + 1
+                let div = document.getElementById('content' + i);
+                while (div != null) {
+                    main_content.removeChild(div);
+                    i++;
+                    div = document.getElementById('content' + i);
                 }
 
                 for (i = 1; i < (main_content.offsetWidth - 15) / 320; i++) {
-                    let div = document.createElement("div");
-                    div.classList.add("content")
-                    div.maxWidth = "300px";
-                    div.id = "content" + i;
-                    main_content.appendChild(div);
+                    let div = document.getElementById('content' + i);
+                    if (div == null) {
+                        let div = document.createElement("div");
+                        div.classList.add("content")
+                        div.maxWidth = "300px";
+                        div.id = "content" + i;
+                        main_content.appendChild(div);
+                    }
                 }
 
                 const searchBar = document.getElementsByClassName("search-bar")[0];
@@ -191,6 +233,7 @@
                 width = header.offsetWidth - 148 ;
                 searchBar.style.maxWidth = width + "px";
                 console.log(width);
+                addElementsToDivs();
             }
 
             function checkFollowed() {
@@ -266,6 +309,7 @@
                 /*content = getShortestContent();
                 content.appendChild(iframe);*/
                 elementList.push(iframe);
+                console.log(elementList);
             }
 
             function addCat(category) {
@@ -291,6 +335,7 @@
                 content.appendChild(btn);*/
                 elementList.push(btn);
                 //document.getElementById('content').appendChild(linebreak);
+                console.log(elementList);
             }
 
             function Select(id) {
