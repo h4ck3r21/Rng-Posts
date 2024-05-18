@@ -133,7 +133,8 @@ img.logo {
 
 .category {
     width: 300px;
-    margin:10px;
+    margin: 0px;
+    height: 53px;
 }
 
 .solid-button:hover, .category:hover {
@@ -211,8 +212,18 @@ img.logo {
     margin: 0px 0px 0px 0px;
 }
 
+.wrapper {
+    break-inside: avoid;
+    width: 100%;
+}
+
 #content {
+    /*
     columns: 300px 12;
     column-fill: balance;
-    column-rule-width: 16px;
+    column-rule-width: 16px;*/
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-auto-rows: max-content;
+    gap: 20px;
 }

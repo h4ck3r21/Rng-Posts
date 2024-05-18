@@ -81,6 +81,7 @@
             var followed;
             var posts;
             var follow_btn_link;
+            var wrapperIndex = 0;
             
 
             function startup() {
@@ -118,7 +119,11 @@
                     posts = posts.split("&gt;, &lt;");
 
                     console.log(posts);
-
+                    /*const main_content = document.getElementsByClassName('main-content')[0]
+                    let columns = math.floor((main_content.offsetWidth - 15) / 320
+                    for (let i = 0; i < posts.length * columns; i += columns) {
+                        let index = Math.floor(i / posts.length) + i % posts.length;
+                        console.log(index);*/
                     for (index in posts) {
                         if (posts[index].startsWith("Post ")) {
                             addRow(posts[index].substring(5, posts[index].length));
@@ -215,7 +220,13 @@
                     iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
 
                 });
-                document.getElementById('content').appendChild(iframe);
+
+                let wrapper = document.createElement('div');
+                wrapper.style.order = wrapperIndex;
+                wrapperIndex++;
+                wrapper.className = "wrapper-div";
+                wrapper.appendChild(iframe);
+                document.getElementById('content').appendChild(wrapper);
             }
 
             function addCat(category) {
