@@ -82,6 +82,27 @@
             var posts;
             var follow_btn_link;
             var wrapperIndex = 0;
+            var ro = new ResizeObserver(entries => {
+                let total_height = 0;
+                for (let entry of entries) {
+                    const cr = entry.contentRect;
+
+                    console.log('Element:', entry.target);
+                    console.log(`Element size: ${cr.width}px x ${cr.height}px`);
+                    console.log(`Element padding: ${cr.top}px ; ${cr.left}px`);
+                }
+                const main_content = document.getElementsByClassName('main-content')[0];
+                const content = document.getElementById('content'); 
+                for (let element of content.children) {
+                    total_height += element.clientHeight;
+                    total_height += 10;
+                }
+                
+                let columns = Math.floor((main_content.offsetWidth - 15) / 320);
+                console.log(total_height);
+                console.log(columns);
+                content.style.height = total_height/columns + 'px';
+            });
             
 
             function startup() {
@@ -226,6 +247,7 @@
                 wrapperIndex++;
                 wrapper.className = "wrapper-div";
                 wrapper.appendChild(iframe);
+                ro.observe(wrapper);
                 document.getElementById('content').appendChild(wrapper);
             }
 

@@ -213,8 +213,8 @@ img.logo {
 }
 
 .wrapper {
-    break-inside: avoid;
-    width: 100%;
+    order: 1;
+    margin: 5px;
 }
 
 #content {
@@ -222,8 +222,13 @@ img.logo {
     columns: 300px 12;
     column-fill: balance;
     column-rule-width: 16px;*/
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    height: 4469px;
+}
+.subgrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    grid-auto-rows: max-content;
-    gap: 20px;
+    grid-template-columns: repeat(12, 1fr);
 }
