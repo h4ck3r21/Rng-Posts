@@ -83,8 +83,9 @@
             var follow_btn_link;
             var wrapperIndex = 0;
             var wrappers = [];
+            var sorting = false;
             var ro = new ResizeObserver(entries => {
-                for (let entry of entries) {
+                /*for (let entry of entries) {
                     const cr = entry.contentRect;
 
                     console.log('Element:', entry.target);
@@ -102,7 +103,13 @@
                 content_height = findMinX(heights, columns);
                 console.log(content_height)
 
-                content.style.height = content_height + 'px';
+                content.style.height = content_height + 'px';*/
+                if (!sorting) {
+                    sorting = true;
+                    sortPosts();
+                    sorting = false;
+                }
+                
             });
 
 
@@ -140,6 +147,54 @@
                 }
 
                 return result;
+            }
+
+            function sortPosts() {
+                const main_content = document.getElementsByClassName('main-content')[0];
+                const content = document.getElementById('content'); 
+                n = Math.floor((main_content.offsetWidth - 15) / 320);
+                posts = content.children;
+
+                let column_heights = new Array(n).fill(0);
+                let columns = [];
+                for (let i = 0; i < n; i++) {
+                    columns.push([]);
+                }
+                for (let post of posts) {
+                    if (post.className == "filler") {
+                        post.remove();
+                    }
+                    else {
+                        let index = column_heights.reduce((r, v, i, a) => v >= a[r] ? r : i, -1);
+                        column_heights[index] += post.clientHeight + 10;
+                        columns[index].push(post);
+                    }
+                    
+                }
+
+                let content_height = Math.max(...column_heights);
+                let x = 0;
+                for (let i = 0; i < n; i++) {
+                    let column = columns[i]
+                    for (let post of column) {
+                        post.style.order = x;
+                        x++;
+                    }
+
+                    console.log(i);
+                    let height = column_heights[i]
+                    let filler = document.createElement("div");
+                    filler.className = "filler";
+                    filler.style.height = content_height - height + "px";
+                    content.appendChild(filler);
+                    filler.style.order = x;
+                    x++;
+                }
+
+                console.log(columns);
+                console.log(column_heights);
+                console.log(content_height);
+                content.style.height = content_height + 'px';
             }
             
 
@@ -215,7 +270,7 @@
                 for (let i = 0; i < wrappers.length * columns; i += columns) {
                     let index = Math.floor(i / wrappers.length) + i % wrappers.length;
                     console.log(index);
-                    wrappers[index].style.order = x;
+                    //wrappers[index].style.order = x;
                     x++;
                 }
             }
