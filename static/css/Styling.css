@@ -133,7 +133,8 @@ img.logo {
 
 .category {
     width: 300px;
-    margin:10px;
+    margin: 0px;
+    height: 53px;
 }
 
 .solid-button:hover, .category:hover {
@@ -211,8 +212,23 @@ img.logo {
     margin: 0px 0px 0px 0px;
 }
 
+.wrapper {
+    order: 1;
+    margin: 5px;
+}
+
 #content {
+    /*
     columns: 300px 12;
     column-fill: balance;
-    column-rule-width: 16px;
+    column-rule-width: 16px;*/
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    height: 4469px;
+}
+.subgrid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
 }

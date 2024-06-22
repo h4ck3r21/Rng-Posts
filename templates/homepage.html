@@ -81,6 +81,132 @@
             var followed;
             var posts;
             var follow_btn_link;
+            var wrapperIndex = 0;
+            var wrappers = [];
+            var sorting = false;
+            var ro = new ResizeObserver(entries => {
+                /*for (let entry of entries) {
+                    const cr = entry.contentRect;
+
+                    console.log('Element:', entry.target);
+                    console.log(`Element size: ${cr.width}px x ${cr.height}px`);
+                    console.log(`Element padding: ${cr.top}px ; ${cr.left}px`);
+                }
+                const main_content = document.getElementsByClassName('main-content')[0];
+                const content = document.getElementById('content'); 
+                let heights = [];
+                for (let element of content.children) {
+                    heights.push(element.clientHeight + 10);
+                }
+
+                let columns = Math.floor((main_content.offsetWidth - 15) / 320);
+                content_height = findMinX(heights, columns);
+                console.log(content_height)
+
+                content.style.height = content_height + 'px';*/
+                if (!sorting) {
+                    sorting = true;
+                    sortPosts();
+                    sorting = false;
+                }
+                
+            });
+
+
+            function canDivide(arr, n, maxSum) {
+                let sections = 1;
+                let currentSum = 0;
+
+                for (let num of arr) {
+                    if (currentSum + num > maxSum) {
+                        sections++;
+                        currentSum = num;
+                        if (sections > n) return false;
+                    } else {
+                        currentSum += num;
+                    }
+                }
+
+                return true;
+            }
+
+            function findMinX(arr, n) {
+                let left = Math.max(...arr);
+                let right = arr.reduce((a, b) => a + b, 0);
+                let result = right;
+
+                while (left <= right) {
+                    let mid = Math.floor((left + right) / 2);
+
+                    if (canDivide(arr, n, mid)) {
+                        result = mid;
+                        right = mid - 1;
+                    } else {
+                        left = mid + 1;
+                    }
+                }
+
+                return result;
+            }
+
+            function sortPosts() {
+                const main_content = document.getElementsByClassName('main-content')[0];
+                const content = document.getElementById('content'); 
+                n = Math.floor((main_content.offsetWidth - 15) / 320);
+                posts = content.children;
+
+                let column_heights = new Array(n).fill(0);
+                let columns = [];
+                let fillers = [];
+                for (let i = 0; i < n; i++) {
+                    columns.push([]);
+                }
+                for (let post of posts) {
+                    if (post.className == "filler") {
+                        fillers.push(post);
+                    }
+                    else {
+                        let index = column_heights.reduce((r, v, i, a) => v >= a[r] ? r : i, -1);
+                        column_heights[index] += post.clientHeight;
+                        columns[index].push(post);
+                    }   
+                }
+                console.log(column_heights);
+                console.log(fillers);
+
+                let content_height = Math.max(...column_heights);
+                let x = 0;
+                for (let i = 0; i < n; i++) {
+                    let column = columns[i]
+                    for (let post of column) {
+                        post.style.order = x;
+                        x++;
+                    }
+                    let height = column_heights[i]
+                    if (i >= fillers.length) {
+                        let filler = document.createElement("div");
+                        filler.className = "filler";
+                        content.appendChild(filler);
+                        filler.style.height = content_height - height + "px";
+                        filler.style.order = x;
+                        x++;
+                    }
+                    else {
+                        let filler = fillers[i];
+                        filler.style.height = content_height - height + "px";
+                        filler.style.order = x;
+                        x++;
+                    }
+                }
+                for (let i = n; i < fillers.length; i++) {
+                    fillers[i].remove();
+                }
+
+                console.log(columns);
+                console.log(column_heights);
+                console.log(content_height);
+                content.style.height = content_height + 'px';
+            }
             
 
             function startup() {
@@ -103,6 +229,8 @@
                     checkFollowed();
                 }
 
+                ro.observe(document.getElementById('content'));
+
                 if (posts == "[]") {
                     no_posts = document.createElement('p')
                     no_posts.className += "noPostsMessage"
@@ -118,8 +246,12 @@
                     posts = posts.split("&gt;, &lt;");
 
                     console.log(posts);
-
-                    for (index in posts) {
+                    /*const main_content = document.getElementsByClassName('main-content')[0]
+                    let columns = math.floor((main_content.offsetWidth - 15) / 320
+                    for (let i = 0; i < posts.length * columns; i += columns) {
+                        let index = Math.floor(i / posts.length) + i % posts.length;
+                        console.log(index);*/
+                    for (let index in posts) {
                         if (posts[index].startsWith("Post ")) {
                             addRow(posts[index].substring(5, posts[index].length));
                         }
@@ -143,6 +275,16 @@
                 width = header.offsetWidth - 148 ;
                 searchBar.style.maxWidth = width + "px";
                 console.log(width);
+
+                let columns = Math.floor((main_content.offsetWidth - 15) / 320);
+                let x = 0
+                for (let i = 0; i < wrappers.length * columns; i += columns) {
+                    let index = Math.floor(i / wrappers.length) + i % wrappers.length;
+                    console.log(index);
+                    //wrappers[index].style.order = x;
+                    x++;
+                }
+                sortPosts();
             }
 
             function checkFollowed() {
@@ -215,7 +357,15 @@
                     iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
 
                 });
-                document.getElementById('content').appendChild(iframe);
+
+                let wrapper = document.createElement('div');
+                wrapper.style.order = wrapperIndex;
+                wrapperIndex++;
+                wrappers.push(wrapper);
+                wrapper.className = "wrapper-div";
+                wrapper.appendChild(iframe);
+                ro.observe(wrapper);
+                document.getElementById('content').appendChild(wrapper);
             }
 
             function addCat(category) {
@@ -236,7 +386,14 @@
                     Select(id)
                 });
 
-                document.getElementById('content').appendChild(btn);
+                let wrapper = document.createElement('div');
+                wrapper.style.order = wrapperIndex;
+                wrapperIndex++;
+                wrappers.push(wrapper);
+                wrapper.className = "wrapper-div";
+                wrapper.appendChild(btn);
+                ro.observe(wrapper);
+                document.getElementById('content').appendChild(wrapper);
                 //document.getElementById('content').appendChild(linebreak);
             }
 

@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename, redirect
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'files'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'wav', }
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'wav', 'mov', 'mkv'}
 
 DATABASE_URL = os.environ['DATABASE_URL']
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
@@ -818,9 +818,13 @@ def getLevel(category_id, user_promote_id):
         if user is not None and permission.canPromote:
             return str(user_promote_permission.level)
         else:
-            return "fail"
+            return "N/A"
     else:
         redirect(url_for("home"), code=302)
+        
+@app.route("/get-level/<category_id>/")
+def noUser(category_id):
+    return "N/A"
 
 
 @app.route("/promote-form", methods=["GET", "POST"])

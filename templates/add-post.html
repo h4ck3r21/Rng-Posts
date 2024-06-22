@@ -10,19 +10,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-<center>
-    <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/add-cat">
-        <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
-        <input name="post" id="post" class="input-text" required hidden>
-        <div id="posts"></div>
+    <center>
+        <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/add-cat">
+            <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
+            <input name="post" id="post" class="input-text" required hidden>
+            <div id="posts"></div>
 
-        <br><br>
+            <br><br>
 
-        <button type="submit" id="submit-post" class="btn">Submit</button>
-        <button type="button" id="PostCloseButton" class="btn close" onclick="history.back()">Close</button>
-    </form>
-</center>
-<script id="post-script">
+            <button type="submit" id="submit-post" class="btn">Submit</button>
+            <button type="button" id="PostCloseButton" class="btn close" onclick="history.back()">Close</button>
+        </form>
+    </center>
+    <script src="../static/add-post-add-row.js"></script>
+    <script id="post-script">
 
     console.log("{{posts}}");
     var posts = "{{posts}}";
@@ -43,71 +44,7 @@
             addRow(posts[index])
         }
     }
-    
 
-
-    function addRow(post) {
-
-        console.log(post)
-
-        const iframe = document.createElement('iframe');
-
-        iframe.className = 'post';
-
-        iframe.src = "/post/" + post;
-
-        iframe.addEventListener('load', function() {
-            this.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px";
-            iframe.contentWindow.addEventListener('resize', function () {
-                iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
-                console.log(iframe.contentWindow.document.body.scrollHeight);
-            });
-            let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            if (typeof iframeDoc.addEventListener != "undefined") {
-                iframeDoc.addEventListener("click", iframeClickHandler, false);
-            } else if (typeof iframeDoc.attachEvent != "undefined") {
-                iframeDoc.attachEvent("onclick", iframeClickHandler);
-            }
-            const embeds = iframeDoc.getElementsByTagName("iframe");
-            console.log(embeds);
-            for (i = 0; i < embeds.length; i++) {
-                let embedDoc = embeds[i].contentDocument || embeds[i].contentWindow.document;
-                if (typeof embedDoc.addEventListener != "undefined") {
-                    embedDoc.addEventListener("click", iframeClickHandler, false);
-                } else if (typeof embedDoc.attachEvent != "undefined") {
-                    embedDoc.attachEvent("onclick", iframeClickHandler);
-                }
-                console.log(embeds[i].src)
-            }
-
-            function iframeClickHandler() {
-                console.log("click");
-                if (iframe.classList.contains('selected')) {
-                    iframe.classList.remove('selected');
-                }
-                else {
-                    selected_posts = document.getElementsByClassName('selected');
-                    Array.prototype.forEach.call(selected_posts, function (post) { post.classList.remove('selected') });
-                    document.getElementById('post').value = post;
-                    console.log(document.getElementById('post').value);
-                    iframe.classList.add('selected');
-                }
-            }
-// iframe.contentWindow.document.addEventListener("click", iframeClick);
-        });
-
-
-        window.addEventListener('resize', function() {
-            iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 16) + "px"
-            console.log(iframe.contentWindow.document.body.scrollHeight);
-        });
-
-
-
-        document.getElementById('posts').appendChild(iframe);
-    }
-
-    
-</script>
+    </script>
 </body>
 </html>
