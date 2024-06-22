@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>select categories</title>
-    <link rel="stylesheet" href="../static/css/select_category.css">
     <link rel="stylesheet" href="../static/css/Styling.css">
+    <link rel="stylesheet" href="../static/css/select_category.css">
 </head>
 <body>
-<div id="categories"></div>
-<script>
+    <h1 style="text-align:center">Followed Categories</h1>
+    <p class="error-text" id="error">{{err}}</p>
+    <div id="categories"></div>
+    <script>
     var cat_div = document.getElementById('categories');
     var categories = "{{categories}}";
     var users = "{{users}}"
@@ -52,6 +54,6 @@
         console.log(id);
         window.location.href = window.location.origin + "/category-action/" + id +"/"+ "{{action}}"
     }
-</script>
+    </script>
 </body>
 </html>

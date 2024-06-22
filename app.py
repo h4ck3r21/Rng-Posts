@@ -489,9 +489,14 @@ def add_post_to_category():
             return redirect(url_for("view_category",
                                     category_id=cat_id),
                             code=302)
-        else:
+        elif not perms.canPost:
             return redirect(url_for("view_category",
                                     err="You do not have permission to post in that category",
+                                    category_id=cat_id),
+                            code=302)
+        else:
+            return redirect(url_for("select_post",
+                                    err="You do not have permission to post media in that category",
                                     category_id=cat_id),
                             code=302)
     else:
@@ -547,7 +552,8 @@ def manage_category():
 
 @app.route("/members/<category>")
 def members(category):
-    return render_template(members.html)
+    raise NotImplementedError()
+    return render_template("members.html")
 
 
 def get_users_of_lower_level(user, category):
@@ -578,7 +584,7 @@ def delete_category(category_id):
         for poster in users:
             posts.extend([post for post in Post.query.filter_by(user=poster).all() if category in post.category])
     if user is not None:
-        return render_template("remove-post.html", category=category_id, posts=posts)
+        return render_template("remove-post.html", err=request.args.get('err'), category=category_id, posts=posts)
     else:
         return redirect(url_for("view_category",
                                 err="You need to sign in to delete that post",
@@ -649,7 +655,7 @@ def timeout(category_id):
         permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     if user is not None and permission.canTimeout:
-        render_template("timeout.html", category=category_id, users=users)
+        render_template("timeout.html", err=request.args.get('err'), category=category_id, users=users)
     else:
         return redirect(url_for("view_category",
                                 err="You do not have permission to timeout in that category",
@@ -677,7 +683,7 @@ def timeout_user():
             db.session.commit()
             return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
-            return redirect(url_for("view_category",
+            return redirect(url_for("timeout",
                                     err="You do not have permission to timeout that person",
                                     category_id=cat_id),
                             code=302)
@@ -697,7 +703,7 @@ def mute(category_id):
         permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     if user is not None and permission.canMute:
-        return render_template("mute.html", category=category_id, users=users)
+        return render_template("mute.html", err=request.args.get('err'), category=category_id, users=users)
     else:
         return redirect(url_for("view_category",
                                 err="You do not have permission to mute",
@@ -724,7 +730,7 @@ def mute_user():
             db.session.commit()
             return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
-            return redirect(url_for("view_category",
+            return redirect(url_for("mute",
                                     err="You do not have permission to mute that person",
                                     category_id=cat_id),
                             code=302)
@@ -744,7 +750,7 @@ def ban(category_id):
         permission = create_permission(user, category)
     users = get_users_of_lower_level(user, category)
     if user is not None and permission.canBan:
-        return render_template("ban.html", category=category_id, users=users)
+        return render_template("ban.html", err=request.args.get('err'), category=category_id, users=users)
     else:
         return redirect(url_for("view_category",
                                 err="You do not have permission to ban in that category",
@@ -773,7 +779,7 @@ def ban_user():
             db.session.commit()
             return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
-            return redirect(url_for("view_category",
+            return redirect(url_for("ban",
                                     err="You do not have permission to ban that person",
                                     category_id=cat_id),
                             code=302)
@@ -794,7 +800,7 @@ def promote(category_id):
     users = get_users_of_lower_level(user, category)
     users_id = [poster.id for poster in users]
     if user is not None and permission.canPromote:
-        return render_template("promote.html", category=category_id, users=users, users_id=users_id)
+        return render_template("promote.html", err=request.args.get('err'), category=category_id, users=users, users_id=users_id)
     else:
         return redirect(url_for("view_category",
                                 err="You do not have permission to promote in this category",
@@ -858,7 +864,7 @@ def promote_user():
                                     category_id=cat_id),
                             code=302)
         else:
-            return redirect(url_for("view_category",
+            return redirect(url_for("promote",
                                     err="You do not have permission to promote that person",
                                     category_id=cat_id),
                             code=302)
@@ -896,7 +902,7 @@ def modify(category_id):
     if permission.canInvite:
         actions.append("invite")
     if user is not None:
-        return render_template('modify.html', actions=actions, category_id=category_id)
+        return render_template('modify.html', actions=actions, category_id=category_id, category_name=category.name)
     else:
         redirect(url_for("home", msg="You need to sign in to access categories"), code=302)
 
@@ -914,7 +920,7 @@ def roles(category_id):
     users = get_users_of_lower_level(user, category)
     users_id = [poster.id for poster in users]
     if user is not None and permission.canPromote:
-        return render_template("roles.html", category=category_id, users=users, users_id=users_id, perms=permission)
+        return render_template("roles.html", err=request.args.get('err'), category=category_id, users=users, users_id=users_id, perms=permission)
     else:
         return redirect(url_for("view_category",
                                 err="You do not have permission to modify roles in that category",
@@ -972,7 +978,7 @@ def change_role():
             db.session.commit()
             return redirect(url_for("view_category", category_id=cat_id), code=302)
         else:
-            return redirect(url_for("view_category",
+            return redirect(url_for("roles",
                                     err="You do not have permission to promote that person",
                                     category_id=cat_id),
                             code=302)
@@ -991,7 +997,7 @@ def invite(category_id):
     if permission is None:
         permission = create_permission(user, category)
     if user is not None and permission.canPromote:
-        return render_template("invite.html", category=category_id)
+        return render_template("invite.html", err=request.args.get('err'), category=category_id)
     else:
         return redirect(url_for("view_category",
                                 err="You do not have permission to modify roles",
@@ -1014,12 +1020,12 @@ def invite_user():
             perms = create_permission(user, cat)
         invitee = User.query.filter_by(username=request.form['name']).all()
         if not invitee:
-            return redirect(url_for("view_category",
+            return redirect(url_for("invite",
                                     err="No one by that username found",
                                     category_id=cat_id),
                             code=302)
         elif len(invitee) > 1:
-            return redirect(url_for("view_category", err="multiple users by that username found", category_id=cat_id),
+            return redirect(url_for("invite", err="multiple users by that username found", category_id=cat_id),
                             code=302)
         else:
             invitee = invitee[0]

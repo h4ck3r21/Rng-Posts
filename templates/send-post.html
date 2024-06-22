@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create post</title>
+    <title>Create Post</title>
 
 
     <link rel="stylesheet" href="../static/css/Styling.css">
@@ -15,6 +15,8 @@
 <center>
 
     <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/add_post">
+        <h1>Create Post</h1>
+        <p class="error-text" id="error">{{err}}</p>
         <label for="title">Title</label>
         <input name="title" id="title" class="input-text" required>
         <br>
@@ -33,7 +35,7 @@
             </div>
 
         </div>
-        
+
 
         <br><br>
         <label for="tags">Tags</label>

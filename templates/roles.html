@@ -12,6 +12,8 @@
 <body>
 <center>
     <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/change-role">
+        <h1>Change Roles</h1>
+        <p class="error-text" id="error">{{err}}</p>
         <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
         <label for="user">User</label>
         <select name="user" id="user" required></select>

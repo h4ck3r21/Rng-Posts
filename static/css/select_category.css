@@ -1,9 +1,11 @@
 .btn {
   cursor: pointer;
   width: 80%;
-  margin:10px;
+  margin-left:auto;
+  margin-right: auto;
+  margin-top: 5px;
 }
 
-a {
+a { 
     text-decoration: none;
 }
