@@ -157,20 +157,22 @@
 
                 let column_heights = new Array(n).fill(0);
                 let columns = [];
+                let fillers = [];
                 for (let i = 0; i < n; i++) {
                     columns.push([]);
                 }
                 for (let post of posts) {
                     if (post.className == "filler") {
-                        post.remove();
+                        fillers.push(post);
                     }
                     else {
                         let index = column_heights.reduce((r, v, i, a) => v >= a[r] ? r : i, -1);
-                        column_heights[index] += post.clientHeight + 10;
+                        column_heights[index] += post.clientHeight;
                         columns[index].push(post);
-                    }
-                    
+                    }   
                 }
+                console.log(column_heights);
+                console.log(fillers);
 
                 let content_height = Math.max(...column_heights);
                 let x = 0;
@@ -180,15 +182,24 @@
                         post.style.order = x;
                         x++;
                     }
-
-                    console.log(i);
                     let height = column_heights[i]
-                    let filler = document.createElement("div");
-                    filler.className = "filler";
-                    filler.style.height = content_height - height + "px";
-                    content.appendChild(filler);
-                    filler.style.order = x;
-                    x++;
+                    if (i >= fillers.length) {
+                        let filler = document.createElement("div");
+                        filler.className = "filler";
+                        content.appendChild(filler);
+                        filler.style.height = content_height - height + "px";
+                        filler.style.order = x;
+                        x++;
+                    }
+                    else {
+                        let filler = fillers[i];
+                        filler.style.height = content_height - height + "px";
+                        filler.style.order = x;
+                        x++;
+                    }
+                }
+                for (let i = n; i < fillers.length; i++) {
+                    fillers[i].remove();
                 }
 
                 console.log(columns);
@@ -273,6 +284,7 @@
                     //wrappers[index].style.order = x;
                     x++;
                 }
+                sortPosts();
             }
 
             function checkFollowed() {
