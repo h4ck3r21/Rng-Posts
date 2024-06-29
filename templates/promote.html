@@ -41,18 +41,22 @@
         createDropDown(userList, 'user');
 
         const http = new XMLHttpRequest();
-        const url = "/get-level/" + {{ category }} + "/" + user_dropdown.value;
+        let url = "/get-level/" + {{ category }} + "/" + user_dropdown.value;
         http.open("GET", url);
         http.send();
 
         http.onreadystatechange = (e) => {
-            console.log(http.responseText);
-            level_preview.innerHTML = http.responseText;
+            if (http.responseText != "") {
+                level_preview.innerHTML = http.responseText;
+                console.log(http.responseText);
+            }
         }
         user_dropdown.addEventListener("change", function () {
+            let url = "/get-level/" + {{ category }} + "/" + user_dropdown.value;
             http.open("GET", url);
             http.send();
         })
     </script>
+    <script src="../static/check-error.js"></script>
 </body>
 </html>

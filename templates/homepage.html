@@ -78,6 +78,7 @@
 
         <script id="post-script">
             window.onload = startup;
+            const wrapperWidth = 320;
             var followed;
             var posts;
             var follow_btn_link;
@@ -99,7 +100,7 @@
                     heights.push(element.clientHeight + 10);
                 }
 
-                let columns = Math.floor((main_content.offsetWidth - 15) / 320);
+                let columns = Math.floor((main_content.offsetWidth - 15) / wrapperWidth);
                 content_height = findMinX(heights, columns);
                 console.log(content_height)
 
@@ -152,7 +153,7 @@
             function sortPosts() {
                 const main_content = document.getElementsByClassName('main-content')[0];
                 const content = document.getElementById('content'); 
-                n = Math.floor((main_content.offsetWidth - 15) / 320);
+                n = Math.min(Math.floor((main_content.offsetWidth - 15) / wrapperWidth), wrappers.length);
                 posts = content.children;
 
                 let column_heights = new Array(n).fill(0);
@@ -210,7 +211,6 @@
             
 
             function startup() {
-                resizeContent()
                 window.addEventListener("resize", resizeContent)
 
                 console.log("{{posts}}");
@@ -247,7 +247,7 @@
 
                     console.log(posts);
                     /*const main_content = document.getElementsByClassName('main-content')[0]
-                    let columns = math.floor((main_content.offsetWidth - 15) / 320
+                    let columns = math.floor((main_content.offsetWidth - 15) / wrapperWidth
                     for (let i = 0; i < posts.length * columns; i += columns) {
                         let index = Math.floor(i / posts.length) + i % posts.length;
                         console.log(index);*/
@@ -260,12 +260,15 @@
                         }
                     }
                 }
+                resizeContent()
             }
 
             function resizeContent() {
                 const content = document.getElementById('content'); 
                 const main_content = document.getElementsByClassName('main-content')[0]
-                newWidth = (main_content.offsetWidth - 15) - ((main_content.offsetWidth - 15) % 320) - 20
+                let columns = Math.min(Math.floor((main_content.offsetWidth - 15) / wrapperWidth), wrappers.length);
+                console.log(columns)
+                newWidth = columns*wrapperWidth - 20
                 console.log(newWidth);
                 content.style.maxWidth = newWidth + "px";
                 //655/620 975/940 1295/1260 1615/1580
@@ -276,7 +279,6 @@
                 searchBar.style.maxWidth = width + "px";
                 console.log(width);
 
-                let columns = Math.floor((main_content.offsetWidth - 15) / 320);
                 let x = 0
                 for (let i = 0; i < wrappers.length * columns; i += columns) {
                     let index = Math.floor(i / wrappers.length) + i % wrappers.length;

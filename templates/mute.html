@@ -10,22 +10,22 @@
     <script src="../static/createUserDropDown.js"></script>
 </head>
 <body>
-<center>
-    <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/mute-form">
-        <h1>Mute</h1>
-        <p class="error-text" id="error">{{err}}</p>
-        <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
-        <label for="user">User</label>
-        <select name="user" id="user" required></select>
+    <center>
+        <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/mute-form">
+            <h1>Mute</h1>
+            <p class="error-text" id="error">{{err}}</p>
+            <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
+            <label for="user">User</label>
+            <select name="user" id="user" required></select>
 
-        <br><br>
+            <br><br>
 
-        <button type="submit" id="submit-post" class="btn">Submit</button>
-        <button type="button" id="PostCloseButton" class="btn close" onclick="history.back()">Close</button>
-    </form>
-    <p style="display:none;" id="users">{{users}}</p>
-</center>
-<script>
+            <button type="submit" id="submit-post" class="btn">Submit</button>
+            <button type="button" id="PostCloseButton" class="btn close" onclick="history.back()">Close</button>
+        </form>
+        <p style="display:none;" id="users">{{users}}</p>
+    </center>
+    <script>
     var user_dropdown = document.getElementById('user');
     var users = "{{users}}";
     var user_ids = "{{users}}"
@@ -33,6 +33,7 @@
     console.log(user_ids)
     userList = setupUserList(users)
     createDropDown(userList, 'user')
-</script>
+    </script>
+    <script src="../static/check-error.js"></script>
 </body>
 </html>

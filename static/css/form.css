@@ -23,12 +23,7 @@
     box-shadow: -10px 10px 10px 3px #08D9D6;
 
     width: 500px;
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    margin: 20px;
 }
 
 .post-form {

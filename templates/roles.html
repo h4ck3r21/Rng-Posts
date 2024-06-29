@@ -55,6 +55,11 @@
         else {
             userList = setupUserList(users)
             createDropDown(userList, 'user')
+            setPerms()
+            user_dropdown.onchange = setPerms
+        }
+        
+        function setPerms() {
             getPermissionValue("canPost", "post")
             getPermissionValue("canDelete", "delete")
             getPermissionValue("canAttachFiles", "files")
@@ -65,8 +70,6 @@
             getPermissionValue("canPromote", "promote")
             getPermissionValue("canInvite", "invite")
         }
-        
-
 
         function getPermissionValue(property, input) {
             const http = new XMLHttpRequest();
@@ -90,6 +93,7 @@
         }
 
     </script>
+    <script src="../static/check-error.js"></script>
 </center>
 </body>
 </html>

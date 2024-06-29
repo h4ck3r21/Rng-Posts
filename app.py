@@ -397,10 +397,10 @@ def view_category(category_id):
     permission = Permissions.query.filter_by(user=user, category=cat).first()
     if permission is None:
         permission = create_permission(user, cat)
-    if user is not None and permission.canView or cat.is_public:
+    if user is not None and permission.canView:
         return home(cat.posts, title=cat.name, err=request.args.get('err'), category=category_id)
     else:
-        return home(err="you do not have permission to view this category")
+        return redirect(url_for("home", err="you do not have permission to view this category"), code=302)
 
 
 def create_permission(user, category):
@@ -560,8 +560,10 @@ def get_users_of_lower_level(user, category):
     permission = Permissions.query.filter_by(user=user, category=category).first()
     if permission is None:
         permission = create_permission(user, category)
+    permissions = Permissions.query.filter_by(category=category).all()
+    print("everything" + str(permissions))
     posts = category.posts
-    users = [post.user for post in posts]
+    users = [post.user for post in posts] + [p.user for p in permissions]
     print(users)
     return [poster for poster in users if
             Permissions.query.filter_by(user=poster, category=category).first().level > permission.level]
@@ -824,13 +826,13 @@ def getLevel(category_id, user_promote_id):
         if user is not None and permission.canPromote:
             return str(user_promote_permission.level)
         else:
-            return "N/A"
+            return "is not available for this user."
     else:
         redirect(url_for("home"), code=302)
         
 @app.route("/get-level/<category_id>/")
 def noUser(category_id):
-    return "N/A"
+    return "is not available for this user."
 
 
 @app.route("/promote-form", methods=["GET", "POST"])
