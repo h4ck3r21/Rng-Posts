@@ -13,6 +13,7 @@ from werkzeug.utils import secure_filename, redirect
 app = Flask(__name__)
 UPLOAD_FOLDER = 'files'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'wav', 'mov', 'mkv'}
+DEFAULT_USER_ID = 6
 
 DATABASE_URL = os.environ['DATABASE_URL']
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
@@ -186,6 +187,7 @@ def home(items: Optional[List] = None, err: str = "", title: str = "", msg: str 
             perm = Permissions.query.filter_by(user=user, category_id=category).first()
             if perm is not None:
                 followed = perm.followed
+    print("DEFAULT USERID:" + str(user_id))
     return render_template('homepage.html',
                            title=title,
                            msg=msg,
@@ -211,9 +213,20 @@ def login():
         err = "password incorrect"
         print(err)
         resp = home(err=err)
+    elif user.username == "Default User":
+        err = "username not allowed"
+        print(err)
+        resp = home(err=err)
     else:
         print("login successful")
         resp.set_cookie('userID', str(hash(user.id)))
+    return resp
+
+@app.route("/logout")
+def logout():
+    print("logging out")
+    resp = make_response(render_template('set-cookie.html'))
+    resp.delete_cookie('userID')
     return resp
 
 
@@ -392,6 +405,8 @@ def logo():
 @app.route("/category/<category_id>")
 def view_category(category_id):
     user_id = request.cookies.get('userID')
+    if user_id is None:
+        return redirect(url_for("home", err="You need to sign in to perform this action"), code=302)
     user = User.query.filter_by(id=user_id).first()
     cat = Category.query.filter_by(id=category_id).first()
     permission = Permissions.query.filter_by(user=user, category=cat).first()
@@ -407,6 +422,31 @@ def create_permission(user, category):
     print(f"new permission:{user}, {category}")
     if user is None:
         redirect(url_for("home", err="You need to sign in to perform this action"), code=302)
+    default = Permissions.query.filter_by(user_id=DEFAULT_USER_ID).first()
+    if default is None:
+        default = create_default_permission(category)
+    perms = Permissions(
+        user=user,
+        category=category,
+        canPost=default.canPost,
+        canDelete=default.canDelete,
+        canView=default.canView,
+        canTimeout=default.canTimeout,
+        canAttachFiles=default.canAttachFiles,
+        canMute=default.canMute,
+        canBan=default.canBan,
+        canPromote=default.canPromote,
+        followed=default.followed,
+        canInvite=default.canInvite,
+        level=default.level
+    )
+    db.session.add(perms)
+    db.session.commit()
+    print("new perm:", perms)
+    return perms
+
+def create_default_permission(category):
+    user = User.query.filter_by(id=DEFAULT_USER_ID).first()
     perms = Permissions(
         user=user,
         category=category,
@@ -426,9 +466,8 @@ def create_permission(user, category):
         perms.canView = True
     db.session.add(perms)
     db.session.commit()
-    print("new perm:", perms)
+    print("new default perm:", perms)
     return perms
-
 
 @app.route("/create-category", methods=["GET", "POST"])
 def create_category():

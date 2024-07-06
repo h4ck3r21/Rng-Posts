@@ -19,9 +19,9 @@ if (document.getElementById("user").innerHTML == "None") {
 }
 
 login_error = document.getElementById("login-error").innerHTML
-if (login_error.innerHTML == "") {
+if (login_error != "") {
+    console.log("test")
     openLogin()
-    login_error.style.display = "none"
 }
 
 const lst_posts = document.getElementsByClassName("post")

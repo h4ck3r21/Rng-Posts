@@ -3,7 +3,7 @@
     <head>
 
         <meta charset="UTF-8">
-        <title>Duke of Edinburgh Website</title>
+        <title>Rng posts</title>
         <link rel="stylesheet" href="../static/css/Styling.css">
         <link rel="stylesheet" href="../static/css/form.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -37,8 +37,8 @@
 
         <div id="not-signed-in">
             <h1>Welcome to my website</h1>
-            <p>Start by registering, then you can post notes to yourself.
-                If you wish to access the notes again, then you can sign in</p>
+            <p>Start by registering, then you can post and view posts.
+                If you wish to access your posts again, then you can sign in</p>
         </div>
 
         <div id="signed-in">
@@ -56,7 +56,7 @@
                 <p class="msg-text" id="msg">{{msg}}</p>
 
                 <a id="post-redirect" href="/create-post" style="display: inline-block;">
-                <button id="postButton" class="open-button">Post</button>
+                    <button id="postButton" class="open-button">Post</button>
                 </a>
                 <a href="/new-category" style="display: inline-block;">
                     <button id="new-category" class="open-button">Create Category</button>
@@ -71,7 +71,9 @@
                 <span id="follow-btn">
                     <button style="display: none;" id="follow" class="open-button">Follow</button>
                 </span>
-
+                <a href="/logout" style="display: inline-block;" id="logout-btn">
+                    <button id="manage-category" class="open-button open-close">Log Out</button>
+                </a>
                 <div id="content"></div>
             </div>
         </div>
@@ -407,6 +409,7 @@
             }
 
         </script>
+
         <script src="../static/check_logged_in.js"></script>
 
     </body>

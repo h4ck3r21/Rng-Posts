@@ -182,6 +182,8 @@ img.logo {
     text-decoration: none;
     color: #FF2E63;
     border-color: #FF2E63;
+    text-decoration: underline;
+    text-decoration-color: #FF2E63;
 }
 
 .open-close:hover {

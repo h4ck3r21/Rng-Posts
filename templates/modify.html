@@ -54,7 +54,7 @@
         btn.className = 'open-close open-button btn';
         btn.innerHTML = "Close";
         link.appendChild(btn);
-        link.href = "javascript:history.back()";
+        link.href = '/category/{{category_id}}';
         actions_div.appendChild(link);
 
         function Select(action) {
