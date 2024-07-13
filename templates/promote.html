@@ -14,14 +14,15 @@
         <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/promote-form">
             <h1>Promote</h1>
             <p class="error-text" id="error">{{err}}</p>
+            <p id="msg"></p>
             <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
-            <label for="user">User</label>
-            <select name="user" id="user" required></select>
-            <br>
-            <label for="level">Level</label>
-            <span id="levelPreview"></span>
-            <p>lower level allows the user more power</p>
-            <input name="level" id="level" type="number" inputmode="numeric" required>
+            <label for="user" class="input">User</label>
+            <select name="user" id="user" class="input" required></select>
+            <br class="input">
+            <label for="level" class="input">Level</label>
+            <span id="levelPreview" class="input"></span>
+            <p class="input">lower level allows the user more power</p>
+            <input name="level" id="level" type="number" inputmode="numeric" required class="input">
 
             <br><br>
 
@@ -37,25 +38,36 @@
         var level_preview = document.getElementById("levelPreview");
         console.log(users);;
         console.log(user_ids);
-        userList = setupUserList(users);
-        createDropDown(userList, 'user');
 
-        const http = new XMLHttpRequest();
-        let url = "/get-level/" + {{ category }} + "/" + user_dropdown.value;
-        http.open("GET", url);
-        http.send();
-
-        http.onreadystatechange = (e) => {
-            if (http.responseText != "") {
-                level_preview.innerHTML = http.responseText;
-                console.log(http.responseText);
+        if (users == "[]") {
+            document.getElementById("msg").innerHTML = "There are no users that you can promote."
+            inputs = document.getElementsByClassName("input");
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].hidden = true;
             }
         }
-        user_dropdown.addEventListener("change", function () {
+        else {
+            userList = setupUserList(users);
+            createDropDown(userList, 'user');
+
+            const http = new XMLHttpRequest();
             let url = "/get-level/" + {{ category }} + "/" + user_dropdown.value;
             http.open("GET", url);
             http.send();
-        })
+
+            http.onreadystatechange = (e) => {
+                if (http.responseText != "") {
+                    level_preview.innerHTML = http.responseText;
+                    console.log(http.responseText);
+                }
+            }
+            user_dropdown.addEventListener("change", function () {
+                let url = "/get-level/" + {{ category }} + "/" + user_dropdown.value;
+            http.open("GET", url);
+            http.send();
+            })
+        }
+        
     </script>
     <script src="../static/check-error.js"></script>
 </body>

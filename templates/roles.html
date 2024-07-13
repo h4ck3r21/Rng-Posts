@@ -15,28 +15,28 @@
         <h1>Change Roles</h1>
         <p class="error-text" id="error">{{err}}</p>
         <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
-        <label for="user">User</label>
-        <select name="user" id="user" required></select>
+        <label for="user" class="input">User</label>
+        <select name="user" id="user" class="input" required></select>
         <p id="msg"></p>
         <br>
-        <input type="checkbox" id="post" name="post" value="true">
-        <label for="post">Can Post</label><br>
-        <input type="checkbox" id="delete" name="delete" value="true">
-        <label for="delete">Can Delete</label><br>
-        <input type="checkbox" id="view" name="view" value="true">
-        <label for="view">Can View</label><br>
-        <input type="checkbox" id="timeout" name="timeout" value="true">
-        <label for="timeout">Can Timeout</label><br>
-        <input type="checkbox" id="files" name="files" value="true">
-        <label for="files">Can Post Files</label><br>
-        <input type="checkbox" id="mute" name="mute" value="true">
-        <label for="mute">Can Mute</label><br>
-        <input type="checkbox" id="ban" name="ban" value="true">
-        <label for="ban">Can Ban</label><br>
-        <input type="checkbox" id="promote" name="promote" value="true">
-        <label for="promote">Can Promote</label><br>
-        <input type="checkbox" id="invite" name="invite" value="true">
-        <label for="invite">Can Invite</label><br>
+        <input type="checkbox" id="post" name="post" value="true" class="input">
+        <label for="post" class="input">Can Post</label><br class="input">
+        <input type="checkbox" id="delete" name="delete" value="true" class="input">
+        <label for="delete" class="input">Can Delete</label><br class="input">
+        <input type="checkbox" id="view" name="view" value="true" class="input">
+        <label for="view" class="input">Can View</label><br class="input">
+        <input type="checkbox" id="timeout" name="timeout" value="true" class="input">
+        <label for="timeout" class="input">Can Timeout</label><br class="input">
+        <input type="checkbox" id="files" name="files" value="true" class="input">
+        <label for="files" class="input">Can Post Files</label><br class="input">
+        <input type="checkbox" id="mute" name="mute" value="true" class="input">
+        <label for="mute" class="input">Can Mute</label><br class="input">
+        <input type="checkbox" id="ban" name="ban" value="true" class="input">
+        <label for="ban" class="input">Can Ban</label><br class="input">
+        <input type="checkbox" id="promote" name="promote" value="true" class="input">
+        <label for="promote" class="input">Can Promote</label><br class="input">
+        <input type="checkbox" id="invite" name="invite" value="true" class="input">
+        <label for="invite" class="input">Can Invite</label><br class="input">
         <br><br>
 
         <button type="submit" id="submit-post" class="btn">Submit</button>
@@ -51,6 +51,10 @@
         
         if (users == "[]") {
             document.getElementById("msg").innerHTML = "There are no users that you can modify the roles of."
+            inputs = document.getElementsByClassName("input");
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].hidden = true;
+            }
         }
         else {
             userList = setupUserList(users)

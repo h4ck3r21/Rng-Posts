@@ -14,9 +14,10 @@
         <form method="post" enctype="multipart/form-data" class="form-container post-form" action="/mute-form">
             <h1>Mute</h1>
             <p class="error-text" id="error">{{err}}</p>
+            <p id="msg"></p>
             <input name="category" id="category" class="input-text" value="{{category}}" required hidden>
-            <label for="user">User</label>
-            <select name="user" id="user" required></select>
+            <label for="user" class="input">User</label>
+            <select name="user" id="user" class="input" required></select>
 
             <br><br>
 
@@ -26,13 +27,23 @@
         <p style="display:none;" id="users">{{users}}</p>
     </center>
     <script>
-    var user_dropdown = document.getElementById('user');
-    var users = "{{users}}";
-    var user_ids = "{{users}}"
-    console.log(users);
-    console.log(user_ids)
-    userList = setupUserList(users)
-    createDropDown(userList, 'user')
+        var user_dropdown = document.getElementById('user');
+        var users = "{{users}}";
+        var user_ids = "{{users}}"
+        console.log(users);
+        console.log(user_ids);
+        if (users == "[]") {
+            document.getElementById("msg").innerHTML = "There are no users that you can mute."
+            inputs = document.getElementsByClassName("input");
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].hidden = true;
+            }
+        }
+        else {
+            userList = setupUserList(users);
+            createDropDown(userList, 'user');
+        }
+        
     </script>
     <script src="../static/check-error.js"></script>
 </body>

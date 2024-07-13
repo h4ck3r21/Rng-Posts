@@ -500,6 +500,7 @@ def create_category():
             canInvite=True,
             level=0
         )
+        create_default_permission(cat)
         db.session.add(perms)
         db.session.commit()
         return redirect(url_for("view_category",
