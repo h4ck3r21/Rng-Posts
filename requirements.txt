@@ -81,6 +81,7 @@ protobuf==4.25.3
 psutil==5.9.8
 psycopg==3.1.16
 psycopg2==2.9.9
+psycopg2-binary==2.9.9
 ptyprocess==0.7.0
 pycparser==2.22
 pydantic==2.6.4
