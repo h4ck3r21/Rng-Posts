@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename, redirect
 
+print("app started")
 app = Flask(__name__)
 UPLOAD_FOLDER = 'files'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4', 'wav', 'mov', 'mkv'}
